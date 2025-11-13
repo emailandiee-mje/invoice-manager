@@ -1,7 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
- * @version 0.94
+ * @version 0.95
  */
 
 /**
@@ -746,6 +746,21 @@ function doGet(e) {
                                     <\/div>
 
                                     <div class="form-group">
+                                        <label for="miscellaneousCost">Miscellaneous Cost<\/label>
+                                        <div class="input-field currency-input">
+                                            <input 
+                                                type="text" 
+                                                id="miscellaneousCost" 
+                                                name="miscellaneousCost"
+                                                placeholder="0.00"
+                                                inputmode="decimal"
+                                            >
+                                        <\/div>
+                                        <div class="field-hint">Delivery, gas, and other costs<\/div>
+                                        <div class="error-message hidden" id="miscellaneousCostError"><\/div>
+                                    <\/div>
+
+                                    <div class="form-group">
                                         <label for="invoiceCredits">Invoice Credits<\/label>
                                         <div class="input-field currency-input">
                                             <input 
@@ -915,6 +930,17 @@ function doGet(e) {
                                         <\/div>
 
                                         <div class="form-group">
+                                            <label for="editMiscellaneousCost">Miscellaneous Cost<\/label>
+                                            <div class="input-field currency-input">
+                                                <input 
+                                                    type="text" 
+                                                    id="editMiscellaneousCost" 
+                                                    inputmode="decimal"
+                                                >
+                                            <\/div>
+                                        <\/div>
+
+                                        <div class="form-group">
                                             <label for="editInvoiceCredits">Invoice Credits<\/label>
                                             <div class="input-field currency-input">
                                                 <input 
@@ -947,7 +973,7 @@ function doGet(e) {
             <\/div>
 
             <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
-                <p>© 2025 Bonnie's Invoice Manager | Version 0.94 (Beta)<\/p>
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.95 (Beta)<\/p>
                 <p class="mt-1 text-xs">Created lovingly by MJE AppWorks<\/p>
             <\/div>
         <\/div>
@@ -999,12 +1025,12 @@ function doGet(e) {
             document.getElementById('invoiceForm').addEventListener('reset', handleFormReset);
             document.getElementById('editInvoiceForm').addEventListener('submit', handleEditSubmit);
 
-            const costInputs = ['#flowerCost', '#suppliesCost', '#greensCost', '#invoiceCredits'];
+            const costInputs = ['#flowerCost', '#suppliesCost', '#greensCost', '#miscellaneousCost', '#invoiceCredits'];
             costInputs.forEach(selector => {
                 document.querySelector(selector).addEventListener('input', calculateTotal);
             });
 
-            const editCostInputs = ['#editFlowerCost', '#editSuppliesCost', '#editGreensCost', '#editInvoiceCredits'];
+            const editCostInputs = ['#editFlowerCost', '#editSuppliesCost', '#editGreensCost', '#editMiscellaneousCost', '#editInvoiceCredits'];
             editCostInputs.forEach(selector => {
                 document.querySelector(selector).addEventListener('input', calculateEditTotal);
             });
@@ -1177,9 +1203,10 @@ function doGet(e) {
             const flowerCost = parseFloat(document.getElementById('flowerCost').value) || 0;
             const suppliesCost = parseFloat(document.getElementById('suppliesCost').value) || 0;
             const greensCost = parseFloat(document.getElementById('greensCost').value) || 0;
+            const miscellaneousCost = parseFloat(document.getElementById('miscellaneousCost').value) || 0;
             const credits = parseFloat(document.getElementById('invoiceCredits').value) || 0;
 
-            const total = flowerCost + suppliesCost + greensCost - credits;
+            const total = flowerCost + suppliesCost + greensCost + miscellaneousCost - credits;
             displayTotal(total, 'totalDisplay');
         }
 
@@ -1187,9 +1214,10 @@ function doGet(e) {
             const flowerCost = parseFloat(document.getElementById('editFlowerCost').value) || 0;
             const suppliesCost = parseFloat(document.getElementById('editSuppliesCost').value) || 0;
             const greensCost = parseFloat(document.getElementById('editGreensCost').value) || 0;
+            const miscellaneousCost = parseFloat(document.getElementById('editMiscellaneousCost').value) || 0;
             const credits = parseFloat(document.getElementById('editInvoiceCredits').value) || 0;
 
-            const total = flowerCost + suppliesCost + greensCost - credits;
+            const total = flowerCost + suppliesCost + greensCost + miscellaneousCost - credits;
             displayTotal(total, 'editTotalDisplay');
         }
 
@@ -1475,6 +1503,7 @@ function doGet(e) {
             document.getElementById('editFlowerCost').value = invoice.flowerCost.toFixed(2);
             document.getElementById('editSuppliesCost').value = invoice.suppliesCost.toFixed(2);
             document.getElementById('editGreensCost').value = invoice.greensCost.toFixed(2);
+            document.getElementById('editMiscellaneousCost').value = (invoice.miscellaneousCost || 0).toFixed(2);
             document.getElementById('editInvoiceCredits').value = invoice.invoiceCredits.toFixed(2);
 
             calculateEditTotal();
@@ -1641,6 +1670,7 @@ function submitInvoice(invoiceData) {
       invoiceData.flowerCost,
       invoiceData.suppliesCost,
       invoiceData.greensCost,
+      invoiceData.miscellaneousCost,
       invoiceData.invoiceCredits
     );
 
@@ -1746,6 +1776,7 @@ function updateInvoice(updatedData) {
       updatedData.flowerCost,
       updatedData.suppliesCost,
       updatedData.greensCost,
+      updatedData.miscellaneousCost,
       updatedData.invoiceCredits
     );
 
@@ -1756,6 +1787,7 @@ function updateInvoice(updatedData) {
       flowerCost: updatedData.flowerCost,
       suppliesCost: updatedData.suppliesCost,
       greensCost: updatedData.greensCost,
+      miscellaneousCost: updatedData.miscellaneousCost,
       invoiceCredits: updatedData.invoiceCredits,
       total: newTotal
     });
@@ -2160,8 +2192,8 @@ function validateAllFields(data) {
   return { isValid, errors };
 }
 
-function calculateTotal(flowerCost, suppliesCost, greensCost, invoiceCredits) {
-  return flowerCost + suppliesCost + greensCost - invoiceCredits;
+function calculateTotal(flowerCost, suppliesCost, greensCost, miscellaneousCost, invoiceCredits) {
+  return flowerCost + suppliesCost + greensCost + miscellaneousCost - invoiceCredits;
 }
 
 function appendInvoice(invoiceData) {
@@ -2185,6 +2217,7 @@ function appendInvoice(invoiceData) {
       invoiceData.flowerCost,
       invoiceData.suppliesCost,
       invoiceData.greensCost,
+      invoiceData.miscellaneousCost,
       invoiceData.invoiceCredits,
       invoiceData.total,
       'Active',
@@ -2226,10 +2259,11 @@ function updateInvoiceRow(invoiceId, updatedData) {
         invoiceSheet.getRange(rowNumber, 5).setValue(updatedData.flowerCost); // Flower Cost
         invoiceSheet.getRange(rowNumber, 6).setValue(updatedData.suppliesCost); // Supplies Cost
         invoiceSheet.getRange(rowNumber, 7).setValue(updatedData.greensCost); // Greens Cost
-        invoiceSheet.getRange(rowNumber, 8).setValue(updatedData.invoiceCredits); // Invoice Credits
-        invoiceSheet.getRange(rowNumber, 9).setValue(updatedData.total); // Total Due
-        invoiceSheet.getRange(rowNumber, 12).setValue(timestamp); // Last Modified Timestamp
-        invoiceSheet.getRange(rowNumber, 14).setValue(userEmail); // Last Modified By
+        invoiceSheet.getRange(rowNumber, 8).setValue(updatedData.miscellaneousCost); // Miscellaneous Cost
+        invoiceSheet.getRange(rowNumber, 9).setValue(updatedData.invoiceCredits); // Invoice Credits
+        invoiceSheet.getRange(rowNumber, 10).setValue(updatedData.total); // Total Due
+        invoiceSheet.getRange(rowNumber, 13).setValue(timestamp); // Last Modified Timestamp
+        invoiceSheet.getRange(rowNumber, 15).setValue(userEmail); // Last Modified By
         
         return true;
       }
@@ -2263,7 +2297,7 @@ function searchByInvoiceNumberV2(searchTerm) {
       const invoiceNumber = String(data[i][1]).toLowerCase();
       if (invoiceNumber.includes(searchLower)) {
         const invoiceDateObj = data[i][2];
-        const createdTimestampObj = data[i][10];
+        const createdTimestampObj = data[i][11];
         
         let invoiceDateStr = String(invoiceDateObj);
         let createdTimestampStr = String(createdTimestampObj);
@@ -2298,8 +2332,9 @@ function searchByInvoiceNumberV2(searchTerm) {
           flowerCost: Number(data[i][4]),
           suppliesCost: Number(data[i][5]),
           greensCost: Number(data[i][6]),
-          invoiceCredits: Number(data[i][7]),
-          total: Number(data[i][8]),
+          miscellaneousCost: Number(data[i][7]) || 0,
+          invoiceCredits: Number(data[i][8]),
+          total: Number(data[i][9]),
           createdTimestamp: createdTimestampStr
         };
         
@@ -2354,7 +2389,7 @@ function searchByDateRangeV2(fromDate, toDate) {
       
       if (invoiceDate >= from && invoiceDate <= to) {
         const invoiceDateObj = data[i][2];
-        const createdTimestampObj = data[i][10];
+        const createdTimestampObj = data[i][11];
         
         let invoiceDateStr = String(invoiceDateObj);
         let createdTimestampStr = String(createdTimestampObj);
@@ -2389,8 +2424,9 @@ function searchByDateRangeV2(fromDate, toDate) {
           flowerCost: Number(data[i][4]),
           suppliesCost: Number(data[i][5]),
           greensCost: Number(data[i][6]),
-          invoiceCredits: Number(data[i][7]),
-          total: Number(data[i][8]),
+          miscellaneousCost: Number(data[i][7]) || 0,
+          invoiceCredits: Number(data[i][8]),
+          total: Number(data[i][9]),
           createdTimestamp: createdTimestampStr
         };
         
@@ -2433,9 +2469,10 @@ function getInvoiceDataById(invoiceId) {
           flowerCost: data[i][4],
           suppliesCost: data[i][5],
           greensCost: data[i][6],
-          invoiceCredits: data[i][7],
-          total: data[i][8],
-          createdTimestamp: data[i][10]
+          miscellaneousCost: data[i][7] || 0,
+          invoiceCredits: data[i][8],
+          total: data[i][9],
+          createdTimestamp: data[i][11]
         };
       }
     }
@@ -2461,7 +2498,7 @@ function getAllActiveInvoices() {
     
     // Skip header row
     for (let i = 1; i < data.length; i++) {
-      if (data[i][9] === 'Active') { // Status column
+      if (data[i][10] === 'Active') { // Status column (shifted by 1)
         results.push({
           id: data[i][0],
           invoiceNumber: data[i][1],
@@ -2470,9 +2507,10 @@ function getAllActiveInvoices() {
           flowerCost: data[i][4],
           suppliesCost: data[i][5],
           greensCost: data[i][6],
-          invoiceCredits: data[i][7],
-          total: data[i][8],
-          createdTimestamp: data[i][10]
+          miscellaneousCost: data[i][7] || 0,
+          invoiceCredits: data[i][8],
+          total: data[i][9],
+          createdTimestamp: data[i][11]
         });
       }
     }

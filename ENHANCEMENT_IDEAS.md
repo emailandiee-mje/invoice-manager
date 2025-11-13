@@ -60,6 +60,17 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 - **Priority:** Medium
 - **Status:** Needs discussion
 
+### 9. Add Miscellaneous Cost Field
+- **Description:** Add a new "Miscellaneous Cost" field to track delivery and gas costs
+- **GUI Placement:** Field should appear after Greens Cost and before Invoice Credits in the form
+- **Sheet Placement:** New column inserted between Greens Cost and Invoice Credits columns
+- **Validation:** All rules that apply to other cost fields (non-negative, numeric, default to 0) apply to this field
+- **Calculation:** Total Due = Flower Cost + Supplies Cost + Greens Cost + Miscellaneous Cost - Invoice Credits
+- **Benefit:** Better expense tracking for delivery, gas, and other miscellaneous costs
+- **Priority:** High
+- **Status:** Completed
+- **Implemented:** November 13, 2025 (v0.95)
+
 ---
 
 ## How to Use This Document
