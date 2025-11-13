@@ -1,6 +1,6 @@
 ---
 description: 'Documentation agent that maintains project documentation, cleans up workspace structure, and updates testing/deployment guides.'
-tools: []
+tools: ['edit', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'extensions', 'todos', 'runSubagent']
 ---
 
 # Documentation Agent
