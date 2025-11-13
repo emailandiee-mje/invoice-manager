@@ -507,6 +507,6 @@ Use this section after making any code changes:
 ---
 
 **Sign-Off:**
-- Tester: _____________________
-- Date: _____________________
-- Approved For Production: ☐ YES / ☐ NO
+- Tester: Miranda Jane Ellison
+- Date: 11/13/2025
+- Approved For Production: X YES / ☐ NO
