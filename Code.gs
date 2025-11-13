@@ -1,7 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
- * @version 0.95
+ * @version 0.96
  */
 
 /**
@@ -973,7 +973,7 @@ function doGet(e) {
             <\/div>
 
             <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
-                <p>© 2025 Bonnie's Invoice Manager | Version 0.95 (Beta)<\/p>
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.96 (Beta)<\/p>
                 <p class="mt-1 text-xs">Created lovingly by MJE AppWorks<\/p>
             <\/div>
         <\/div>
@@ -1259,6 +1259,7 @@ function doGet(e) {
                 flowerCost: document.getElementById('flowerCost').value.trim(),
                 suppliesCost: document.getElementById('suppliesCost').value.trim(),
                 greensCost: document.getElementById('greensCost').value.trim(),
+                miscellaneousCost: document.getElementById('miscellaneousCost').value.trim(),
                 invoiceCredits: document.getElementById('invoiceCredits').value.trim()
             };
 
@@ -1270,6 +1271,7 @@ function doGet(e) {
             invoiceData.flowerCost = parseFloat(invoiceData.flowerCost) || 0;
             invoiceData.suppliesCost = parseFloat(invoiceData.suppliesCost) || 0;
             invoiceData.greensCost = parseFloat(invoiceData.greensCost) || 0;
+            invoiceData.miscellaneousCost = parseFloat(invoiceData.miscellaneousCost) || 0;
             invoiceData.invoiceCredits = parseFloat(invoiceData.invoiceCredits) || 0;
 
             submitToServer(invoiceData);
@@ -1334,6 +1336,18 @@ function doGet(e) {
                     isValid = false;
                 } else if (greensNum < 0) {
                     showError('greensCostError', 'Amount cannot be negative');
+                    isValid = false;
+                }
+            }
+
+            // Validate Miscellaneous Cost - must be numeric or empty
+            if (data.miscellaneousCost !== '') {
+                const miscNum = parseFloat(data.miscellaneousCost);
+                if (isNaN(miscNum)) {
+                    showError('miscellaneousCostError', 'Amount must be a valid number (e.g., 10.50)');
+                    isValid = false;
+                } else if (miscNum < 0) {
+                    showError('miscellaneousCostError', 'Amount cannot be negative');
                     isValid = false;
                 }
             }

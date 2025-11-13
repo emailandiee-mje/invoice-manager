@@ -31,6 +31,19 @@ _No active defects_
 - **Version:** Fixed in v0.94
 - **Notes:** CSS fix ensures descenders (g, y, p, etc.) display properly without clipping
 
+### 2. Miscellaneous Cost Field Not Saving
+- **Description:** Miscellaneous Cost field value not being captured from form submission, resulting in missing data in the sheet and #NUM! error in Total Due column
+- **Location:** Create Invoice form submission handler
+- **Severity:** High
+- **Impact:** Complete data loss for miscellaneous costs, incorrect total calculations
+- **Status:** Resolved
+- **Priority:** Critical
+- **Reported:** November 13, 2025
+- **Resolved:** November 13, 2025
+- **Fix:** Added `miscellaneousCost` to invoiceData object in `handleFormSubmit()`, added parseFloat() conversion, and added validation function for the field
+- **Version:** Fixed in v0.96
+- **Notes:** Field was added to GUI in v0.95 but form submission logic was incomplete, causing undefined values to be passed to calculation and storage functions
+
 ---
 
 ## How to Use This Document
