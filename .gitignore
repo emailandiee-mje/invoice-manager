@@ -1,0 +1,138 @@
+# Bonnie's Invoice Manager - Git Ignore File
+
+# ===================================
+# Sensitive Data & Credentials
+# ===================================
+# Never commit actual spreadsheet IDs or deployment URLs
+.clasp.json
+appsscript.json
+credentials.json
+client_secret*.json
+*.env
+.env.*
+
+# Personal configuration
+config.local.js
+settings.local.json
+
+# ===================================
+# IDE & Editor Files
+# ===================================
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# ===================================
+# Operating System Files
+# ===================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+
+# ===================================
+# Temporary & Build Files
+# ===================================
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*.cache
+
+# Build outputs (if any)
+dist/
+build/
+out/
+
+# ===================================
+# Dependencies (if Node.js used)
+# ===================================
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ===================================
+# Archive & Backup Files
+# ===================================
+# Keep docs-archive in repo for reference
+# But exclude any personal backups
+*_backup/
+*.backup
+*.old
+
+# ===================================
+# Test Data & Local Development
+# ===================================
+# Exclude any local test data
+test-data/
+sample-data.json
+local-invoices.csv
+
+# ===================================
+# Documentation Generation
+# ===================================
+# If using doc generators
+.docz/
+.cache/
+public/
+
+# ===================================
+# Git Specific
+# ===================================
+.git/
+.gitattributes_local
+
+# ===================================
+# Personal Notes
+# ===================================
+# Your personal development notes
+NOTES.md
+TODO.md
+PERSONAL_*.md
