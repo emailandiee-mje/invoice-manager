@@ -610,7 +610,7 @@ function doGet(e) {
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-12 animate-fade-in">
                 <h1 class="gradient-text text-5xl font-bold mb-4">
-                    <i class="fas fa-receipt"><\/i> Invoice Manager
+                    <i class="fas fa-receipt"><\/i> Bonnie's Invoice Manager
                 </h1>
                 <p class="text-gray-600 dark-mode:text-gray-200 text-lg">
                     Professional invoice management for your business
