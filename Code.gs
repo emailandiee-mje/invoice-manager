@@ -1,7 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
- * @version 0.93
+ * @version 0.94
  */
 
 /**
@@ -79,6 +79,14 @@ function doGet(e) {
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            line-height: 1.5;
+            display: inline-block;
+            padding-bottom: 8px;
+            overflow: visible;
+        }
+
+        h1.gradient-text {
+            padding: 8px 0 12px 0;
         }
 
         input, textarea, select {
@@ -939,7 +947,7 @@ function doGet(e) {
             <\/div>
 
             <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
-                <p>© 2025 Bonnie's Invoice Manager | Version 0.93 (Beta)<\/p>
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.94 (Beta)<\/p>
                 <p class="mt-1 text-xs">Created lovingly by MJE AppWorks<\/p>
             <\/div>
         <\/div>

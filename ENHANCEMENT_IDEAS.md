@@ -52,7 +52,7 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 - **Description:** Consider renaming the app to "Bonnie's Invoice Manager" for better branding
 - **Benefit:** More personalized, professional appearance
 - **Priority:** Low
-- **Status:** Under consideration
+- **Status:** Completed
 
 ### 8. Clear Search Results on Tab Switch
 - **Description:** Decide whether switching between tabs should clear search results, and whether a dedicated "Clear" button is needed

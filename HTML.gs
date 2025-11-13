@@ -57,14 +57,14 @@ function getHtmlOutput() {
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            line-height: 1.4;
+            line-height: 1.5;
             display: inline-block;
-            padding-bottom: 4px;
+            padding-bottom: 8px;
             overflow: visible;
         }
 
         h1.gradient-text {
-            padding: 4px 0 8px 0;
+            padding: 8px 0 12px 0;
         }
 
         input, textarea, select {
