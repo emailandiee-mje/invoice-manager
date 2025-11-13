@@ -1,6 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
+ * @version 0.93
  */
 
 /**
@@ -938,7 +939,7 @@ function doGet(e) {
             <\/div>
 
             <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
-                <p>© 2025 Bonnie's Invoice Management System | Version 0.92 (Beta)<\/p>
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.93 (Beta)<\/p>
                 <p class="mt-1 text-xs">Created lovingly by MJE AppWorks<\/p>
             <\/div>
         <\/div>
