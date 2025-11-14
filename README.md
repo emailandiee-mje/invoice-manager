@@ -97,7 +97,7 @@ _BonniesApp/
 Each invoice record includes:
 
 | Field | Type | Purpose |
-|-------|------|---------||
+|-------|------|---------|
 | **ID** | UUID | Unique identifier |
 | **Invoice Number** | Text | User-provided reference |
 | **Invoice Date** | Date | When invoice was issued |
