@@ -248,129 +248,123 @@ This ensures **historical accuracy** - old invoices use old markups, new invoice
 
 ### Step 5: Create Calculated Fields for Profit Analysis
 
-Now you need to create calculated fields that will use the markup values from your blend. For a robust and scalable report, you should **always add calculated fields to the data source itself**, not to individual charts. This ensures they can be reused across all charts and reports.
+**IMPORTANT:** Your calculated fields must be created in two different places. Due to a Looker Studio limitation, you **cannot** add new calculated fields directly to a *blended* data source.
 
-**How to Add Calculated Fields (Recommended Method):**
+-   Fields that only use data from a **single source** (e.g., `Invoices`) should be created in that original data source for reusability.
+-   Fields that combine data from **both sources** (e.g., `Invoices` and `Markups`) **must be created at the chart level**.
+
+#### Part A: Add Reusable Fields to the `Invoices` Data Source
+
+First, let's add the fields that only depend on the `Invoices` data. Creating them here makes them reusable across any report that uses this data source.
 
 1.  Go to **Resource** > **Manage added data sources**.
-2.  Find your **"Invoices with Markups"** blended data source and click **Edit**.
+2.  Find your original **Invoices** data source and click **Edit**.
 3.  In the data source editor, click **Add a Field** (top right).
-4.  Enter the field name and formula from the list below.
-5.  Repeat for all the calculated fields. Fields created this way are available to all charts using this blend.
-
-Adding fields to a single chart is possible but **not recommended** as it prevents reuse and makes maintenance difficult. Use the chart-level method only for quick, temporary tests.
+4.  Enter the field name and formula for each field below.
 
 **💡 Pro Tip: Naming Convention**
-> As a best practice, consider prefixing your calculated fields with `c_` (e.g., `c_Total Profit`, `c_Profit Margin %`). This makes them easy to find and identify in the field list, distinguishing them from fields that come directly from your Google Sheet.
+> As a best practice, consider prefixing your calculated fields with `c_` (e.g., `c_Year`, `c_Invoice_Count`). This makes them easy to find and identify.
 
-Below are the critical calculated field formulas you'll need. Create these in the **blended data source editor**:
+**Fields to Add to `Invoices` Data Source:**
 
-#### Core Business Metrics
-
-**1. Wholesale Cost (What We Pay Vendors)**
-*This is simply the total amount from the invoice.*
-```
-Total Due
-```
-
-**2. Retail Price - Flowers**
-*Calculates the retail price based on the markup.*
-```
-Flower Cost * Flowers Markup
-```
-
-**3. Retail Price - Botanicals**
-```
-Botanicals Cost * Botanicals Markup
-```
-
-**4. Retail Price - Supplies**
-```
-Supplies Cost * Supplies Markup
-```
-
-**5. Retail Price - Greens**
-```
-Greens Cost * Greens Markup
-```
-
-**6. Retail Price - Miscellaneous**
-```
-Miscellaneous Cost * Miscellaneous Markup
-```
-
-**7. Total Retail Price (What Customers Should Pay)**
-*The total price after all markups are applied, before credits.*
-```
-(Retail Price - Flowers) + 
-(Retail Price - Botanicals) + 
-(Retail Price - Supplies) + 
-(Retail Price - Greens) + 
-(Retail Price - Miscellaneous)
-```
-
-**8. Final Retail Price**
-*The final price after invoice-level credits are applied.*
-```
-Total Retail Price - Invoice Credits
-```
-
-**9. Total Profit**
-*The difference between the final retail price and the wholesale cost.*
-```
-Final Retail Price - Total Due
-```
-
-**10. Profit Margin %**
-*The percentage of profit relative to the final retail price. Set the field's type to `Numeric` > `Percent`.*
-```
-CASE
-  WHEN Final Retail Price = 0 THEN 0
-  ELSE Total Profit / Final Retail Price
-END
-```
-
-**11. Year**
+**1. c_Year**
 ```
 YEAR(Invoice Date)
 ```
 
-**12. Quarter**
-*Uses the native Looker Studio function for simplicity.*
+**2. c_Quarter**
 ```
 QUARTER(Invoice Date)
 ```
 
-**13. Month-Year**
+**3. c_Month_Year**
 *For sorting and displaying trends over time.*
 ```
 FORMAT_DATE("%Y-%m", Invoice Date)
 ```
 
-**14. Month Name**
+**4. c_Month_Name**
 ```
 FORMAT_DATE("%B", Invoice Date)
 ```
 
-**15. Week of Year**
+**5. c_Week_of_Year**
 ```
 WEEK(Invoice Date)
 ```
 
-**16. Day of Week**
+**6. c_Day_of_Week**
 ```
 FORMAT_DATE("%A", Invoice Date)
 ```
 
-**17. Invoice Count**
+**7. c_Invoice_Count**
 ```
 COUNT(Invoice Number)
 ```
 
-**18. Category Cost % - Flowers**
+**8. c_Category_Cost_Percent_Flowers**
 *Calculates the percentage of total cost for a specific category. Create one for each category.*
 ```
 Flower Cost / Total Due
+```
+*(Repeat for Botanicals, Supplies, Greens, and Miscellaneous)*
+
+---
+
+#### Part B: Create Blend-Specific Fields in Your Charts
+
+Now, for the core profit metrics that combine `Invoice` costs with `Markup` multipliers. These **must be created inside each chart** that uses your blended data.
+
+**How to Add Chart-Level Calculated Fields:**
+
+1.  Add a new chart (e.g., a Table or Scorecard) to your report.
+2.  For the chart's `Data Source`, select your **"Invoices with Markups"** blend.
+3.  In the **Data Panel** on the right, click **Add a metric** (or **Add a dimension**), then click **CREATE FIELD**.
+4.  Enter the field name and formula from the list below.
+
+**⚠️ Important:** These fields only exist within the chart where you create them. To reuse them, **copy the chart** (Ctrl+C) and **paste it** (Ctrl+V), then change the chart type as needed. This copies the fields with it.
+
+**Core Business Metrics (Create at Chart Level):**
+
+**1. c_Wholesale_Cost**
+*This is simply the total amount from the invoice.*
+```
+Total Due
+```
+
+**2. c_Retail_Price_Flowers**
+*Calculates the retail price based on the markup.*
+```
+Flower Cost * Flowers Markup
+```
+*(Repeat for Botanicals, Supplies, Greens, and Miscellaneous)*
+
+**3. c_Total_Retail_Price**
+*The total price after all markups are applied, before credits. You must create the individual retail price fields first.*
+```
+c_Retail_Price_Flowers + c_Retail_Price_Botanicals + c_Retail_Price_Supplies + c_Retail_Price_Greens + c_Retail_Price_Miscellaneous
+```
+
+**4. c_Final_Retail_Price**
+*The final price after invoice-level credits are applied.*
+```
+c_Total_Retail_Price - Invoice Credits
+```
+
+**5. c_Total_Profit**
+*The difference between the final retail price and the wholesale cost.*
+```
+c_Final_Retail_Price - c_Wholesale_Cost
+```
+
+**6. c_Profit_Margin_Percent**
+*The percentage of profit relative to the final retail price. After creating, edit the field to set its type to `Numeric` > `Percent`.*
+```
+CASE
+  WHEN c_Final_Retail_Price = 0 THEN 0
+  ELSE c_Total_Profit / c_Final_Retail_Price
+END
 ```
 
 ---
