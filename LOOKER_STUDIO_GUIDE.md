@@ -254,9 +254,29 @@ This ensures **historical accuracy** - old invoices use old markups, new invoice
 
 ### Step 5: Create Calculated Fields for Profit Analysis
 
-Now that your blend is set up, you can create calculated fields that will automatically use the correct historical markup values.
+Now you need to create calculated fields that will use the markup values from your blend. **IMPORTANT:** You cannot add calculated fields directly to a blended data source in Looker Studio. Instead, you'll create these fields when you add charts to your reports.
 
-Click **Add a Field** in your **"Invoices with Markups"** blended data source and create these critical metrics:
+**How to Add Calculated Fields in Looker Studio:**
+
+1. **Create a new report** or open an existing one
+2. **Add a chart** (Scorecard, Table, Line Chart, etc.)
+3. In the chart's **Data** panel on the right, you'll see the blended data source
+4. Click **Add a field** (the "fx" button) at the bottom of the Metrics or Dimensions section
+5. Create the calculated field with the formulas below
+6. The field will be available for that chart
+
+**Alternatively (Better for Reusability):**
+
+1. While editing a chart that uses your "Invoices with Markups" blend
+2. Click on the data source name at the top of the Data panel
+3. Click **Edit Data Source**
+4. This opens the data source editor
+5. Click **Add a field** here
+6. Fields created this way are available to all charts using this blend
+
+**Note:** Once you create a field in a chart, you can reuse it across other charts in the same report by selecting it from the available fields list.
+
+Below are the critical calculated field formulas you'll need. Create these as you build your reports:
 
 #### Core Business Metrics
 

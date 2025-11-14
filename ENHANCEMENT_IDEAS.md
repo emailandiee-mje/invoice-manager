@@ -93,13 +93,13 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 - **Description:** Decide whether switching between tabs should clear search results, and whether a dedicated "Clear" button is needed
 - **Benefit:** Better state management, clearer UX expectations
 - **Priority:** Medium
-- **Status:** Needs discussion
+- **Status:** Needs discussion with customer/stakeholders
 
 ### 8. Add Freeform Comment Field
 - **Description:** Add freeform comment field to Create New Invoice and Edit Invoice screens
 - **Benefit:** Provide context for purchases
 - **Priority:** Medium
-- **Status:** Under consideration
+- **Status:** Needs discussion with customer/stakeholders to understand best field placement
 
 ---
 
