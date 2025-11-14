@@ -46,6 +46,21 @@ _No active defects_
 - **Version:** Create form fixed in v0.96, Edit form fixed in v0.97
 - **Notes:** Field was added to GUI in v0.95 but form submission logic was incomplete in both Create and Edit forms, causing undefined values to be passed to calculation and storage functions
 
+### 3. Botanicals Cost Field Implementation Defects
+- **Description:** Three defects introduced when adding Botanicals Cost field: (1) Search results showing $0.00 total instead of correct amount, (2) Edit form displaying cost values in wrong fields (shifted by one position), (3) Botanicals Cost not included in real-time Total Due calculation
+- **Location:** `searchByInvoiceNumberV2()`, `searchByDateRangeV2()`, `calculateTotal()`, and `calculateEditTotal()` functions
+- **Severity:** High
+- **Impact:** Incorrect total display in search results, confusing UX with misaligned values in edit form, and inaccurate total calculations when entering botanicals cost
+- **Status:** Resolved
+- **Priority:** Critical
+- **Reported:** November 13, 2025
+- **Resolved:** November 13, 2025
+- **Fix:** 
+  - Search functions: Updated column indices in `searchByInvoiceNumberV2()` and `searchByDateRangeV2()` to account for new botanicals cost column (column 5). Adjusted all subsequent field mappings: suppliesCost (col 6), greensCost (col 7), miscellaneousCost (col 8), invoiceCredits (col 9), total (col 10), createdTimestamp (col 12)
+  - Calculation functions: Added `botanicalsCost` variable to both `calculateTotal()` and `calculateEditTotal()` functions, and updated total formula to include botanicals cost: `flowerCost + botanicalsCost + suppliesCost + greensCost + miscellaneousCost - credits`
+- **Version:** Fixed in v0.98
+- **Notes:** Column index misalignment occurred because search functions weren't updated when botanicals cost column was inserted. Calculation functions were missing botanicals cost variable despite it being in the event listener array. This defect highlights the importance of updating all data read/write operations when adding new columns to the sheet structure.
+
 ---
 
 ## How to Use This Document

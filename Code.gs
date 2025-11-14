@@ -1,7 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
- * @version 0.97
+ * @version 0.99
  */
 
 /**
@@ -716,6 +716,21 @@ function doGet(e) {
                                     <\/div>
 
                                     <div class="form-group">
+                                        <label for="botanicalsCost">Botanicals Cost<\/label>
+                                        <div class="input-field currency-input">
+                                            <input 
+                                                type="text" 
+                                                id="botanicalsCost" 
+                                                name="botanicalsCost"
+                                                placeholder="0.00"
+                                                inputmode="decimal"
+                                            >
+                                        <\/div>
+                                        <div class="field-hint">Cost of plants and botanicals<\/div>
+                                        <div class="error-message hidden" id="botanicalsCostError"><\/div>
+                                    <\/div>
+
+                                    <div class="form-group">
                                         <label for="suppliesCost">Supplies Cost<\/label>
                                         <div class="input-field currency-input">
                                             <input 
@@ -908,6 +923,17 @@ function doGet(e) {
                                         <\/div>
 
                                         <div class="form-group">
+                                            <label for="editBotanicalsCost">Botanicals Cost<\/label>
+                                            <div class="input-field currency-input">
+                                                <input 
+                                                    type="text" 
+                                                    id="editBotanicalsCost" 
+                                                    inputmode="decimal"
+                                                >
+                                            <\/div>
+                                        <\/div>
+
+                                        <div class="form-group">
                                             <label for="editSuppliesCost">Supplies Cost<\/label>
                                             <div class="input-field currency-input">
                                                 <input 
@@ -973,7 +999,7 @@ function doGet(e) {
             <\/div>
 
             <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
-                <p>© 2025 Bonnie's Invoice Manager | Version 0.97<\/p>
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.99<\/p>
                 <p class="mt-1 text-xs">Created lovingly by MJE AppWorks<\/p>
             <\/div>
         <\/div>
@@ -1025,12 +1051,12 @@ function doGet(e) {
             document.getElementById('invoiceForm').addEventListener('reset', handleFormReset);
             document.getElementById('editInvoiceForm').addEventListener('submit', handleEditSubmit);
 
-            const costInputs = ['#flowerCost', '#suppliesCost', '#greensCost', '#miscellaneousCost', '#invoiceCredits'];
+            const costInputs = ['#flowerCost', '#botanicalsCost', '#suppliesCost', '#greensCost', '#miscellaneousCost', '#invoiceCredits'];
             costInputs.forEach(selector => {
                 document.querySelector(selector).addEventListener('input', calculateTotal);
             });
 
-            const editCostInputs = ['#editFlowerCost', '#editSuppliesCost', '#editGreensCost', '#editMiscellaneousCost', '#editInvoiceCredits'];
+            const editCostInputs = ['#editFlowerCost', '#editBotanicalsCost', '#editSuppliesCost', '#editGreensCost', '#editMiscellaneousCost', '#editInvoiceCredits'];
             editCostInputs.forEach(selector => {
                 document.querySelector(selector).addEventListener('input', calculateEditTotal);
             });
@@ -1201,23 +1227,25 @@ function doGet(e) {
 
         function calculateTotal() {
             const flowerCost = parseFloat(document.getElementById('flowerCost').value) || 0;
+            const botanicalsCost = parseFloat(document.getElementById('botanicalsCost').value) || 0;
             const suppliesCost = parseFloat(document.getElementById('suppliesCost').value) || 0;
             const greensCost = parseFloat(document.getElementById('greensCost').value) || 0;
             const miscellaneousCost = parseFloat(document.getElementById('miscellaneousCost').value) || 0;
             const credits = parseFloat(document.getElementById('invoiceCredits').value) || 0;
 
-            const total = flowerCost + suppliesCost + greensCost + miscellaneousCost - credits;
+            const total = flowerCost + botanicalsCost + suppliesCost + greensCost + miscellaneousCost - credits;
             displayTotal(total, 'totalDisplay');
         }
 
         function calculateEditTotal() {
             const flowerCost = parseFloat(document.getElementById('editFlowerCost').value) || 0;
+            const botanicalsCost = parseFloat(document.getElementById('editBotanicalsCost').value) || 0;
             const suppliesCost = parseFloat(document.getElementById('editSuppliesCost').value) || 0;
             const greensCost = parseFloat(document.getElementById('editGreensCost').value) || 0;
             const miscellaneousCost = parseFloat(document.getElementById('editMiscellaneousCost').value) || 0;
             const credits = parseFloat(document.getElementById('editInvoiceCredits').value) || 0;
 
-            const total = flowerCost + suppliesCost + greensCost + miscellaneousCost - credits;
+            const total = flowerCost + botanicalsCost + suppliesCost + greensCost + miscellaneousCost - credits;
             displayTotal(total, 'editTotalDisplay');
         }
 
@@ -1257,6 +1285,7 @@ function doGet(e) {
                 invoiceNumber: document.getElementById('invoiceNumber').value.trim(),
                 invoiceDate: document.getElementById('invoiceDate').value,
                 flowerCost: document.getElementById('flowerCost').value.trim(),
+                botanicalsCost: document.getElementById('botanicalsCost').value.trim(),
                 suppliesCost: document.getElementById('suppliesCost').value.trim(),
                 greensCost: document.getElementById('greensCost').value.trim(),
                 miscellaneousCost: document.getElementById('miscellaneousCost').value.trim(),
@@ -1269,6 +1298,7 @@ function doGet(e) {
 
             // Only convert to numbers AFTER validation passes
             invoiceData.flowerCost = parseFloat(invoiceData.flowerCost) || 0;
+            invoiceData.botanicalsCost = parseFloat(invoiceData.botanicalsCost) || 0;
             invoiceData.suppliesCost = parseFloat(invoiceData.suppliesCost) || 0;
             invoiceData.greensCost = parseFloat(invoiceData.greensCost) || 0;
             invoiceData.miscellaneousCost = parseFloat(invoiceData.miscellaneousCost) || 0;
@@ -1312,6 +1342,18 @@ function doGet(e) {
                     isValid = false;
                 } else if (flowerNum < 0) {
                     showError('flowerCostError', 'Amount cannot be negative');
+                    isValid = false;
+                }
+            }
+
+            // Validate Botanicals Cost - must be numeric or empty
+            if (data.botanicalsCost !== '') {
+                const botanicalsNum = parseFloat(data.botanicalsCost);
+                if (isNaN(botanicalsNum)) {
+                    showError('botanicalsCostError', 'Amount must be a valid number (e.g., 10.50)');
+                    isValid = false;
+                } else if (botanicalsNum < 0) {
+                    showError('botanicalsCostError', 'Amount cannot be negative');
                     isValid = false;
                 }
             }
@@ -1515,6 +1557,7 @@ function doGet(e) {
             document.getElementById('editInvoiceDate').value = invoice.invoiceDate;
             document.getElementById('editVendorSelect').value = invoice.vendor || '';
             document.getElementById('editFlowerCost').value = invoice.flowerCost.toFixed(2);
+            document.getElementById('editBotanicalsCost').value = (invoice.botanicalsCost || 0).toFixed(2);
             document.getElementById('editSuppliesCost').value = invoice.suppliesCost.toFixed(2);
             document.getElementById('editGreensCost').value = invoice.greensCost.toFixed(2);
             document.getElementById('editMiscellaneousCost').value = (invoice.miscellaneousCost || 0).toFixed(2);
@@ -1535,6 +1578,7 @@ function doGet(e) {
                 vendor: document.getElementById('editVendorSelect').value.trim(),
                 invoiceDate: document.getElementById('editInvoiceDate').value,
                 flowerCost: parseFloat(document.getElementById('editFlowerCost').value) || 0,
+                botanicalsCost: parseFloat(document.getElementById('editBotanicalsCost').value) || 0,
                 suppliesCost: parseFloat(document.getElementById('editSuppliesCost').value) || 0,
                 greensCost: parseFloat(document.getElementById('editGreensCost').value) || 0,
                 miscellaneousCost: parseFloat(document.getElementById('editMiscellaneousCost').value) || 0,
@@ -1550,6 +1594,10 @@ function doGet(e) {
             // Validate costs are not negative
             if (updatedData.flowerCost < 0) {
                 showToast('Flower cost cannot be negative', 'error');
+                return false;
+            }
+            if (updatedData.botanicalsCost < 0) {
+                showToast('Botanicals cost cannot be negative', 'error');
                 return false;
             }
             if (updatedData.suppliesCost < 0) {
@@ -1687,6 +1735,7 @@ function submitInvoice(invoiceData) {
     // Calculate total
     const total = calculateTotal(
       invoiceData.flowerCost,
+      invoiceData.botanicalsCost,
       invoiceData.suppliesCost,
       invoiceData.greensCost,
       invoiceData.miscellaneousCost,
@@ -1793,6 +1842,7 @@ function updateInvoice(updatedData) {
     // Calculate new total
     const newTotal = calculateTotal(
       updatedData.flowerCost,
+      updatedData.botanicalsCost,
       updatedData.suppliesCost,
       updatedData.greensCost,
       updatedData.miscellaneousCost,
@@ -1804,6 +1854,7 @@ function updateInvoice(updatedData) {
       invoiceDate: updatedData.invoiceDate,
       vendor: updatedData.vendor,
       flowerCost: updatedData.flowerCost,
+      botanicalsCost: updatedData.botanicalsCost,
       suppliesCost: updatedData.suppliesCost,
       greensCost: updatedData.greensCost,
       miscellaneousCost: updatedData.miscellaneousCost,
@@ -2211,8 +2262,8 @@ function validateAllFields(data) {
   return { isValid, errors };
 }
 
-function calculateTotal(flowerCost, suppliesCost, greensCost, miscellaneousCost, invoiceCredits) {
-  return flowerCost + suppliesCost + greensCost + miscellaneousCost - invoiceCredits;
+function calculateTotal(flowerCost, botanicalsCost, suppliesCost, greensCost, miscellaneousCost, invoiceCredits) {
+  return flowerCost + botanicalsCost + suppliesCost + greensCost + miscellaneousCost - invoiceCredits;
 }
 
 function appendInvoice(invoiceData) {
@@ -2234,6 +2285,7 @@ function appendInvoice(invoiceData) {
       invoiceData.invoiceDate,
       invoiceData.vendor,
       invoiceData.flowerCost,
+      invoiceData.botanicalsCost,
       invoiceData.suppliesCost,
       invoiceData.greensCost,
       invoiceData.miscellaneousCost,
@@ -2276,13 +2328,14 @@ function updateInvoiceRow(invoiceId, updatedData) {
         invoiceSheet.getRange(rowNumber, 3).setValue(updatedData.invoiceDate); // Invoice Date
         invoiceSheet.getRange(rowNumber, 4).setValue(updatedData.vendor); // Vendor
         invoiceSheet.getRange(rowNumber, 5).setValue(updatedData.flowerCost); // Flower Cost
-        invoiceSheet.getRange(rowNumber, 6).setValue(updatedData.suppliesCost); // Supplies Cost
-        invoiceSheet.getRange(rowNumber, 7).setValue(updatedData.greensCost); // Greens Cost
-        invoiceSheet.getRange(rowNumber, 8).setValue(updatedData.miscellaneousCost); // Miscellaneous Cost
-        invoiceSheet.getRange(rowNumber, 9).setValue(updatedData.invoiceCredits); // Invoice Credits
-        invoiceSheet.getRange(rowNumber, 10).setValue(updatedData.total); // Total Due
-        invoiceSheet.getRange(rowNumber, 13).setValue(timestamp); // Last Modified Timestamp
-        invoiceSheet.getRange(rowNumber, 15).setValue(userEmail); // Last Modified By
+        invoiceSheet.getRange(rowNumber, 6).setValue(updatedData.botanicalsCost); // Botanicals Cost
+        invoiceSheet.getRange(rowNumber, 7).setValue(updatedData.suppliesCost); // Supplies Cost
+        invoiceSheet.getRange(rowNumber, 8).setValue(updatedData.greensCost); // Greens Cost
+        invoiceSheet.getRange(rowNumber, 9).setValue(updatedData.miscellaneousCost); // Miscellaneous Cost
+        invoiceSheet.getRange(rowNumber, 10).setValue(updatedData.invoiceCredits); // Invoice Credits
+        invoiceSheet.getRange(rowNumber, 11).setValue(updatedData.total); // Total Due
+        invoiceSheet.getRange(rowNumber, 14).setValue(timestamp); // Last Modified Timestamp
+        invoiceSheet.getRange(rowNumber, 16).setValue(userEmail); // Last Modified By
         
         return true;
       }
@@ -2316,7 +2369,7 @@ function searchByInvoiceNumberV2(searchTerm) {
       const invoiceNumber = String(data[i][1]).toLowerCase();
       if (invoiceNumber.includes(searchLower)) {
         const invoiceDateObj = data[i][2];
-        const createdTimestampObj = data[i][11];
+        const createdTimestampObj = data[i][12];
         
         let invoiceDateStr = String(invoiceDateObj);
         let createdTimestampStr = String(createdTimestampObj);
@@ -2349,11 +2402,12 @@ function searchByInvoiceNumberV2(searchTerm) {
           invoiceDate: invoiceDateStr,
           vendor: String(data[i][3]),
           flowerCost: Number(data[i][4]),
-          suppliesCost: Number(data[i][5]),
-          greensCost: Number(data[i][6]),
-          miscellaneousCost: Number(data[i][7]) || 0,
-          invoiceCredits: Number(data[i][8]),
-          total: Number(data[i][9]),
+          botanicalsCost: Number(data[i][5]) || 0,
+          suppliesCost: Number(data[i][6]),
+          greensCost: Number(data[i][7]),
+          miscellaneousCost: Number(data[i][8]) || 0,
+          invoiceCredits: Number(data[i][9]),
+          total: Number(data[i][10]),
           createdTimestamp: createdTimestampStr
         };
         
@@ -2408,7 +2462,7 @@ function searchByDateRangeV2(fromDate, toDate) {
       
       if (invoiceDate >= from && invoiceDate <= to) {
         const invoiceDateObj = data[i][2];
-        const createdTimestampObj = data[i][11];
+        const createdTimestampObj = data[i][12];
         
         let invoiceDateStr = String(invoiceDateObj);
         let createdTimestampStr = String(createdTimestampObj);
@@ -2441,11 +2495,12 @@ function searchByDateRangeV2(fromDate, toDate) {
           invoiceDate: invoiceDateStr,
           vendor: String(data[i][3]),
           flowerCost: Number(data[i][4]),
-          suppliesCost: Number(data[i][5]),
-          greensCost: Number(data[i][6]),
-          miscellaneousCost: Number(data[i][7]) || 0,
-          invoiceCredits: Number(data[i][8]),
-          total: Number(data[i][9]),
+          botanicalsCost: Number(data[i][5]) || 0,
+          suppliesCost: Number(data[i][6]),
+          greensCost: Number(data[i][7]),
+          miscellaneousCost: Number(data[i][8]) || 0,
+          invoiceCredits: Number(data[i][9]),
+          total: Number(data[i][10]),
           createdTimestamp: createdTimestampStr
         };
         

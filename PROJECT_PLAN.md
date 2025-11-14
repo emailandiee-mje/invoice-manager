@@ -223,7 +223,7 @@ This project delivers a web-based invoice management application leveraging the 
 
 #### Total Due Calculation
 ```
-TOTAL DUE = (Flower Cost + Supplies Cost + Greens Cost + Miscellaneous Cost) - Invoice Credits
+TOTAL DUE = (Flower Cost + Botanicals Cost + Supplies Cost + Greens Cost + Miscellaneous Cost) - Invoice Credits
 ```
 
 #### Implementation
@@ -277,16 +277,17 @@ B1: Invoice Number
 C1: Invoice Date
 D1: Vendor
 E1: Flower Cost
-F1: Supplies Cost
-G1: Greens Cost
-H1: Miscellaneous Cost
-I1: Invoice Credits
-J1: Total Due
-K1: Status
-L1: Created Timestamp
-M1: Last Modified Timestamp
-N1: Created By
-O1: Last Modified By
+F1: Botanicals Cost
+G1: Supplies Cost
+H1: Greens Cost
+I1: Miscellaneous Cost
+J1: Invoice Credits
+K1: Total Due
+L1: Status
+M1: Created Timestamp
+N1: Last Modified Timestamp
+O1: Created By
+P1: Last Modified By
 ```
 
 #### Data Types & Formatting
@@ -295,9 +296,9 @@ Column A (ID):                   Text (GUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxx
 Column B (Invoice Number):       Text, max 50 chars
 Column C (Invoice Date):         Date (YYYY-MM-DD format)
 Column D (Vendor):               Text, max 100 chars
-Column E-H (Currency Amounts):   Number, Currency format, 2 decimal places
-Column I (Invoice Credits):      Number, Currency format, 2 decimal places
-Column J (Total Due):            Formula: =E+F+G+H-I (then format as currency)
+Column E-I (Currency Amounts):   Number, Currency format, 2 decimal places
+Column J (Invoice Credits):      Number, Currency format, 2 decimal places
+Column K (Total Due):            Formula: =E+F+G+H+I-J (then format as currency)
 Column K (Status):               Text (ACTIVE|ARCHIVED)
 Column L-M (Timestamps):         DateTime (YYYY-MM-DD HH:MM:SS)
 Column N-O (User Email):         Text

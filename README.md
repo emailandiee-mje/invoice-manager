@@ -112,9 +112,10 @@ Each invoice record includes:
 | **Invoice Date** | Date | When invoice was issued |
 | **Vendor** | Text | Vendor name |
 | **Flower Cost** | Currency | Cost breakdown |
+| **Botanicals Cost** | Currency | Cost breakdown (plants, botanicals) |
 | **Supplies Cost** | Currency | Cost breakdown |
 | **Greens Cost** | Currency | Cost breakdown |
-| **Miscellaneous Cost** | Currency | Cost breakdown |
+| **Miscellaneous Cost** | Currency | Cost breakdown (delivery, gas, etc.) |
 | **Invoice Credits** | Currency | Deductions |
 | **Total Due** | Currency | Auto-calculated |
 | **Status** | Text | ACTIVE or ARCHIVED |
@@ -173,7 +174,7 @@ Each invoice record includes:
 
 ### Total Calculation
 ```
-Total Due = (Flower Cost + Supplies Cost + Greens Cost + Miscellaneous Cost) - Invoice Credits
+Total Due = (Flower Cost + Botanicals Cost + Supplies Cost + Greens Cost + Miscellaneous Cost) - Invoice Credits
 ```
 
 ---

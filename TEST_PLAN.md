@@ -88,34 +88,48 @@ This document outlines all test scenarios for the Invoice Management System to e
 - [x] Enter text (e.g., "e") → **FIXED** - changed input type from "number" to "text" so validation now properly rejects 'e' with error message
 - [x] Leave blank → defaults to 0
 
-### Test 2.7: Cost Fields - Supplies Cost
+### Test 2.7: Cost Fields - Botanicals Cost
+- [x] Enter 0 → accepted
+- [x] Enter 12.50 → accepted
+- [x] Enter -5.00 → error: "Amount cannot be negative"
+- [x] Leave blank → defaults to 0
+
+### Test 2.8: Cost Fields - Supplies Cost
 - [x] Enter 0 → accepted
 - [x] Enter 15.50 → accepted
 - [x] Enter -10.00 → error: "Amount cannot be negative"
 - [x] Leave blank → defaults to 0
 
-### Test 2.8: Cost Fields - Greens Cost
+### Test 2.9: Cost Fields - Greens Cost
 - [x] Enter 0 → accepted
 - [x] Enter 8.75 → accepted
 - [x] Enter -3.00 → error: "Amount cannot be negative"
 - [x] Leave blank → defaults to 0
 
-### Test 2.9: Cost Fields - Invoice Credits
+### Test 2.10: Cost Fields - Miscellaneous Cost
+- [x] Enter 0 → accepted
+- [x] Enter 7.25 → accepted
+- [x] Enter -2.00 → error: "Amount cannot be negative"
+- [x] Leave blank → defaults to 0
+
+### Test 2.11: Cost Fields - Invoice Credits
 - [x] Enter 0 → accepted
 - [x] Enter 5.00 (to reduce total) → accepted
 - [x] Enter -2.00 → error: "Credits cannot be negative"
 - [x] Enter text (e.g., "e") → error: "Credits must be a valid number (e.g., 10.50)"
 - [x] Leave blank → defaults to 0
 
-### Test 2.10: Total Due Calculation (Live Update)
+### Test 2.12: Total Due Calculation (Live Update)
 - [x] Enter Flower Cost: 10.00 → Total shows $10.00
-- [x] Add Supplies Cost: 5.00 → Total shows $15.00
-- [x] Add Greens Cost: 3.00 → Total shows $18.00
-- [x] Add Invoice Credits: 2.00 → Total shows $16.00
-- [x] Change Flower Cost to 20.00 → Total updates to $26.00
-- [x] Verify calculation: (Flower + Supplies + Greens + Miscellaneous - Credits) = Total
+- [x] Add Botanicals Cost: 4.00 → Total shows $14.00
+- [x] Add Supplies Cost: 5.00 → Total shows $19.00
+- [x] Add Greens Cost: 3.00 → Total shows $22.00
+- [x] Add Miscellaneous Cost: 2.00 → Total shows $24.00
+- [x] Add Invoice Credits: 2.00 → Total shows $22.00
+- [x] Change Flower Cost to 20.00 → Total updates to $32.00
+- [x] Verify calculation: (Flower + Botanicals + Supplies + Greens + Miscellaneous - Credits) = Total
 
-### Test 2.11: Total Due Edge Cases
+### Test 2.13: Total Due Edge Cases
 - [x] All costs = 0, credits = 0 → Total = $0.00
 - [x] Costs = $10, Credits = $20 → Total = -$10.00
 - [x] High precision: $10.99 + $5.01 = $16.00 (rounding works correctly)
@@ -153,7 +167,7 @@ After submitting an invoice:
 - [x] Invoice Number column matches entered value
 - [x] Invoice Date column matches entered date
 - [x] Vendor column contains vendor name
-- [x] Flower Cost, Supplies Cost, Greens Cost match entered values
+- [x] Flower Cost, Botanicals Cost, Supplies Cost, Greens Cost, Miscellaneous Cost match entered values
 - [x] Invoice Credits match entered value
 - [x] Total Due = correct calculation
 - [x] Created Timestamp populated with current date/time
@@ -207,8 +221,10 @@ When invoices are found:
 - [x] Change Invoice Date to different date
 - [x] Change Vendor to different vendor from dropdown
 - [x] Change Flower Cost from original value
+- [x] Change Botanicals Cost
 - [x] Change Supplies Cost
 - [x] Change Greens Cost
+- [x] Change Miscellaneous Cost
 - [x] Change Invoice Credits
 - [x] Verify Total Due updates correctly with changes
 

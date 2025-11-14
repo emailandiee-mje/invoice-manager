@@ -10,6 +10,39 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 
 ---
 
+## Completed Enhancements
+
+### Application Branding
+- **Description:** Consider renaming the app to "Bonnie's Invoice Manager" for better branding
+- **Benefit:** More personalized, professional appearance
+- **Priority:** Low
+- **Status:** Completed
+- **Implemented:** November 13, 2025
+
+### Add Miscellaneous Cost Field
+- **Description:** Add a new "Miscellaneous Cost" field to track delivery and gas costs
+- **GUI Placement:** Field should appear after Greens Cost and before Invoice Credits in the form
+- **Sheet Placement:** New column inserted between Greens Cost and Invoice Credits columns
+- **Validation:** All rules that apply to other cost fields (non-negative, numeric, default to 0) apply to this field
+- **Calculation:** Total Due = Flower Cost + Supplies Cost + Greens Cost + Miscellaneous Cost - Invoice Credits
+- **Benefit:** Better expense tracking for delivery, gas, and other miscellaneous costs
+- **Priority:** High
+- **Status:** Completed
+- **Implemented:** November 13, 2025 (v0.95)
+
+### Add Botanicals Cost Field
+- **Description:** Add a new "Botanicals Cost" field to track delivery and gas costs
+- **GUI Placement:** Field should appear after Flowers Cost and before Supplies Costs in the form
+- **Sheet Placement:** New column will be inserted by me between Flowers Cost and Supplies Costs columns
+- **Validation:** All rules that apply to other cost fields (non-negative, numeric, default to 0) apply to this field
+- **Calculation:** Total Due = Flower Cost + Botanicals Cost + Supplies Cost + Greens Cost + Miscellaneous Cost - Invoice Credits
+- **Benefit:** Better expense tracking for plants and botanicals
+- **Priority:** High
+- **Status:** Completed
+- **Implemented:** November 13, 2025 (v0.98)
+
+---
+
 ## Proposed Enhancements
 
 ### 1. Character Counter on Fields
@@ -48,30 +81,13 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 - **Priority:** High
 - **Status:** Needs review
 
-### 7. Application Branding
-- **Description:** Consider renaming the app to "Bonnie's Invoice Manager" for better branding
-- **Benefit:** More personalized, professional appearance
-- **Priority:** Low
-- **Status:** Completed
-
-### 8. Clear Search Results on Tab Switch
+### 7. Clear Search Results on Tab Switch
 - **Description:** Decide whether switching between tabs should clear search results, and whether a dedicated "Clear" button is needed
 - **Benefit:** Better state management, clearer UX expectations
 - **Priority:** Medium
 - **Status:** Needs discussion
 
-### 9. Add Miscellaneous Cost Field
-- **Description:** Add a new "Miscellaneous Cost" field to track delivery and gas costs
-- **GUI Placement:** Field should appear after Greens Cost and before Invoice Credits in the form
-- **Sheet Placement:** New column inserted between Greens Cost and Invoice Credits columns
-- **Validation:** All rules that apply to other cost fields (non-negative, numeric, default to 0) apply to this field
-- **Calculation:** Total Due = Flower Cost + Supplies Cost + Greens Cost + Miscellaneous Cost - Invoice Credits
-- **Benefit:** Better expense tracking for delivery, gas, and other miscellaneous costs
-- **Priority:** High
-- **Status:** Completed
-- **Implemented:** November 13, 2025 (v0.95)
-
-### 10. Auto-Focus Invoice Number After Submission
+### 8. Auto-Focus Invoice Number After Submission
 - **Description:** After successfully submitting an invoice, automatically place cursor in the Invoice Number field and scroll window to top of form
 - **Benefit:** Streamlines batch invoice entry workflow - users can immediately start entering next invoice without manual clicking/scrolling
 - **Priority:** Medium
