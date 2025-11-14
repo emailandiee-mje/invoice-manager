@@ -35,22 +35,31 @@ A modern, professional invoice management system built with Google Apps Script, 
 
 ## 🚀 Quick Start
 
-### Preview the UI (No Setup)
-Open `preview.html` in VS Code with Live Server:
-```bash
-# Option 1: Use Live Server extension (right-click preview.html → Open with Live Server)
+### 👀 For Employers/Code Review
+Browse the source code here on GitHub to see:
+- Clean, documented code architecture
+- Modern UI/UX implementation
+- Google Apps Script integration patterns
+- Form validation and error handling
 
-# Option 2: Use Python
-python -m http.server 8000
-# Then visit: http://localhost:8000/preview.html
-```
+**Note:** There is no public demo URL. This protects business data privacy while sharing the codebase for review.
 
-### Full Deployment (With Google Sheets)
-See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for step-by-step instructions to:
-1. Create a Google Sheet
-2. Set up Google Apps Script
-3. Deploy as a Web App
-4. Share with your team
+### 🧪 To Test the Application
+Want to try it hands-on? Follow the deployment instructions:
+
+1. **Preview the UI (Static View)**
+   - Open `preview.html` in VS Code with Live Server
+   - See the interface without Google Sheets backend
+
+2. **Deploy Your Own Instance**
+   - See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for full instructions
+   - Creates a separate copy with your own Google Sheet
+   - Uses your data only - completely isolated from production
+
+### 🔒 Production vs. Source Code
+- **GitHub Repository**: Source code is public for review
+- **Live Application**: Private, secured by Google authentication
+- **Your Data**: Never exposed - Google Sheet permissions control access
 
 ---
 
