@@ -95,6 +95,12 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 - **Priority:** Medium
 - **Status:** Needs discussion
 
+### 8. Add Freeform Comment Field
+- **Description:** Add freeform comment field to Create New Invoice and Edit Invoice screens
+- **Benefit:** Provide context for purchases
+- **Priority:** Medium
+- **Status:** Under consideration
+
 ---
 
 ## How to Use This Document
