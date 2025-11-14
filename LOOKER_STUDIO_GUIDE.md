@@ -28,6 +28,7 @@
    - Select **Google Sheets**
    - Choose your Invoice Manager spreadsheet
    - Select the **Invoices** sheet
+   - **Ensure "Use first row as headers" is checked.**
    - Click **Connect**
 
 #### Connect Markups Sheet
@@ -36,7 +37,8 @@
 3. Select **Google Sheets**
 4. Choose the same Invoice Manager spreadsheet
 5. Select the **Markups** sheet
-6. Click **Connect**
+6. **Ensure "Use first row as headers" is checked.**
+7. Click **Connect**
 
 ### Step 2: Configure Data Source Settings
 
@@ -92,13 +94,15 @@ This approach requires no manual updates to Looker Studio when markups change - 
 3. **In the first data row** (assuming headers are in row 1, this would be row 2), enter this formula:
 
 ```
-=MAXIFS(Markups!$B:$B, Markups!$B:$B, "<="&A2)
+=MAXIFS(Markups!$B$2:$B$1000, Markups!$B$2:$B$1000, "<="&A2)
 ```
 
 **Where:**
-- `Markups!$B:$B` is the Effective Date column in your Markups sheet
-- `A2` is the Invoice Date in the current row
-- This formula finds the most recent markup effective date that is ≤ the invoice date
+- `Markups!$B$2:$B$1000` is the Effective Date column in your Markups sheet. Using a specific range like `$B$2:$B$1000` is more efficient than searching the entire column (`$B:$B`). Adjust `1000` as needed to ensure it's larger than your expected number of markup entries.
+- `A2` is the Invoice Date in the current row.
+- This formula finds the most recent markup effective date that is on or before the invoice date.
+
+**💡 Pro Tip for Robustness:** If an invoice is dated *before* your first effective date, the formula will return `0` (which appears as `12/30/1899`) and the invoice won't be matched correctly. To prevent this, ensure your first `Effective Date` in the `Markups` sheet is earlier than your oldest invoice.
 
 4. **Drag the formula down** to fill all rows in your Invoices sheet
 5. **Format the column** as a Date (Format → Number → Date)
@@ -148,6 +152,8 @@ If you prefer to keep everything in Looker Studio without modifying your Google 
 CASE
   WHEN Invoice Date >= DATE(2025, 11, 1) THEN DATE(2025, 11, 1)
   WHEN Invoice Date >= DATE(2025, 1, 1) THEN DATE(2025, 1, 1)
+  -- Fallback for any invoices dated before the first known markup period.
+  -- This should be your earliest effective date.
   ELSE DATE(2025, 1, 1)
 END
 ```
@@ -178,20 +184,8 @@ Now we'll create a blend that joins invoices to the correct markup row based on 
 3. **Configure the Left Table (Invoices)**
    - In the blend editor, you'll see two tables side-by-side
    - **Left Table:** Select your **Invoices** data source from the dropdown
-   - **Dimensions to Include:** 
-     - Invoice Date
-     - Invoice Number
-     - Vendor
-     - Flower Cost
-     - Botanicals Cost
-     - Supplies Cost
-     - Greens Cost
-     - Miscellaneous Cost
-     - Invoice Credits
-     - Total Due
-     - Status
-     - **Applicable Markup Date** (the column from Google Sheets or calculated field)
-   - **Join Key:** Click **Add a join key** and select **Applicable Markup Date**
+   - **Dimensions to Include:** All fields from the Invoices sheet are automatically available. You only need to add the join key.
+   - **Join Key:** Click **Add a join key** and select **Applicable Markup Date**.
 
 4. **Configure the Right Table (Markups)**
    - **Right Table:** Select your **Markups** data source from the dropdown
@@ -254,154 +248,129 @@ This ensures **historical accuracy** - old invoices use old markups, new invoice
 
 ### Step 5: Create Calculated Fields for Profit Analysis
 
-Now you need to create calculated fields that will use the markup values from your blend. **IMPORTANT:** You cannot add calculated fields directly to a blended data source in Looker Studio. Instead, you'll create these fields when you add charts to your reports.
+Now you need to create calculated fields that will use the markup values from your blend. For a robust and scalable report, you should **always add calculated fields to the data source itself**, not to individual charts. This ensures they can be reused across all charts and reports.
 
-**How to Add Calculated Fields in Looker Studio:**
+**How to Add Calculated Fields (Recommended Method):**
 
-1. **Create a new report** or open an existing one
-2. **Add a chart** (Scorecard, Table, Line Chart, etc.)
-3. In the chart's **Data** panel on the right, you'll see the blended data source
-4. Click **Add a field** (the "fx" button) at the bottom of the Metrics or Dimensions section
-5. Create the calculated field with the formulas below
-6. The field will be available for that chart
+1.  Go to **Resource** > **Manage added data sources**.
+2.  Find your **"Invoices with Markups"** blended data source and click **Edit**.
+3.  In the data source editor, click **Add a Field** (top right).
+4.  Enter the field name and formula from the list below.
+5.  Repeat for all the calculated fields. Fields created this way are available to all charts using this blend.
 
-**Alternatively (Better for Reusability):**
+Adding fields to a single chart is possible but **not recommended** as it prevents reuse and makes maintenance difficult. Use the chart-level method only for quick, temporary tests.
 
-1. While editing a chart that uses your "Invoices with Markups" blend
-2. Click on the data source name at the top of the Data panel
-3. Click **Edit Data Source**
-4. This opens the data source editor
-5. Click **Add a field** here
-6. Fields created this way are available to all charts using this blend
+**💡 Pro Tip: Naming Convention**
+> As a best practice, consider prefixing your calculated fields with `c_` (e.g., `c_Total Profit`, `c_Profit Margin %`). This makes them easy to find and identify in the field list, distinguishing them from fields that come directly from your Google Sheet.
 
-**Note:** Once you create a field in a chart, you can reuse it across other charts in the same report by selecting it from the available fields list.
-
-Below are the critical calculated field formulas you'll need. Create these as you build your reports:
+Below are the critical calculated field formulas you'll need. Create these in the **blended data source editor**:
 
 #### Core Business Metrics
 
 **1. Wholesale Cost (What We Pay Vendors)**
+*This is simply the total amount from the invoice.*
 ```
 Total Due
 ```
 
-**2. Retail - Flowers**
+**2. Retail Price - Flowers**
+*Calculates the retail price based on the markup.*
 ```
 Flower Cost * Flowers Markup
 ```
 
-**3. Wholesale - Botanicals**
+**3. Retail Price - Botanicals**
 ```
 Botanicals Cost * Botanicals Markup
 ```
 
-**4. Wholesale - Supplies**
+**4. Retail Price - Supplies**
 ```
 Supplies Cost * Supplies Markup
 ```
 
-**5. Wholesale - Greens**
+**5. Retail Price - Greens**
 ```
 Greens Cost * Greens Markup
 ```
 
-**6. Wholesale - Miscellaneous**
+**6. Retail Price - Miscellaneous**
 ```
 Miscellaneous Cost * Miscellaneous Markup
 ```
 
-**7. Total Wholesale (What We Should Charge)**
+**7. Total Retail Price (What Customers Should Pay)**
+*The total price after all markups are applied, before credits.*
 ```
-(Flower Cost * Flowers Markup) + 
-(Botanicals Cost * Botanicals Markup) + 
-(Supplies Cost * Supplies Markup) + 
-(Greens Cost * Greens Markup) + 
-(Miscellaneous Cost * Miscellaneous Markup) - 
-Invoice Credits
-```
-
-**8. Total Profit/Margin**
-```
-((Flower Cost * Flowers Markup) + 
-(Botanicals Cost * Botanicals Markup) + 
-(Supplies Cost * Supplies Markup) + 
-(Greens Cost * Greens Markup) + 
-(Miscellaneous Cost * Miscellaneous Markup) - 
-Invoice Credits) - Total Due
+(Retail Price - Flowers) + 
+(Retail Price - Botanicals) + 
+(Retail Price - Supplies) + 
+(Retail Price - Greens) + 
+(Retail Price - Miscellaneous)
 ```
 
-**9. Profit Margin %**
+**8. Final Retail Price**
+*The final price after invoice-level credits are applied.*
 ```
-CASE 
-  WHEN Total Due = 0 THEN 0
-  ELSE (((Flower Cost * Flowers Markup) + 
-         (Botanicals Cost * Botanicals Markup) + 
-         (Supplies Cost * Supplies Markup) + 
-         (Greens Cost * Greens Markup) + 
-         (Miscellaneous Cost * Miscellaneous Markup) - 
-         Invoice Credits - Total Due) / 
-        ((Flower Cost * Flowers Markup) + 
-         (Botanicals Cost * Botanicals Markup) + 
-         (Supplies Cost * Supplies Markup) + 
-         (Greens Cost * Greens Markup) + 
-         (Miscellaneous Cost * Miscellaneous Markup) - 
-         Invoice Credits)) * 100
+Total Retail Price - Invoice Credits
+```
+
+**9. Total Profit**
+*The difference between the final retail price and the wholesale cost.*
+```
+Final Retail Price - Total Due
+```
+
+**10. Profit Margin %**
+*The percentage of profit relative to the final retail price. Set the field's type to `Numeric` > `Percent`.*
+```
+CASE
+  WHEN Final Retail Price = 0 THEN 0
+  ELSE Total Profit / Final Retail Price
 END
 ```
 
-**10. Month-Year**
-```
-CONCAT(YEAR(Invoice Date), "-", FORMAT_DATE("%m", Invoice Date), " - ", FORMAT_DATE("%B", Invoice Date))
-```
-
-**11. Quarter**
-```
-CONCAT("Q", CAST(CEIL(MONTH(Invoice Date)/3) AS TEXT), " ", CAST(YEAR(Invoice Date) AS TEXT))
-```
-
-**12. Year**
+**11. Year**
 ```
 YEAR(Invoice Date)
 ```
 
-**13. Month Name**
+**12. Quarter**
+*Uses the native Looker Studio function for simplicity.*
+```
+QUARTER(Invoice Date)
+```
+
+**13. Month-Year**
+*For sorting and displaying trends over time.*
+```
+FORMAT_DATE("%Y-%m", Invoice Date)
+```
+
+**14. Month Name**
 ```
 FORMAT_DATE("%B", Invoice Date)
 ```
 
-**14. Week of Year**
+**15. Week of Year**
 ```
 WEEK(Invoice Date)
 ```
 
-**15. Day of Week**
+**16. Day of Week**
 ```
 FORMAT_DATE("%A", Invoice Date)
 ```
 
-**16. Average Invoice Value (Wholesale)**
-```
-AVG(Total Due)
-```
-
-**17. Average Profit per Invoice**
-```
-AVG(Total Profit/Margin)
-```
-
-**18. Invoice Count**
+**17. Invoice Count**
 ```
 COUNT(Invoice Number)
 ```
 
-**19. Vendor Price Change Indicator** (Requires historical data)
+**18. Category Cost % - Flowers**
+*Calculates the percentage of total cost for a specific category. Create one for each category.*
 ```
-(AVG(Total Due) - LAG(AVG(Total Due), 1)) / LAG(AVG(Total Due), 1) * 100
-```
-
-**20. Category Cost %**
-```
-(Flower Cost / Total Due) * 100
+Flower Cost / Total Due
 ```
 
 ---
@@ -420,13 +389,13 @@ COUNT(Invoice Number)
    - Period: YTD
    - Comparison: vs. Previous Year
 
-2. **Total Retail Value (What Customers Should Pay)**
-   - Metric: Sum of Total Retail
+2. **Total Final Retail Price (What Customers Should Pay)**
+   - Metric: Sum of Final Retail Price
    - Period: YTD
    - Comparison: vs. Previous Year
 
-3. **Total Profit/Margin**
-   - Metric: Sum of Total Profit/Margin
+3. **Total Profit**
+   - Metric: Sum of Total Profit
    - Period: YTD
    - Comparison: vs. Previous Year
    - Color: Green if positive, Red if negative
@@ -447,7 +416,7 @@ COUNT(Invoice Number)
    - Period: YTD
 
 7. **Average Profit per Invoice**
-   - Metric: AVG of Total Profit/Margin
+   - Metric: AVG of Total Profit
    - Comparison: vs. Previous Period
 
 8. **Active Vendors**
@@ -457,7 +426,7 @@ COUNT(Invoice Number)
 #### Third Row: Profit & Cost Trends
 9. **Monthly Profit Trend (Dual-Axis Line Chart)**
    - Dimension: Invoice Date (Month)
-   - Left Y-Axis: Sum of Total Profit/Margin (Line)
+   - Left Y-Axis: Sum of Total Profit (Line)
    - Right Y-Axis: Profit Margin % (Line)
    - Date Range: Last 12 months
    - Add trend lines
@@ -496,7 +465,7 @@ COUNT(Invoice Number)
 
 14. **Vendor Profit Contribution (Donut Chart)**
     - Dimension: Vendor (Top 5 + Others)
-    - Metric: Sum of Total Profit/Margin
+    - Metric: Sum of Total Profit
     - Shows which vendors drive the most profit
 
 ---
@@ -606,15 +575,15 @@ COUNT(Invoice Number)
 - Category Dropdown
 
 #### Alert Scorecards
-1. **Vendors with Price Increases**
-   - Count of vendors with avg cost increase > 5% vs. last period
+1. **Vendors with Price Increases (vs. Prior Period)**
+   - Manually compare current vs. previous period average costs.
+   - Count vendors with an average cost increase > 5%.
 
 2. **Highest Price Increase**
-   - Vendor with largest % increase
-   - Show % change
+   - Identify the vendor with the largest % increase from the main table.
 
 3. **Total Cost Impact**
-   - Dollar amount of all price increases
+   - Manually calculate the dollar amount impact of key price increases.
 
 #### Price Trend Analysis
 
@@ -628,7 +597,7 @@ COUNT(Invoice Number)
 5. **Vendor Price Change Heatmap (Calendar View)**
    - Rows: Vendor
    - Columns: Month
-   - Metric: % Change in Avg Invoice Cost
+   - Metric: % Change in Avg Invoice Cost (Requires manual calculation or advanced data prep)
    - Color Scale:
      - Deep Red: >10% increase
      - Red: 5-10% increase
@@ -643,7 +612,6 @@ COUNT(Invoice Number)
      - Last Month Avg Cost
      - $ Change
      - % Change
-     - 3-Month Trend (↑↓→)
      - # of Invoices (to validate sample size)
    - Sort: By % change (descending)
    - Conditional Formatting: Red for increases > 5%
@@ -658,18 +626,11 @@ COUNT(Invoice Number)
      - Misc Cost Trend
    - **Key Question:** What categories are driving vendor price increases?
 
-8. **Vendor Cost Volatility Analysis (Scatter Plot)**
-   - X-Axis: Average Invoice Cost
-   - Y-Axis: Standard Deviation of Invoice Cost
-   - Bubble Size: Number of Invoices
-   - Color: Vendor
-   - **Shows which vendors have inconsistent pricing**
-
-9. **Price Increase Timeline (Gantt-style)**
+8. **Price Increase Timeline (Gantt-style)**
    - Shows when each vendor had significant price changes
    - Helps identify market-wide price trends
 
-10. **Vendor Price Detail Table (Drill-Down Ready)**
+9. **Vendor Price Detail Table (Drill-Down Ready)**
     - Dimension: Vendor
     - Metrics:
       - Current Avg Cost
@@ -794,12 +755,12 @@ COUNT(Invoice Number)
 1. **Category Profit Scorecards** (6 Cards in Grid)
    - **Flowers:**
      - Total Wholesale Cost
-     - Total Retail Value
+     - Final Retail Price
      - Total Profit
      - Profit Margin %
    - **Botanicals:**
      - Total Wholesale Cost
-     - Total Retail Value
+     - Final Retail Price
      - Total Profit
      - Profit Margin %
    - (Repeat for Supplies, Greens, Misc, Credits)
@@ -808,8 +769,8 @@ COUNT(Invoice Number)
    - Rows: Cost Category
    - Columns:
      - Wholesale Cost (What We Pay Vendors)
-     - Retail Value (What Customers Should Pay)
-     - Profit
+     - Final Retail Price (What Customers Should Pay)
+     - Total Profit
      - Profit Margin %
      - % of Total Business
      - Current Markup
@@ -873,8 +834,8 @@ COUNT(Invoice Number)
   - Greens Cost (Wholesale)
   - Misc Cost (Wholesale)
   - Credits
-  - **Total Wholesale**
-  - **Total Retail**
+  - **Total Due (Wholesale Cost)**
+  - **Final Retail Price**
   - **Total Profit**
   - **Profit Margin %**
   - Created Timestamp
@@ -909,41 +870,23 @@ When an invoice is selected:
    - Color: Red if triggered
 
 2. **Price Increase Alert**
-   - Count of vendors with avg cost increase > 10%
+   - Count of vendors with avg cost increase > 10% (manual check)
    - Color: Yellow if > 0
 
 3. **Low Activity Alert**
    - Shows if current month invoices < 50% of average
    - Color: Yellow if triggered
 
-4. **Outlier Invoice Count**
-   - Invoices with Z-score > 2 (unusually high/low costs)
-
 #### Anomaly Visualizations
 
-5. **Cost Anomaly Detection (Z-Score Analysis)**
-   - Create calculated field: `(Total Due - AVG(Total Due)) / STDDEV(Total Due)`
-   - Table showing invoices where abs(Z-Score) > 2
-   - Columns:
-     - Invoice Number
-     - Vendor
-     - Total Due
-     - Z-Score
-     - Expected Range
-   - **Automatically flags unusual invoices**
-
-6. **Margin Degradation Tracking (Time Series with Alerts)**
+5. **Margin Degradation Tracking (Time Series with Alerts)**
    - Dimension: Invoice Date (Week)
    - Metric: Profit Margin %
    - Reference Line: 30% (warning threshold)
    - Reference Line: 20% (critical threshold)
    - Alert annotations when margin crosses thresholds
 
-7. **Vendor Price Spike Detection**
-   - Shows vendors where current avg cost > 2 standard deviations above historical avg
-   - Table with vendor, amount, % increase, investigation notes
-
-8. **Daily Spend Anomalies (Heatmap)**
+6. **Daily Spend Anomalies (Heatmap)**
    - Rows: Day of Week
    - Columns: Week of Year
    - Metric: Total Spend
@@ -981,12 +924,13 @@ Retail Revenue: #10b981 (Green)
 - **Alert Text:** 14px, Bold, Red/Yellow
 
 ### Layout Guidelines
-1. Use **2-3 column grid** for desktop
-2. **Mobile responsive:** Stack components vertically
-3. **White space:** Minimum 16px padding between elements
-4. **Filter controls:** Always at top, sticky if possible
-5. **Alert scorecards:** Prominent placement (top of page)
-6. **Logo placement:** Top left corner
+1. **Use a Report Theme** - To apply your color scheme and fonts consistently across all reports, create and apply a **Report Theme**. This is far more efficient than styling each chart manually.
+2. Use **2-3 column grid** for desktop
+3. **Mobile responsive:** Stack components vertically
+4. **White space:** Minimum 16px padding between elements
+5. **Filter controls:** Always at top, sticky if possible
+6. **Alert scorecards:** Prominent placement (top of page)
+7. **Logo placement:** Top left corner
 
 ---
 
@@ -1147,11 +1091,12 @@ Every time you update your markup multipliers:
 6. **Color consistency** - Always use green for profit, red for loss
 
 ### Data Quality
-1. **Validate markups** - Ensure markups in Markups sheet are correct (>1.0 for profit)
-2. **Filter active invoices** - Exclude ARCHIVED status if needed
-3. **Handle nulls** - Use IFNULL() and COALESCE() in calculated fields
-4. **Verify calculations** - Spot-check profit calculations against manual calculations
-5. **Document assumptions** - Add "About" page explaining how profit is calculated
+1. **Prevent Bad Data Entry** - In your `Markups` sheet, use **Data > Data validation** to ensure markup columns only accept numbers greater than 1. This prevents errors like typing "2x" instead of "2".
+2. **Validate markups** - Ensure markups in Markups sheet are correct (>1.0 for profit)
+3. **Filter active invoices** - Exclude ARCHIVED status if needed
+4. **Handle nulls** - Use IFNULL() and COALESCE() in calculated fields
+5. **Verify calculations** - Spot-check profit calculations against manual calculations
+6. **Document assumptions** - Add "About" page explaining how profit is calculated
 
 ---
 
@@ -1208,7 +1153,6 @@ With these reports in place, you'll be able to answer:
 ### Vendor Intelligence
 - ✅ "Vendor XYZ increased prices 12% in March. Time to negotiate or find alternatives."
 - ✅ "We're spending 40% of our budget with one vendor - too much concentration risk."
-- ✅ "Vendor ABC has the most volatile pricing (high std. deviation) - unreliable for planning."
 
 ### Seasonality Insights
 - ✅ "May and December are consistently our busiest months (wedding + holiday season)."
