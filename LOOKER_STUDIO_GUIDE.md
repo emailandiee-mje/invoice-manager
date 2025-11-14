@@ -64,6 +64,7 @@
 | Field Name | Type | Aggregation |
 |------------|------|-------------|
 | ID | Text | None |
+| Effective Date | Date (YYYYMMDD) | None |
 | Flowers Markup | Number | None |
 | Botanicals Markup | Number | None |
 | Supplies Markup | Number | None |
@@ -74,24 +75,188 @@
 | Created By | Text | None |
 | Last Modified By | Text | None |
 
-### Step 3: Create a Blended Data Source (CRITICAL for Profit Analysis)
+**CRITICAL:** The **Effective Date** field indicates when each set of markups became active. This allows historical markup tracking so invoices use the correct markup values that were in effect at the time.
 
-To calculate profits, we need to join Invoices with Markups:
+### Step 3: Create a Blended Data Source with Dynamic Date Matching
 
-1. In your report, click **Resource** > **Manage added data sources**
-2. Click **Blend Data**
-3. **Left Table:** Invoices sheet
-4. **Right Table:** Markups sheet
-5. **Join Configuration:**
-   - Join Type: **Left Outer Join** (to get the most recent markup)
-   - Join Key: Use a calculated field to always join to the latest markup row
-6. Name it: **"Invoices with Markups"**
+Looker Studio doesn't support complex SQL-style joins with inequality operators (like "find the most recent date ≤ invoice date") directly in the blend interface. However, we can use a **workaround with Google Sheets formulas** to handle this dynamically.
 
-**Note:** Since Markups sheet likely has one row (current markups), all invoices will use the same markup values. If you want historical markup tracking, you'll need to add a date-based join.
+#### Option A: Dynamic Approach Using Google Sheets (RECOMMENDED)
 
-### Step 4: Create Calculated Fields for Profit Analysis
+This approach requires no manual updates to Looker Studio when markups change - everything updates automatically!
 
-Click **Add a Field** in your blended data source and create these critical metrics:
+**In Your Google Sheets - Add Columns to Invoices Sheet:**
+
+1. **Open your Invoices sheet** in Google Sheets
+2. **Add a new column** called `Applicable Markup Date` (next to your existing columns)
+3. **In the first data row** (assuming headers are in row 1, this would be row 2), enter this formula:
+
+```
+=MAXIFS(Markups!$B:$B, Markups!$B:$B, "<="&A2)
+```
+
+**Where:**
+- `Markups!$B:$B` is the Effective Date column in your Markups sheet
+- `A2` is the Invoice Date in the current row
+- This formula finds the most recent markup effective date that is ≤ the invoice date
+
+4. **Drag the formula down** to fill all rows in your Invoices sheet
+5. **Format the column** as a Date (Format → Number → Date)
+
+**Example:**
+```
+Row 2: Invoice Date = 2025-03-15
+       Formula finds: MAX(2025-01-01) where dates ≤ 2025-03-15
+       Result: 2025-01-01
+
+Row 3: Invoice Date = 2025-12-01
+       Formula finds: MAX(2025-01-01, 2025-11-01) where dates ≤ 2025-12-01
+       Result: 2025-11-01
+```
+
+**Benefits of This Approach:**
+- ✅ **Fully automatic** - When you add a new markup row with a new effective date, the formulas automatically recalculate
+- ✅ **No Looker Studio updates needed** - The Applicable Markup Date column updates in Google Sheets, and Looker Studio just reads it
+- ✅ **Works for all invoices** - Past, present, and future invoices automatically get the correct markup date
+- ✅ **Easy to verify** - You can see the applied markup date right in your spreadsheet
+
+6. **Verify it's working**: Add a test row to your Markups sheet with a future effective date and watch the Applicable Markup Date column update for future invoices
+
+**In Looker Studio:**
+
+1. **Refresh your Invoices data source** (Resource → Manage added data sources → Invoices → Refresh fields)
+2. The new `Applicable Markup Date` column will now be available as a field
+3. Ensure it's set as **Date** type
+
+Now proceed to Step 4 to create the blend using this dynamic field!
+
+---
+
+#### Option B: Manual Calculated Field in Looker Studio (Not Recommended)
+
+If you prefer to keep everything in Looker Studio without modifying your Google Sheet, you can create a calculated field, but it **requires manual updates** each time markups change:
+
+**In Looker Studio - Invoices Data Source:**
+
+1. Go to **Resource** > **Manage added data sources**
+2. Click on your **Invoices** data source
+3. Click **Add a Field**
+4. **Field Name:** `Applicable Markup Date`
+5. **Formula:**
+
+```
+CASE
+  WHEN Invoice Date >= DATE(2025, 11, 1) THEN DATE(2025, 11, 1)
+  WHEN Invoice Date >= DATE(2025, 1, 1) THEN DATE(2025, 1, 1)
+  ELSE DATE(2025, 1, 1)
+END
+```
+
+6. Click **Save**
+
+**⚠️ Limitation:** You must manually update this formula each time you add a new markup effective date to your Markups sheet.
+
+---
+
+**We strongly recommend Option A (Google Sheets formula)** for a fully automated, hands-off solution.
+
+### Step 4: Create a Blended Data Source (CRITICAL for Profit Analysis with Historical Markup Tracking)
+
+Now we'll create a blend that joins invoices to the correct markup row based on date.
+
+#### Detailed Step-by-Step Instructions:
+
+1. **Open or Create a Report** in Looker Studio
+   - Go to [lookerstudio.google.com](https://lookerstudio.google.com)
+   - Either open an existing report or create a new blank report
+
+2. **Access the Blend Data Function**
+   - Method 1: In the toolbar, click **Resource** > **Manage added data sources** > **Blend Data** (bottom of the modal)
+   - Method 2: While editing a chart, click the **Blend Data** button in the data panel
+   - Method 3: From the main report menu, click **Add Data** > **Blend Data**
+
+3. **Configure the Left Table (Invoices)**
+   - In the blend editor, you'll see two tables side-by-side
+   - **Left Table:** Select your **Invoices** data source from the dropdown
+   - **Dimensions to Include:** 
+     - Invoice Date
+     - Invoice Number
+     - Vendor
+     - Flower Cost
+     - Botanicals Cost
+     - Supplies Cost
+     - Greens Cost
+     - Miscellaneous Cost
+     - Invoice Credits
+     - Total Due
+     - Status
+     - **Applicable Markup Date** (the column from Google Sheets or calculated field)
+   - **Join Key:** Click **Add a join key** and select **Applicable Markup Date**
+
+4. **Configure the Right Table (Markups)**
+   - **Right Table:** Select your **Markups** data source from the dropdown
+   - **Dimensions to Include:**
+     - Effective Date
+     - Flowers Markup
+     - Botanicals Markup
+     - Supplies Markup
+     - Greens Markup
+     - Miscellaneous Markup
+   - **Join Key:** Click **Add a join key** and select **Effective Date**
+
+5. **Set the Join Type**
+   - In the middle between the two tables, you'll see the join configuration
+   - Click on the join diagram
+   - Select **Left Outer Join**
+   - This ensures all invoices are included, even if there's no matching markup row (though there should always be one)
+
+6. **Verify the Join Keys Match**
+   - You should see a line connecting **Applicable Markup Date** (from Invoices) to **Effective Date** (from Markups)
+   - This ensures each invoice gets the markup values from the row with a matching effective date
+
+7. **Name Your Blended Data Source**
+   - At the top of the blend editor, click on the default name (e.g., "Blend 1")
+   - Rename it to: **"Invoices with Markups"**
+
+8. **Save the Blend**
+   - Click **Save** (top right)
+   - You now have a blended data source that correctly matches each invoice to its historical markup values!
+
+#### Visual Reference for Join Configuration:
+
+```
+┌─────────────────────────┐         ┌─────────────────────────┐
+│   INVOICES (Left)       │         │   MARKUPS (Right)       │
+├─────────────────────────┤         ├─────────────────────────┤
+│ Invoice Date            │         │ Effective Date          │
+│ Invoice Number          │         │ Flowers Markup          │
+│ Vendor                  │         │ Botanicals Markup       │
+│ Flower Cost             │         │ Supplies Markup         │
+│ Total Due               │         │ Greens Markup           │
+│ Applicable Markup Date ─┼────────▶│ Miscellaneous Markup    │
+│   (calculated)          │  JOIN   │                         │
+└─────────────────────────┘         └─────────────────────────┘
+        LEFT OUTER JOIN
+   (All invoices included, matched to correct markup by date)
+```
+
+#### How the Date-Based Join Works:
+
+**Example Scenario:**
+- Markups Sheet Row 1: Effective Date = Jan 1, 2025, Flowers Markup = 2.0x
+- Markups Sheet Row 2: Effective Date = Nov 1, 2025, Flowers Markup = 2.5x
+
+**Invoice Matching:**
+- Invoice dated **March 15, 2025** → Applicable Markup Date = Jan 1, 2025 → Joins to Row 1 → Uses 2.0x markup
+- Invoice dated **December 1, 2025** → Applicable Markup Date = Nov 1, 2025 → Joins to Row 2 → Uses 2.5x markup
+
+This ensures **historical accuracy** - old invoices use old markups, new invoices use new markups!
+
+### Step 5: Create Calculated Fields for Profit Analysis
+
+Now that your blend is set up, you can create calculated fields that will automatically use the correct historical markup values.
+
+Click **Add a Field** in your **"Invoices with Markups"** blended data source and create these critical metrics:
 
 #### Core Business Metrics
 
@@ -822,16 +987,22 @@ Wholesale Revenue: #10b981 (Green)
 ## 🎓 Implementation Checklist
 
 ### Week 1: Data Foundation & Critical Reports
-- [ ] Add Markups sheet to your Google Sheet
-- [ ] Enter current markup multipliers
+- [ ] Add Markups sheet to your Google Sheet (if not already present)
+- [ ] Add "Effective Date" column to Markups sheet
+- [ ] Enter effective dates for each markup row (e.g., Jan 1, 2025, Nov 1, 2025)
+- [ ] Ensure all historical markup changes have rows with effective dates
+- [ ] **CRITICAL:** Add "Applicable Markup Date" column to Invoices sheet with MAXIFS formula (see Step 3, Option A)
+- [ ] Verify the formula is working: Check that invoices show correct effective dates
 - [ ] Connect Invoices sheet to Looker Studio
 - [ ] Connect Markups sheet to Looker Studio
-- [ ] Create blended data source (Invoices + Markups)
-- [ ] Create all calculated fields (profit, margin, wholesale)
-- [ ] Test calculations with sample invoices
+- [ ] Refresh Invoices data source in Looker Studio to include new "Applicable Markup Date" field
+- [ ] Create blended data source (Invoices + Markups) with date-based join
+- [ ] Verify join is working: check a few invoices to ensure they're using correct markup values
+- [ ] Create all calculated fields (profit, margin, wholesale) in blended data source
+- [ ] Test calculations with sample invoices from different date ranges
 - [ ] Build Executive Performance Dashboard
 - [ ] Build Margin Analysis Dashboard
-- [ ] **Validate:** Ensure profit calculations are accurate
+- [ ] **Validate:** Ensure profit calculations are accurate and use correct historical markups
 
 ### Week 2: Business Intelligence Reports
 - [ ] Build Vendor Price Intelligence Report
@@ -858,11 +1029,76 @@ Wholesale Revenue: #10b981 (Green)
 ### Ongoing: Optimization & Expansion
 - [ ] Monitor report usage analytics
 - [ ] Gather user feedback
-- [ ] Update markup multipliers in Markups sheet (triggers automatic recalculation)
-- [ ] Add historical markup tracking (if needed)
+- [ ] When markups change: Add new row to Markups sheet with new Effective Date and new markup values
+- [ ] Verify new invoices are automatically using updated markup values (Google Sheets formula handles this!)
 - [ ] Optimize slow-loading charts
 - [ ] Add new metrics based on business needs
 - [ ] Archive unused reports
+
+### When Markups Change - Maintenance Checklist (Fully Automated!)
+
+Every time you update your markup multipliers:
+
+#### If Using Option A (Google Sheets Formula - RECOMMENDED):
+
+1. **Add New Row to Markups Sheet**
+   - Add a new row to your Markups sheet with:
+     - **Effective Date:** The date the new markups take effect (e.g., 2026-02-01)
+     - **Markup values:** New multipliers for each category
+   - Example:
+     ```
+     | Effective Date | Flowers Markup | Botanicals Markup | ... |
+     | 2026-02-01     | 2.6           | 2.5              | ... |
+     ```
+
+2. **That's It! Everything Else Is Automatic**
+   - ✅ The MAXIFS formula in the Invoices sheet automatically recalculates
+   - ✅ New invoices on/after Feb 1, 2026 automatically use the new markups
+   - ✅ Historical invoices continue using their original markups
+   - ✅ Looker Studio reports automatically reflect the correct values
+   - ✅ **No Looker Studio changes needed!**
+
+3. **Verify (Optional but Recommended)**
+   - Create a test invoice with today's date in Google Sheets
+   - Check that the `Applicable Markup Date` column shows the correct effective date
+   - View the invoice in your Looker Studio report
+   - Verify it's using the new markup values in profit calculations
+
+#### If Using Option B (Manual Looker Studio Calculated Field - NOT RECOMMENDED):
+
+1. **Add New Row to Markups Sheet**
+   - Add a new row with the new effective date and markup values
+
+2. **Update the Looker Studio Calculated Field** ⚠️ (Manual Step Required)
+   - In Looker Studio, go to **Resource** > **Manage added data sources**
+   - Click on **Invoices** data source
+   - Edit the **Applicable Markup Date** calculated field
+   - Add a new CASE condition for the new effective date:
+   ```
+   CASE
+     WHEN Invoice Date >= DATE(2026, 2, 1) THEN DATE(2026, 2, 1)
+     WHEN Invoice Date >= DATE(2025, 11, 1) THEN DATE(2025, 11, 1)
+     WHEN Invoice Date >= DATE(2025, 1, 1) THEN DATE(2025, 1, 1)
+     ELSE DATE(2025, 1, 1)
+   END
+   ```
+   - Always add new dates at the TOP of the CASE statement
+   - Save the field
+
+3. **Test the Update**
+   - Create a test invoice with today's date
+   - View it in your Looker Studio report
+   - Verify it's using the new markup values
+
+---
+
+**💡 Pro Tip:** If you're currently using Option B and want to switch to the fully automated Option A:
+
+1. Add the `Applicable Markup Date` column with the MAXIFS formula to your Invoices sheet
+2. In Looker Studio, refresh your Invoices data source (Resource → Manage added data sources → Invoices → Refresh fields)
+3. Edit your blend to use the new field from Google Sheets instead of the calculated field
+4. Delete the old calculated field from Looker Studio
+5. You're now fully automated!
 
 ---
 
