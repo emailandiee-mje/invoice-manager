@@ -6,7 +6,7 @@
 
 ## 🎯 Business Questions This Guide Answers
 
-1. **Are we charging enough for our products?** → Margin Analysis Dashboard
+1. **Are we charging customers enough for our products?** → Margin Analysis Dashboard
 2. **How can we know when our margin is shrinking?** → Profit Trend Monitoring
 3. **Can we monitor costs by Vendor to see who is raising prices?** → Vendor Price Intelligence
 4. **How is our business doing?** → Executive Performance Dashboard
@@ -260,12 +260,12 @@ Click **Add a Field** in your **"Invoices with Markups"** blended data source an
 
 #### Core Business Metrics
 
-**1. Retail Cost (What We Pay)**
+**1. Wholesale Cost (What We Pay Vendors)**
 ```
 Total Due
 ```
 
-**2. Wholesale - Flowers**
+**2. Retail - Flowers**
 ```
 Flower Cost * Flowers Markup
 ```
@@ -359,7 +359,7 @@ WEEK(Invoice Date)
 FORMAT_DATE("%A", Invoice Date)
 ```
 
-**16. Average Invoice Value (Retail)**
+**16. Average Invoice Value (Wholesale)**
 ```
 AVG(Total Due)
 ```
@@ -395,13 +395,13 @@ COUNT(Invoice Number)
 **Report Title:** Business Performance - Executive Dashboard
 
 #### Top Row: Financial Health Scorecards
-1. **Total Retail Costs (What We Pay)** 
+1. **Total Wholesale Costs (What We Pay Vendors)** 
    - Metric: Sum of Total Due
    - Period: YTD
    - Comparison: vs. Previous Year
 
-2. **Total Wholesale Value (What We Should Charge)**
-   - Metric: Sum of Total Wholesale
+2. **Total Retail Value (What Customers Should Pay)**
+   - Metric: Sum of Total Retail
    - Period: YTD
    - Comparison: vs. Previous Year
 
@@ -422,7 +422,7 @@ COUNT(Invoice Number)
    - Metric: COUNT of Invoice Number
    - Period: YTD
 
-6. **Average Invoice Value (Retail)**
+6. **Average Invoice Value (Wholesale)**
    - Metric: AVG of Total Due
    - Period: YTD
 
@@ -443,12 +443,12 @@ COUNT(Invoice Number)
    - Add trend lines
    - **Key Question:** Is margin shrinking?
 
-10. **Retail vs Wholesale Comparison (Stacked Area Chart)**
+10. **Wholesale vs Retail Comparison (Stacked Area Chart)**
     - Dimension: Invoice Date (Month)
     - Metrics:
-      - Retail Costs (Bottom)
+      - Wholesale Costs (Bottom)
       - Profit (Stacked on top)
-    - Shows gap between what we pay and what we should charge
+    - Shows gap between what we pay vendors and what customers should pay
 
 #### Fourth Row: Category Performance
 11. **Profit by Category (Waterfall Chart)**
@@ -556,8 +556,8 @@ COUNT(Invoice Number)
 9. **Low Margin Invoices Table (Bottom 20)**
    - Dimension: Invoice Number, Vendor, Invoice Date
    - Metrics:
-     - Retail Cost
-     - Wholesale Value
+     - Wholesale Cost
+     - Retail Value
      - Profit Margin %
    - Filter: Show only invoices with margin < 30%
    - Sort: Ascending by margin
@@ -773,13 +773,13 @@ COUNT(Invoice Number)
 
 1. **Category Profit Scorecards** (6 Cards in Grid)
    - **Flowers:**
-     - Total Retail Cost
-     - Total Wholesale Value
+     - Total Wholesale Cost
+     - Total Retail Value
      - Total Profit
      - Profit Margin %
    - **Botanicals:**
-     - Total Retail Cost
-     - Total Wholesale Value
+     - Total Wholesale Cost
+     - Total Retail Value
      - Total Profit
      - Profit Margin %
    - (Repeat for Supplies, Greens, Misc, Credits)
@@ -787,8 +787,8 @@ COUNT(Invoice Number)
 2. **Category Comparison Table**
    - Rows: Cost Category
    - Columns:
-     - Retail Cost (What We Pay)
-     - Wholesale Value (What We Should Charge)
+     - Wholesale Cost (What We Pay Vendors)
+     - Retail Value (What Customers Should Pay)
      - Profit
      - Profit Margin %
      - % of Total Business
@@ -804,7 +804,7 @@ COUNT(Invoice Number)
    - **Identifies shifting business focus**
 
 4. **Category Profitability Quadrant (Bubble Chart)**
-   - X-Axis: Retail Cost (Volume)
+   - X-Axis: Wholesale Cost (Volume)
    - Y-Axis: Profit Margin %
    - Bubble Size: Total Profit
    - Color: Category
@@ -816,14 +816,14 @@ COUNT(Invoice Number)
 
 5. **Category Trends (Multi-Line Chart with Dual Y-Axis)**
    - Dimension: Month
-   - Left Y-Axis: Retail Cost (6 lines for each category)
+   - Left Y-Axis: Wholesale Cost (6 lines for each category)
    - Right Y-Axis: Profit Margin % (6 lines for each category)
    - **Shows volume and profitability trends**
 
 6. **Category by Vendor Matrix (Pivot Table)**
    - Rows: Vendor
    - Columns: Cost Categories
-   - Values: Sum of Retail Cost
+   - Values: Sum of Wholesale Cost
    - Conditional Formatting: Heatmap
    - **Shows vendor specialization and dependencies**
 
@@ -847,14 +847,14 @@ COUNT(Invoice Number)
 #### Detailed Invoice Table (Master View)
 - Dimensions: Invoice Number, Vendor, Invoice Date
 - Metrics:
-  - Flower Cost (Retail)
-  - Botanicals Cost (Retail)
-  - Supplies Cost (Retail)
-  - Greens Cost (Retail)
-  - Misc Cost (Retail)
+  - Flower Cost (Wholesale)
+  - Botanicals Cost (Wholesale)
+  - Supplies Cost (Wholesale)
+  - Greens Cost (Wholesale)
+  - Misc Cost (Wholesale)
   - Credits
-  - **Total Retail**
   - **Total Wholesale**
+  - **Total Retail**
   - **Total Profit**
   - **Profit Margin %**
   - Created Timestamp
@@ -868,7 +868,7 @@ COUNT(Invoice Number)
 #### Invoice Detail Panel (Click to View)
 When an invoice is selected:
 - Full invoice information
-- Retail vs. Wholesale comparison (bar chart)
+- Wholesale vs. Retail comparison (bar chart)
 - Category breakdown (pie chart)
 - Margin calculation breakdown
 - Edit link (to app if permissions allow)
@@ -942,8 +942,8 @@ Success/Profit: #10b981 (Green)
 Warning: #f59e0b (Amber)
 Danger/Loss: #ef4444 (Red)
 Neutral: #6b7280 (Gray)
-Retail Costs: #3b82f6 (Blue)
-Wholesale Revenue: #10b981 (Green)
+Wholesale Costs: #3b82f6 (Blue)
+Retail Revenue: #10b981 (Green)
 ```
 
 ### Margin Health Color Coding
@@ -1181,9 +1181,9 @@ Every time you update your markup multipliers:
 With these reports in place, you'll be able to answer:
 
 ### Profitability Questions
-- ✅ "Our overall margin is 35%, but Flowers category is only 28%. We need to increase Flowers markup from 2.0x to 2.3x."
-- ✅ "Margin dropped from 38% to 32% in the last 2 months. Investigation shows Vendor ABC raised prices by 15%."
-- ✅ "We're charging enough on Supplies (45% margin) but not enough on Greens (22% margin)."
+- ✅ "Our overall margin is 35%, but Flowers category is only 28%. We need to increase Flowers markup from 2.0x to 2.3x to charge customers more."
+- ✅ "Margin dropped from 38% to 32% in the last 2 months. Investigation shows Vendor ABC raised wholesale prices by 15%."
+- ✅ "We're charging customers enough on Supplies (45% margin) but not enough on Greens (22% margin)."
 
 ### Vendor Intelligence
 - ✅ "Vendor XYZ increased prices 12% in March. Time to negotiate or find alternatives."
@@ -1196,9 +1196,9 @@ With these reports in place, you'll be able to answer:
 - ✅ "Last year we had an outlier spike in June due to a corporate event - that's not repeating this year."
 
 ### Category Performance
-- ✅ "Flowers represent 60% of our costs but only 50% of our profit - we're over-reliant on this low-margin category."
-- ✅ "Botanicals have the highest margin (48%) - we should promote these products more."
-- ✅ "Miscellaneous costs are growing as % of total - need to understand what's driving this."
+- ✅ "Flowers represent 60% of our wholesale costs but only 50% of our profit - we're over-reliant on this low-margin category."
+- ✅ "Botanicals have the highest margin (48%) - we should promote these products more to customers."
+- ✅ "Miscellaneous wholesale costs are growing as % of total - need to understand what's driving this."
 
 ---
 
