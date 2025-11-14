@@ -29,16 +29,13 @@
 5. Leave open
 ```
 
-### Step 2: Set Up Google Apps Script (5 min)
+### Step 2: Set Up Google Apps Script (3 min)
 ```
 1. Extensions → Apps Script
-2. Delete default Code.gs
-3. Create 4 new script files:
-   - Code.gs
-   - HTML.gs
-   - FormValidation.gs
-   - SheetOperations.gs
-4. Paste code from project folder into each file
+2. Select all code in default Code.gs and delete
+3. Copy all contents from Code.gs (from project folder)
+4. Paste into the Apps Script editor
+5. Save (Ctrl+S or Cmd+S)
 ```
 
 ### Step 3: Deploy (5 min)
@@ -113,7 +110,9 @@ Replace `#ec4899` with your color hex code. Examples:
 Change "Invoice Manager" to your company name.
 
 ### Adjust Form Fields
-**In FormValidation.gs**, find validation functions. For example:
+**For custom validation:**
+
+In `Code.gs`, find the `validateAllFields()` function. For example:
 ```javascript
 function validateInvoiceNumber(invoiceNumber) {
   // Edit validation rules here

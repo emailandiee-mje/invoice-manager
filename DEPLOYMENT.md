@@ -8,19 +8,18 @@ This folder contains a fully-functional, modern invoice management application b
 
 ## 📁 Files in This Project
 
-### Frontend
-- **`HTML.gs`** - Modern responsive UI with Tailwind CSS, dark mode, and smooth animations
+### Application
+- **`Code.gs`** - Complete application with all backend logic and embedded HTML/CSS/JavaScript UI
 - **`preview.html`** - Standalone preview file for testing the UI locally in VS Code
 
-### Backend (Apps Script)
-- **`Code.gs`** - Main server logic and HTTP handlers
-- **`FormValidation.gs`** - Input validation and calculation engine
-- **`SheetOperations.gs`** - Google Sheets API integration and data persistence
-
 ### Documentation
+- **`README.md`** - Comprehensive overview and quick start guide
+- **`DEPLOYMENT.md`** - This file - step-by-step deployment instructions
 - **`PROJECT_PLAN.md`** - Detailed technical specifications and architecture
-- **`DEPLOYMENT.md`** - Step-by-step deployment instructions
-- **`README.md`** - This file
+- **`QUICK_START.md`** - Quick reference guide
+- **`TEST_PLAN.md`** - Testing procedures and validation
+- **`DEFECTS.md`** - Bug tracking and resolutions
+- **`ENHANCEMENT_IDEAS.md`** - Future feature ideas
 
 ---
 
@@ -65,33 +64,16 @@ Follow these steps to deploy the app to your Google Account:
 2. You'll be taken to the Apps Script editor in a new tab
 3. Delete the default `Code.gs` file (right-click → delete)
 
-### Step 3: Copy the Code Files
+### Step 3: Copy the Code
 
-Copy the contents of each file below into the Apps Script editor:
+1. The default `Code.gs` file should already be present in the Apps Script editor
+2. Select all the default code and delete it
+3. Open `Code.gs` from this project folder
+4. Copy **all contents** from `Code.gs`
+5. Paste into the Apps Script editor
+6. Click the **Save** icon (💾) or press `Ctrl+S` (Windows) / `Cmd+S` (Mac)
 
-#### File 1: Create `Code.gs`
-1. Click **+ (New file)** → select **Script**
-2. Name it: **Code.gs**
-3. Copy all contents from `Code.gs` (from this project folder)
-4. Paste into the editor
-
-#### File 2: Create `HTML.gs`
-1. Click **+ (New file)** → select **Script**
-2. Name it: **HTML.gs**
-3. Copy all contents from `HTML.gs` (from this project folder)
-4. Paste into the editor
-
-#### File 3: Create `FormValidation.gs`
-1. Click **+ (New file)** → select **Script**
-2. Name it: **FormValidation.gs**
-3. Copy all contents from `FormValidation.gs` (from this project folder)
-4. Paste into the editor
-
-#### File 4: Create `SheetOperations.gs`
-1. Click **+ (New file)** → select **Script**
-2. Name it: **SheetOperations.gs**
-3. Copy all contents from `SheetOperations.gs` (from this project folder)
-4. Paste into the editor
+> **Note:** The application uses a single `Code.gs` file that contains all backend logic and embedded HTML/CSS/JavaScript. No additional files are needed.
 
 ### Step 4: Deploy as Web App
 
@@ -135,9 +117,10 @@ Copy the contents of each file below into the Apps Script editor:
 ## 🌟 Features Overview
 
 ### Tab 1: New Invoice
+- **Vendor:** Dropdown with autocomplete (add new vendors on the fly)
 - **Invoice Number:** Unique identifier (auto-validated for duplicates)
 - **Invoice Date:** Date picker (prevents future dates)
-- **Cost Fields:** Flower, Supplies, Greens, Credits
+- **Cost Fields:** Flower, Supplies, Greens, Miscellaneous, Credits
 - **Real-time Calculation:** Total updates as you type
 - **Form Validation:** Clear error messages on submit
 - **Success Feedback:** Toast notifications
@@ -264,12 +247,12 @@ The app is fully responsive and works on:
 
 ## 💡 Advanced Customization
 
-All code is well-commented and modular:
+All code is well-commented and consolidated in Code.gs:
 
-- **Styling:** Edit CSS in `HTML.gs` (lines with `<style>`)
-- **Validation Rules:** Edit `FormValidation.gs`
-- **Colors:** Change `--primary`, `--secondary`, `--accent` in CSS variables
-- **Columns:** Edit `COLUMN_HEADERS` in `SheetOperations.gs`
+- **Styling:** Edit CSS in the embedded HTML template (search for `<style>` in Code.gs)
+- **Validation Rules:** Edit validation functions in Code.gs (search for `validateAllFields`)
+- **Colors:** Change `--primary`, `--secondary`, `--accent` in CSS :root variables
+- **Columns:** Edit column indices in sheet operation functions
 
 ---
 

@@ -33,16 +33,18 @@ _No active defects_
 
 ### 2. Miscellaneous Cost Field Not Saving
 - **Description:** Miscellaneous Cost field value not being captured from form submission, resulting in missing data in the sheet and #NUM! error in Total Due column
-- **Location:** Create Invoice form submission handler
+- **Location:** Create Invoice form submission handler and Edit Invoice form submission handler
 - **Severity:** High
 - **Impact:** Complete data loss for miscellaneous costs, incorrect total calculations
 - **Status:** Resolved
 - **Priority:** Critical
 - **Reported:** November 13, 2025
 - **Resolved:** November 13, 2025
-- **Fix:** Added `miscellaneousCost` to invoiceData object in `handleFormSubmit()`, added parseFloat() conversion, and added validation function for the field
-- **Version:** Fixed in v0.96
-- **Notes:** Field was added to GUI in v0.95 but form submission logic was incomplete, causing undefined values to be passed to calculation and storage functions
+- **Fix:** 
+  - Create form: Added `miscellaneousCost` to invoiceData object in `handleFormSubmit()`, added parseFloat() conversion, and added validation function for the field
+  - Edit form: Added `miscellaneousCost` to updatedData object in `handleEditSubmit()`, added parseFloat() conversion, and added validation for negative values
+- **Version:** Create form fixed in v0.96, Edit form fixed in v0.97
+- **Notes:** Field was added to GUI in v0.95 but form submission logic was incomplete in both Create and Edit forms, causing undefined values to be passed to calculation and storage functions
 
 ---
 

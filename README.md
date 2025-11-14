@@ -61,19 +61,20 @@ _BonniesApp/
 ├── .github/
 │   └── agents/
 │       └── Doc-Agent.agent.md  # Documentation agent configuration
-├── docs-archive/               # Historical documentation & unused code
-├── Code.gs                     # Main server logic (complete application)
-├── HTML.gs                     # Frontend UI (Tailwind CSS + JavaScript)
+├── docs-archive/               # Historical documentation & archived files
+├── Code.gs                     # Complete application (all logic & UI)
 ├── preview.html                # Standalone preview for VS Code
 ├── README.md                   # This file - START HERE
 ├── DEPLOYMENT.md               # Step-by-step deployment guide
 ├── PROJECT_PLAN.md             # Technical specifications & architecture
 ├── QUICK_START.md              # Quick reference guide
 ├── TEST_PLAN.md                # Testing procedures
+├── DEFECTS.md                  # Bug tracking and resolutions
+├── ENHANCEMENT_IDEAS.md        # Future feature ideas
 └── FILE_STRUCTURE.md           # Detailed workspace organization
 ```
 
-> **Note:** The `docs-archive/` folder contains historical troubleshooting documentation and unused modular code files. For current documentation, refer to the files in the root directory. The application uses only `Code.gs` and `HTML.gs` for deployment.
+> **Note:** The `docs-archive/` folder contains historical troubleshooting documentation and archived code files (including the previously separate HTML.gs). The application now uses only `Code.gs` for deployment, which contains all backend logic and embedded HTML/CSS/JavaScript.
 
 ---
 
@@ -96,13 +97,15 @@ _BonniesApp/
 Each invoice record includes:
 
 | Field | Type | Purpose |
-|-------|------|---------|
+|-------|------|---------||
 | **ID** | UUID | Unique identifier |
 | **Invoice Number** | Text | User-provided reference |
 | **Invoice Date** | Date | When invoice was issued |
+| **Vendor** | Text | Vendor name |
 | **Flower Cost** | Currency | Cost breakdown |
 | **Supplies Cost** | Currency | Cost breakdown |
 | **Greens Cost** | Currency | Cost breakdown |
+| **Miscellaneous Cost** | Currency | Cost breakdown |
 | **Invoice Credits** | Currency | Deductions |
 | **Total Due** | Currency | Auto-calculated |
 | **Status** | Text | ACTIVE or ARCHIVED |
@@ -161,7 +164,7 @@ Each invoice record includes:
 
 ### Total Calculation
 ```
-Total Due = (Flower Cost + Supplies Cost + Greens Cost) - Invoice Credits
+Total Due = (Flower Cost + Supplies Cost + Greens Cost + Miscellaneous Cost) - Invoice Credits
 ```
 
 ---
@@ -309,38 +312,36 @@ See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for more troubleshooting.
 
 ## 🎓 Code Organization
 
-### Code.gs
-- `doGet()` - Serves HTML interface
+### Code.gs - Complete Application
+
+**Server-Side Functions:**
+- `doGet()` - Serves HTML interface with embedded UI
 - `submitInvoice()` - Handles form submissions
 - `searchInvoices()` - Processes search queries
 - `updateInvoice()` - Updates existing invoices
 - `getInvoiceById()` - Retrieves single invoice
-
-### FormValidation.gs
-- Input validation functions
-- Calculation engine
-- Sanitization utilities
-- Formatting helpers
-
-### SheetOperations.gs
-- Sheets API integration
-- CRUD operations
+- `validateAllFields()` - Input validation
+- `calculateTotal()` - Total calculation engine
+- `appendInvoice()` - Adds new invoices to sheet
+- `updateInvoiceRow()` - Updates existing sheet data
+- Vendor management functions
 - Search algorithms
-- Data transformation
+- Data sanitization utilities
 
-### HTML.gs
-- Responsive layout (mobile-first)
-- Tailwind CSS styling
+**Embedded HTML/CSS/JavaScript:**
+- Responsive layout (mobile-first with Tailwind CSS)
 - Dark mode implementation
-- Client-side JavaScript
+- Client-side form validation
 - Real-time calculations
-- Form handling
+- Tab switching and UI interactions
+- Toast notifications
+- Loading states
 
 ---
 
 ## 🌟 Best Practices Used
 
-✅ **Modular Code** - Separated concerns across 4 files  
+✅ **Single-File Architecture** - All code consolidated in Code.gs for easy deployment  
 ✅ **Error Handling** - Try-catch blocks, user-friendly messages  
 ✅ **Input Validation** - Server-side and client-side checks  
 ✅ **Responsive Design** - Mobile-first, tested on all devices  

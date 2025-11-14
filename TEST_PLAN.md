@@ -113,7 +113,7 @@ This document outlines all test scenarios for the Invoice Management System to e
 - [x] Add Greens Cost: 3.00 → Total shows $18.00
 - [x] Add Invoice Credits: 2.00 → Total shows $16.00
 - [x] Change Flower Cost to 20.00 → Total updates to $26.00
-- [x] Verify calculation: (Flower + Supplies + Greens - Credits) = Total
+- [x] Verify calculation: (Flower + Supplies + Greens + Miscellaneous - Credits) = Total
 
 ### Test 2.11: Total Due Edge Cases
 - [x] All costs = 0, credits = 0 → Total = $0.00

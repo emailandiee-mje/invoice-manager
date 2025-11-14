@@ -1,7 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
- * @version 0.96
+ * @version 0.97
  */
 
 /**
@@ -973,7 +973,7 @@ function doGet(e) {
             <\/div>
 
             <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
-                <p>© 2025 Bonnie's Invoice Manager | Version 0.96 (Beta)<\/p>
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.97<\/p>
                 <p class="mt-1 text-xs">Created lovingly by MJE AppWorks<\/p>
             <\/div>
         <\/div>
@@ -1537,6 +1537,7 @@ function doGet(e) {
                 flowerCost: parseFloat(document.getElementById('editFlowerCost').value) || 0,
                 suppliesCost: parseFloat(document.getElementById('editSuppliesCost').value) || 0,
                 greensCost: parseFloat(document.getElementById('editGreensCost').value) || 0,
+                miscellaneousCost: parseFloat(document.getElementById('editMiscellaneousCost').value) || 0,
                 invoiceCredits: parseFloat(document.getElementById('editInvoiceCredits').value) || 0
             };
 
@@ -1557,6 +1558,10 @@ function doGet(e) {
             }
             if (updatedData.greensCost < 0) {
                 showToast('Greens cost cannot be negative', 'error');
+                return false;
+            }
+            if (updatedData.miscellaneousCost < 0) {
+                showToast('Miscellaneous cost cannot be negative', 'error');
                 return false;
             }
             if (updatedData.invoiceCredits < 0) {

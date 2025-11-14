@@ -129,13 +129,14 @@ This project delivers a web-based invoice management application leveraging the 
 │ Invoice Date:   [DD/MM/YYYY picker]        │
 │                                             │
 │ COST BREAKDOWN:                             │
-│ ├─ Flower Cost:    $ [_________] (number)  │
-│ ├─ Supplies Cost:  $ [_________] (number)  │
-│ ├─ Greens Cost:    $ [_________] (number)  │
-│ └─ Invoice Credits: $ [_________] (number) │
+│ ├─ Flower Cost:       $ [_________] (number)  │
+│ ├─ Supplies Cost:     $ [_________] (number)  │
+│ ├─ Greens Cost:       $ [_________] (number)  │
+│ ├─ Miscellaneous Cost:$ [_________] (number)  │
+│ └─ Invoice Credits:   $ [_________] (number)  │
 │                                             │
 │ TOTAL DUE: $ [CALCULATED] (read-only)      │
-│ (Calculation: F + S + G - C)                │
+│ (Calculation: F + S + G + M - C)            │
 │                                             │
 │ [SUBMIT] [CLEAR FORM]                      │
 │                                             │
@@ -222,7 +223,7 @@ This project delivers a web-based invoice management application leveraging the 
 
 #### Total Due Calculation
 ```
-TOTAL DUE = (Flower Cost + Supplies Cost + Greens Cost) - Invoice Credits
+TOTAL DUE = (Flower Cost + Supplies Cost + Greens Cost + Miscellaneous Cost) - Invoice Credits
 ```
 
 #### Implementation
@@ -274,16 +275,18 @@ TOTAL DUE = (Flower Cost + Supplies Cost + Greens Cost) - Invoice Credits
 A1: ID
 B1: Invoice Number
 C1: Invoice Date
-D1: Flower Cost
-E1: Supplies Cost
-F1: Greens Cost
-G1: Invoice Credits
-H1: Total Due
-I1: Status
-J1: Created Timestamp
-K1: Last Modified Timestamp
-L1: Created By
-M1: Last Modified By
+D1: Vendor
+E1: Flower Cost
+F1: Supplies Cost
+G1: Greens Cost
+H1: Miscellaneous Cost
+I1: Invoice Credits
+J1: Total Due
+K1: Status
+L1: Created Timestamp
+M1: Last Modified Timestamp
+N1: Created By
+O1: Last Modified By
 ```
 
 #### Data Types & Formatting
@@ -291,18 +294,20 @@ M1: Last Modified By
 Column A (ID):                   Text (GUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
 Column B (Invoice Number):       Text, max 50 chars
 Column C (Invoice Date):         Date (YYYY-MM-DD format)
-Column D-G (Currency Amounts):   Number, Currency format, 2 decimal places
-Column H (Total Due):            Formula: =D-G (then format as currency)
-Column I (Status):               Text (ACTIVE|ARCHIVED)
-Column J-K (Timestamps):         DateTime (YYYY-MM-DD HH:MM:SS)
-Column L-M (User Email):         Text
+Column D (Vendor):               Text, max 100 chars
+Column E-H (Currency Amounts):   Number, Currency format, 2 decimal places
+Column I (Invoice Credits):      Number, Currency format, 2 decimal places
+Column J (Total Due):            Formula: =E+F+G+H-I (then format as currency)
+Column K (Status):               Text (ACTIVE|ARCHIVED)
+Column L-M (Timestamps):         DateTime (YYYY-MM-DD HH:MM:SS)
+Column N-O (User Email):         Text
 ```
 
 #### Example Row
 ```
-| ID                                   | Invoice # | Date       | Flower | Supplies | Greens | Credits | Total   | Status | Created           | Modified          | Created By      | Modified By     |
-|--------------------------------------|------------|------------|--------|----------|--------|---------|---------|--------|-------------------|-------------------|-----------------|-----------------|
-| 550e8400-e29b-41d4-a716-446655440000 | INV-2025-001 | 2025-11-01 | 150.00 | 45.50    | 32.00  | 10.00   | 217.50  | ACTIVE | 2025-11-01 10:30:00 | 2025-11-01 10:30:00 | user@gmail.com  | user@gmail.com  |
+| ID                                   | Invoice #    | Date       | Vendor      | Flower | Supplies | Greens | Misc   | Credits | Total  | Status | Created             | Modified            | Created By     | Modified By    |
+|--------------------------------------|--------------|------------|-------------|--------|----------|--------|--------|---------|--------|--------|---------------------|---------------------|----------------|----------------|
+| 550e8400-e29b-41d4-a716-446655440000 | INV-2025-001 | 2025-11-01 | DV Flora    | 150.00 | 45.50    | 32.00  | 15.00  | 10.00   | 232.50 | ACTIVE | 2025-11-01 10:30:00 | 2025-11-01 10:30:00 | user@gmail.com | user@gmail.com |
 ```
 
 ---
@@ -321,12 +326,11 @@ Column L-M (User Email):         Text
 
 1. Open your Google Sheet
 2. Click "Extensions" > "Apps Script"
-3. Delete the default `Code.gs` file
-4. Create the following files:
-   - `Code.gs` - Main server-side logic
-   - `HTML.gs` - HTML template rendering
-   - `FormValidation.gs` - Validation utilities
-   - `SheetOperations.gs` - Data access layer
+3. The default `Code.gs` file will already be present
+4. Delete all default code in Code.gs
+5. Copy all contents from the project's `Code.gs` file
+6. Paste into the Apps Script editor
+7. Save the file (Ctrl+S or Cmd+S)
 
 ### Step 3: Deploy as Web App
 
@@ -383,105 +387,59 @@ function getInvoiceById(invoiceId)
 ```
 
 **Dependencies:**
-- `SheetOperations.gs`
-- `FormValidation.gs`
-- `HTML.gs`
+- All functionality is self-contained in Code.gs
 
 ---
 
-### File 2: `HTML.gs` (Frontend Template)
+### Code.gs Structure
 
-**Responsibilities:**
-- Render responsive HTML form
-- Include all client-side JavaScript
-- Include CSS styling
+The single `Code.gs` file contains:
 
-**Structure:**
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Invoice Management System</title>
-    <style>
-      /* CSS for form layout, responsive design, dark/light mode */
-    </style>
-  </head>
-  <body>
-    <!-- Tab 1: New Invoice Entry -->
-    <!-- Tab 2: Search & Edit Invoices -->
-    
-    <script>
-      // Client-side form handling
-      // Real-time calculation
-      // Search result display
-      // Edit mode management
-      // Google Apps Script RPC calls
-    </script>
-  </body>
-</html>
+**1. Server-Side Functions:**
+```javascript
+function doGet(e)
+  // Serves HTML interface with embedded template
+
+function submitInvoice(invoiceData)
+  // Validates and saves new invoice
+
+function updateInvoice(updatedData)
+  // Updates existing invoice
+
+function searchInvoices(searchParams)
+  // Searches by number or date range
+
+function getInvoiceById(invoiceId)
+  // Returns single invoice object for editing
+
+function validateAllFields(data)
+  // Server-side validation
+
+function calculateTotal(costs)
+  // Total calculation
+
+function appendInvoice(data)
+  // Adds new invoice to sheet
+
+function updateInvoiceRow(id, data)
+  // Updates existing sheet row
+
+function getVendors()
+  // Returns vendor list
+
+function addNewVendor(vendor)
+  // Adds new vendor to Vendors sheet
 ```
 
-**JavaScript Modules:**
-- Form submission handler
-- Real-time calculation engine
+**2. Embedded HTML/CSS/JavaScript Template:**
+- Responsive HTML form with Tailwind CSS
+- Client-side JavaScript for interactivity
+- Dark mode toggle
+- Real-time calculations
+- Form validation
 - Search functionality
-- Edit mode controller
-- UI state manager
-- Toast notification system
-
----
-
-### File 3: `FormValidation.gs` (Validation Logic)
-
-**Responsibilities:**
-- Validate all form inputs server-side
-- Return validation errors
-- Sanitize user input
-
-**Key Functions:**
-```javascript
-function validateInvoiceNumber(invoiceNumber)
-function validateInvoiceDate(dateString)
-function validateCurrency(amount)
-function validateAllFields(invoiceData)
-function calculateTotal(flowerCost, suppliesCost, greensCost, credits)
-function sanitizeInput(input)
-```
-
----
-
-### File 4: `SheetOperations.gs` (Data Access Layer)
-
-**Responsibilities:**
-- Read/write operations to Google Sheets
-- Data transformation
-- Error handling
-
-**Key Functions:**
-```javascript
-function appendInvoice(invoiceData)
-  // Adds new row, returns ID
-
-function updateInvoiceRow(invoiceId, updatedData)
-  // Updates existing row
-
-function searchByInvoiceNumber(invoiceNumber)
-  // Returns matching invoices
-
-function searchByDateRange(startDate, endDate)
-  // Returns invoices within date range
-
-function getInvoiceDataById(invoiceId)
-  // Returns single invoice as object
-
-function getAllInvoices()
-  // Returns all active invoices
-
-function getSheetData()
-  // Returns reference to Invoices sheet
-```
+- Edit mode management
+- Toast notifications
 
 ---
 

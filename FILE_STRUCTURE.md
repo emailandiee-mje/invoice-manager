@@ -14,19 +14,24 @@ _BonniesApp/
 │   ├── DIAGNOSIS_GUIDE.md - Historical troubleshooting
 │   ├── FINAL_FIX.md - Historical bug fix documentation
 │   ├── FIX_IMPLEMENTED.md - Historical implementation notes
+│   ├── FormValidation.gs - Archived modular validation file
+│   ├── HTML.gs - Archived separate HTML template file
 │   ├── INDEX.md - Archived navigation guide
 │   ├── QUICK_FIX.md - Archived quick fix guide
 │   ├── QUICK_TEST.md - Archived testing guide
+│   ├── README.md - Archived README
 │   ├── REDEPLOY_REQUIRED.md - Archived deployment reminder
 │   ├── REDEPLOY_VISUAL_GUIDE.md - Archived visual deployment guide
 │   ├── SEARCH_DEBUG_GUIDE.md - Archived debugging documentation
 │   ├── SEARCH_STATUS_UPDATE.md - Archived status update
+│   ├── SheetOperations.gs - Archived modular sheet operations file
 │   ├── SUMMARY.md - Archived project summary
 │   ├── TECHNICAL_ANALYSIS.md - Archived technical analysis
-│   └── VISUAL_GUIDE.md - Archived visual guide
+│   ├── VISUAL_GUIDE.md - Archived visual guide
+│   └── WORKSPACE_CLEANUP.md - Archived cleanup documentation
 │
-├── 📄 Code.gs (Main Server Logic - Complete Application)
-│   ├── doGet() - Serves HTML interface
+├── 📄 Code.gs (Complete Application - Single Deployment File)
+│   ├── doGet() - Serves HTML interface (embedded template)
 │   ├── submitInvoice() - Form submission handler
 │   ├── searchInvoices() - Search processor
 │   ├── updateInvoice() - Invoice update handler
@@ -43,52 +48,11 @@ _BonniesApp/
 │   ├── addNewVendor() - Add new vendor
 │   ├── getAllVendors() - Get vendor list
 │   ├── appendVendor() - Add vendor to sheet
-│   └── sanitizeInput() - Input sanitization
-│
-├── 📄 HTML.gs (Frontend UI)
-│   ├── <head> - Meta, Tailwind CDN, custom CSS
-│   │   └── Comprehensive CSS styling (glass-effect, gradients, animations)
-│   ├── <body>
-│   │   ├── Theme toggle button
-│   │   ├── Loading overlay
-│   │   ├── Main container
-│   │   │   ├── Header (Logo, title)
-│   │   │   ├── Tabs (New Invoice, Search & Edit)
-│   │   │   │   ├── Tab 1: New Invoice Form
-│   │   │   │   │   ├── Invoice Number input
-│   │   │   │   │   ├── Invoice Date picker
-│   │   │   │   │   ├── Cost Breakdown section
-│   │   │   │   │   │   ├── Flower Cost
-│   │   │   │   │   │   ├── Supplies Cost
-│   │   │   │   │   │   ├── Greens Cost
-│   │   │   │   │   │   └── Invoice Credits
-│   │   │   │   │   ├── Total Due (calculated, read-only)
-│   │   │   │   │   └── Buttons (Submit, Clear)
-│   │   │   │   │
-│   │   │   │   └── Tab 2: Search & Edit
-│   │   │   │       ├── Search Options
-│   │   │   │       │   ├── Search by Invoice Number
-│   │   │   │       │   └── Search by Date Range
-│   │   │   │       ├── Search Results Table
-│   │   │   │       └── Edit Form (hidden until edit clicked)
-│   │   │   │           ├── Read-only Invoice Number
-│   │   │   │           ├── Editable Date & Costs
-│   │   │   │           ├── Updated Total Display
-│   │   │   │           └── Buttons (Update, Cancel)
-│   │   │   │
-│   │   │   └── Footer
-│   │   │
-│   │   └── <script> - Client-side JavaScript
-│   │       ├── State management
-│   │       ├── Theme toggle logic
-│   │       ├── Tab switching
-│   │       ├── Real-time calculations
-│   │       ├── Form submission & validation
-│   │       ├── Search functionality
-│   │       ├── Edit mode handling
-│   │       ├── Toast notifications
-│   │       └── Loading state management
-│
+│   ├── sanitizeInput() - Input sanitization
+│   └── Embedded HTML/CSS/JavaScript
+│       ├── <head> - Meta, Tailwind CDN, custom CSS
+│       ├── <body> - Complete UI with tabs, forms, search
+│       └── <script> - Client-side logic and event handlers
 │
 ├── 📄 preview.html (Standalone UI Preview)
 │   └── Full HTML + CSS + JavaScript (no backend calls)
@@ -103,7 +67,7 @@ _BonniesApp/
 │
 ├── 📄 DEPLOYMENT.md (Deployment Guide)
 │   ├── Step-by-step Google Apps Script setup
-│   ├── Configuration instructions
+│   ├── Single-file deployment instructions
 │   ├── Testing procedures
 │   └── Troubleshooting common issues
 │
@@ -112,18 +76,15 @@ _BonniesApp/
 │   ├── Tech Stack
 │   ├── System Architecture (diagrams)
 │   ├── Feature Specifications (detailed)
-│   ├── Data Schema (13 columns, types, formats)
+│   ├── Data Schema (15 columns, types, formats)
 │   ├── Deployment Guide
-│   ├── Implementation Files (breakdown of each .gs file)
 │   ├── Testing Checklist
-│   ├── Deployment Checklist
-│   ├── Future Enhancements
 │   ├── Code Quality Standards
-│   ├── Security Considerations
+│   └── Security Considerations
 │
 ├── 📄 QUICK_START.md (Quick Reference)
 │   ├── Fast preview instructions
-│   ├── Deployment checklist
+│   ├── Simplified deployment checklist
 │   ├── Common tasks and tips
 │   └── Customization guide
 │
@@ -133,71 +94,20 @@ _BonniesApp/
 │   ├── Validation procedures
 │   └── Quality assurance checklist
 │
+├── 📄 DEFECTS.md (Bug Tracking)
+│   ├── Active defects
+│   ├── Resolved defects with fix details
+│   └── Bug reporting guidelines
+│
+├── 📄 ENHANCEMENT_IDEAS.md (Future Features)
+│   ├── Proposed enhancements
+│   ├── Feature requests
+│   └── Improvement suggestions
+│
 └── 📄 FILE_STRUCTURE.md (This File)
     ├── Workspace organization
     ├── File descriptions
     └── Architecture overview
-│   ├── Support & Maintenance
-│   └── Common Issues & Resolutions
-│
-├── 📄 DEPLOYMENT.md (Step-by-Step Setup Guide)
-│   ├── Quick Start (preview vs full deployment)
-│   ├── Option 1: Local Preview
-│   ├── Option 2: Full Google Deployment (7 steps)
-│   │   ├── Step 1: Prepare Google Sheets
-│   │   ├── Step 2: Create Apps Script Project
-│   │   ├── Step 3: Copy Code Files (4 files)
-│   │   ├── Step 4: Deploy as Web App
-│   │   ├── Step 5: Test the App
-│   │   ├── Step 6: Verify Data in Sheets
-│   │   └── Step 7: Share with Users
-│   ├── Features Overview
-│   ├── Security & Permissions
-│   ├── Looker Studio Integration Guide
-│   ├── Troubleshooting (with solutions)
-│   ├── Example Test Data
-│   ├── Updating the App
-│   ├── Mobile Support
-│   ├── Advanced Customization Tips
-│   └── Full Deployment Checklist
-│
-├── 📄 README.md (Comprehensive Overview)
-│   ├── Features (Core, UX, Security)
-│   ├── Quick Start (Preview & Deployment links)
-│   ├── Project Structure
-│   ├── Technology Stack
-│   ├── Data Schema (detailed table)
-│   ├── UI/UX Highlights (design system)
-│   ├── Form Validation Rules
-│   ├── Integrations (Sheets, Looker Studio)
-│   ├── Browser Support
-│   ├── Security Considerations (detailed)
-│   ├── Performance Metrics
-│   ├── Deployment Checklist
-│   ├── Updates & Maintenance
-│   ├── FAQ
-│   ├── Troubleshooting Guide
-│   ├── Documentation Links
-│   ├── Code Organization (file-by-file)
-│   ├── Best Practices Used
-│   ├── Future Enhancements
-│   └── Support Information
-│
-├── 📄 QUICK_START.md (Quick Reference)
-│   ├── Preview the UI (2 options)
-│   ├── Full Deployment (5 steps, 15-20 min)
-│   ├── File Guide (what to edit)
-│   ├── Quick Customizations
-│   │   ├── Change Colors
-│   │   ├── Add Company Name
-│   │   └── Adjust Form Fields
-│   ├── Troubleshooting Quick Fixes
-│   ├── Getting Help (3 steps)
-│   ├── Success Checklist
-│   ├── Common Tasks (Submit, Search, Edit, Share)
-│   ├── Creating a Dashboard
-│   ├── Security Notes
-│   ├── Pro Tips
 │   ├── Scale Considerations
 │   ├── Learning Path (Beginner to Advanced)
 │   └── Quick Links
@@ -244,15 +154,14 @@ Google Sheets: "Bonnie's Invoice Management"
 ```
 Apps Script Project: "Invoice Manager Script"
 │
-├── Code.gs (Main file)
-├── HTML.gs (UI rendering)
-├── FormValidation.gs (Validation logic)
-├── SheetOperations.gs (Data access)
+├── Code.gs (Single complete application file)
+│   ├── Server-side functions (handlers, validation, sheet operations)
+│   └── Embedded HTML/CSS/JavaScript (complete UI)
 │
 ├── Deployment
 │   └── Web App URL (shared with users)
 │       └── Executes doGet() on page load
-│       └── RPC calls to other functions via google.script.run
+│       └── RPC calls to handler functions via google.script.run
 │
 └── Logs
     └── Executions (for debugging)
@@ -264,12 +173,16 @@ Apps Script Project: "Invoice Manager Script"
 
 | File | Lines | Complexity | Purpose |
 |------|-------|-----------|---------|
-| HTML.gs | ~1,100 | High | UI, styling, client-side logic |
-| Code.gs | ~120 | Low | Simple request handlers |
-| FormValidation.gs | ~200 | Medium | Validation rules |
-| SheetOperations.gs | ~300 | Medium | CRUD operations |
-| preview.html | ~1,000 | High | Standalone preview |
-| Documentation | ~2,000 | Low | Guides and specs |
+| Code.gs | ~2,700 | High | Complete application (backend + embedded UI) |
+| preview.html | ~1,000 | Medium | Standalone UI preview |
+| Documentation | ~3,000 | Low | Guides and specifications |
+
+**Archived Files (in docs-archive/):**
+| File | Lines | Status |
+|------|-------|--------|
+| HTML.gs | ~1,800 | Archived - now embedded in Code.gs |
+| FormValidation.gs | ~200 | Archived - now inline in Code.gs |
+| SheetOperations.gs | ~300 | Archived - now inline in Code.gs |
 
 ---
 
@@ -278,15 +191,15 @@ Apps Script Project: "Invoice Manager Script"
 ```
 User Action
     ↓
-JavaScript in browser (HTML.gs)
+JavaScript in browser (embedded in Code.gs)
     ↓
 google.script.run (RPC call)
     ↓
-Code.gs (handler function)
+Code.gs handler function
     ↓
-FormValidation.gs (if needed)
+Validation (within Code.gs)
     ↓
-SheetOperations.gs (if needed)
+Sheet operations (within Code.gs)
     ↓
 Google Sheets API
     ↓
@@ -331,15 +244,15 @@ User needs help?
 ```
 Opens deployment URL
         ↓
-    HTML.gs renders
+    Code.gs doGet() serves HTML
         ↓
    Browser displays form
         ↓
   User fills form & clicks submit
         ↓
-FormValidation.gs checks input
+Code.gs validates input
         ↓
-SheetOperations.gs saves to Sheets
+Code.gs saves to Google Sheets
         ↓
 Google Sheets stores data
         ↓
@@ -348,32 +261,32 @@ Toast notification shows success
 
 ### Developer Perspective
 ```
-Code.gs            ← Orchestrates everything
-    ↓
-Calls FormValidation.gs    ← Validates data
-    ↓
-Calls SheetOperations.gs   ← Saves to Sheets
-    ↓
+Code.gs                        ← Single file containing:
+    ↓                           - doGet() function with embedded HTML
+    ├─ Validation logic         - Form validation functions
+    ├─ Sheet operations         - Google Sheets API calls
+    └─ Response handling        - Success/error responses
+        ↓
 Returns JSON response to browser
-    ↓
-HTML.gs handles response      ← Shows feedback
+        ↓
+Client-side JavaScript handles response  ← Shows feedback
 ```
 
 ---
 
-## Key Features by File
+## Key Features by Component
 
-| Feature | Primary File | Supporting Files |
-|---------|-------------|------------------|
-| Form Display | HTML.gs | - |
-| Real-time Calculation | HTML.gs | FormValidation.gs |
-| Input Validation | FormValidation.gs | HTML.gs (client-side) |
-| Data Persistence | SheetOperations.gs | Code.gs |
-| Search | Code.gs | SheetOperations.gs |
-| Edit/Update | Code.gs | SheetOperations.gs, FormValidation.gs |
-| Dark Mode | HTML.gs | - |
-| Duplicate Check | SheetOperations.gs | Code.gs |
-| Timestamp Recording | SheetOperations.gs | FormValidation.gs |
+| Feature | Component in Code.gs | Location |
+|---------|---------------------|----------|
+| Form Display | Embedded HTML template | doGet() function |
+| Real-time Calculation | Client-side JavaScript | <script> section |
+| Input Validation | Server-side functions | validateAllFields() |
+| Data Persistence | Sheet operations | appendInvoice(), updateInvoiceRow() |
+| Search | Search functions | searchByInvoiceNumberV2(), searchByDateRangeV2() |
+| Edit/Update | Update handler | updateInvoice() |
+| Dark Mode | Client-side JavaScript | <script> section |
+| Duplicate Check | Validation function | submitInvoice() |
+| Timestamp Recording | Sheet operations | appendInvoice(), updateInvoiceRow() |
 
 ---
 
@@ -388,29 +301,29 @@ New Invoice Form
 ├─ Greens Cost (number input)
 └─ Invoice Credits (number input)
     ↓
-Client-side validation (HTML.gs)
+Client-side validation (JavaScript in Code.gs)
     ↓
-Submission to Code.gs
+Submission to Code.gs submitInvoice()
     ↓
-Server-side validation (FormValidation.gs)
+Server-side validation (validateAllFields in Code.gs)
     ↓
-Duplicate check (SheetOperations.gs)
+Duplicate check (in submitInvoice function)
     ↓
-Total calculation (FormValidation.gs)
+Total calculation (calculateTotal in Code.gs)
     ↓
-Generate ID (FormValidation.gs)
+Generate ID (Utilities.getUuid())
     ↓
-Get current timestamp (FormValidation.gs)
+Get current timestamp (new Date())
     ↓
-Append to Sheets (SheetOperations.gs)
+Append to Sheets (appendInvoice in Code.gs)
     ↓
 Format currency & dates in Sheets
     ↓
 Return success response to browser
     ↓
-Show toast notification (HTML.gs)
+Show toast notification (JavaScript in embedded HTML)
     ↓
-Clear form (HTML.gs)
+Clear form (JavaScript in embedded HTML)
     ↓
 Data now in Google Sheets! ✅
 ```
@@ -419,23 +332,23 @@ Data now in Google Sheets! ✅
 
 ## Customization Points
 
-| Aspect | File | Location |
-|--------|------|----------|
-| Colors | HTML.gs | CSS :root variables |
-| Form fields | HTML.gs | <form> section |
-| Validation rules | FormValidation.gs | Validate functions |
-| Column structure | SheetOperations.gs | COLUMN_HEADERS constant |
-| Sheet name | SheetOperations.gs | SHEET_NAME constant |
-| Business logic | Code.gs | Handler functions |
+| Aspect | Location in Code.gs |
+|--------|---------------------|
+| Colors | CSS :root variables in embedded HTML |
+| Form fields | HTML form section in doGet() |
+| Validation rules | validateAllFields() function |
+| Column structure | Column indices in sheet operations |
+| Sheet names | 'Invoices' and 'Vendors' strings |
+| Business logic | Handler functions (submitInvoice, updateInvoice, etc.) |
 
 ---
 
 ## Testing Coverage
 
-- Unit tests available via Apps Script Executions
-- Manual test data in DEPLOYMENT.md
+- Manual test procedures in TEST_PLAN.md
+- Test scenarios in DEPLOYMENT.md
 - Mock data in preview.html
-- Form validation tests in FormValidation.gs
+- Form validation in Code.gs
 
 ---
 
@@ -445,6 +358,7 @@ Data now in Google Sheets! ✅
 README.md ──────────→ DEPLOYMENT.md (how to deploy)
             ──────→ PROJECT_PLAN.md (technical specs)
             ──────→ QUICK_START.md (quick reference)
+            ──────→ DEFECTS.md (bug tracking)
 
 DEPLOYMENT.md ──────→ Step-by-step guide
              ──────→ Troubleshooting section
@@ -459,6 +373,12 @@ QUICK_START.md ─────→ Common tasks
 
 preview.html ────────→ Interactive UI demo
             ────────→ No backend needed
+
+DEFECTS.md ─────────→ Known issues
+          ─────────→ Bug fixes implemented
+
+ENHANCEMENT_IDEAS.md → Future features
+                    → Feature requests
 ```
 
 ---
@@ -475,5 +395,7 @@ All files are complete and production-ready. Choose your next step:
 ---
 
 **Created:** November 11, 2025  
+**Last Updated:** November 13, 2025  
 **Status:** ✅ Complete and Ready for Deployment  
-**Total Files:** 8 (4 code files + 4 documentation files)
+**Version:** 0.97
+**Core Files:** 1 (Code.gs - complete application)
