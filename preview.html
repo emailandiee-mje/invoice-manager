@@ -696,17 +696,31 @@
                                         <label for="flowerCost">Flower Cost</label>
                                         <div class="input-field currency-input">
                                             <input 
-                                                type="number" 
+                                                type="text" 
                                                 id="flowerCost" 
                                                 name="flowerCost"
                                                 placeholder="0.00"
-                                                min="0"
-                                                step="0.01"
-                                                value="0"
+                                                inputmode="decimal"
                                             >
                                         </div>
                                         <div class="field-hint">Cost of flowers</div>
                                         <div class="error-message hidden" id="flowerCostError"></div>
+                                    </div>
+
+                                    <!-- Botanicals Cost -->
+                                    <div class="form-group">
+                                        <label for="botanicalsCost">Botanicals Cost</label>
+                                        <div class="input-field currency-input">
+                                            <input 
+                                                type="text" 
+                                                id="botanicalsCost" 
+                                                name="botanicalsCost"
+                                                placeholder="0.00"
+                                                inputmode="decimal"
+                                            >
+                                        </div>
+                                        <div class="field-hint">Cost of plants and botanicals</div>
+                                        <div class="error-message hidden" id="botanicalsCostError"></div>
                                     </div>
 
                                     <!-- Supplies Cost -->
@@ -714,13 +728,11 @@
                                         <label for="suppliesCost">Supplies Cost</label>
                                         <div class="input-field currency-input">
                                             <input 
-                                                type="number" 
+                                                type="text" 
                                                 id="suppliesCost" 
                                                 name="suppliesCost"
                                                 placeholder="0.00"
-                                                min="0"
-                                                step="0.01"
-                                                value="0"
+                                                inputmode="decimal"
                                             >
                                         </div>
                                         <div class="field-hint">Cost of supplies</div>
@@ -732,17 +744,31 @@
                                         <label for="greensCost">Greens Cost</label>
                                         <div class="input-field currency-input">
                                             <input 
-                                                type="number" 
+                                                type="text" 
                                                 id="greensCost" 
                                                 name="greensCost"
                                                 placeholder="0.00"
-                                                min="0"
-                                                step="0.01"
-                                                value="0"
+                                                inputmode="decimal"
                                             >
                                         </div>
                                         <div class="field-hint">Cost of greens</div>
                                         <div class="error-message hidden" id="greensCostError"></div>
+                                    </div>
+
+                                    <!-- Miscellaneous Cost -->
+                                    <div class="form-group">
+                                        <label for="miscellaneousCost">Miscellaneous Cost</label>
+                                        <div class="input-field currency-input">
+                                            <input 
+                                                type="text" 
+                                                id="miscellaneousCost" 
+                                                name="miscellaneousCost"
+                                                placeholder="0.00"
+                                                inputmode="decimal"
+                                            >
+                                        </div>
+                                        <div class="field-hint">Delivery, gas, and other costs</div>
+                                        <div class="error-message hidden" id="miscellaneousCostError"></div>
                                     </div>
 
                                     <!-- Invoice Credits -->
@@ -750,13 +776,11 @@
                                         <label for="invoiceCredits">Invoice Credits</label>
                                         <div class="input-field currency-input">
                                             <input 
-                                                type="number" 
+                                                type="text" 
                                                 id="invoiceCredits" 
                                                 name="invoiceCredits"
                                                 placeholder="0.00"
-                                                min="0"
-                                                step="0.01"
-                                                value="0"
+                                                inputmode="decimal"
                                             >
                                         </div>
                                         <div class="field-hint">Credits to deduct</div>
@@ -879,10 +903,22 @@
                                             <label for="editFlowerCost">Flower Cost</label>
                                             <div class="input-field currency-input">
                                                 <input 
-                                                    type="number" 
-                                                    id="editFlowerCost" 
-                                                    min="0"
-                                                    step="0.01"
+                                                    type="text" 
+                                                    id="editFlowerCost"
+                                                    placeholder="0.00"
+                                                    inputmode="decimal"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="editBotanicalsCost">Botanicals Cost</label>
+                                            <div class="input-field currency-input">
+                                                <input 
+                                                    type="text" 
+                                                    id="editBotanicalsCost"
+                                                    placeholder="0.00"
+                                                    inputmode="decimal"
                                                 >
                                             </div>
                                         </div>
@@ -891,10 +927,10 @@
                                             <label for="editSuppliesCost">Supplies Cost</label>
                                             <div class="input-field currency-input">
                                                 <input 
-                                                    type="number" 
-                                                    id="editSuppliesCost" 
-                                                    min="0"
-                                                    step="0.01"
+                                                    type="text" 
+                                                    id="editSuppliesCost"
+                                                    placeholder="0.00"
+                                                    inputmode="decimal"
                                                 >
                                             </div>
                                         </div>
@@ -903,10 +939,22 @@
                                             <label for="editGreensCost">Greens Cost</label>
                                             <div class="input-field currency-input">
                                                 <input 
-                                                    type="number" 
-                                                    id="editGreensCost" 
-                                                    min="0"
-                                                    step="0.01"
+                                                    type="text" 
+                                                    id="editGreensCost"
+                                                    placeholder="0.00"
+                                                    inputmode="decimal"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="editMiscellaneousCost">Miscellaneous Cost</label>
+                                            <div class="input-field currency-input">
+                                                <input 
+                                                    type="text" 
+                                                    id="editMiscellaneousCost"
+                                                    placeholder="0.00"
+                                                    inputmode="decimal"
                                                 >
                                             </div>
                                         </div>
@@ -915,10 +963,10 @@
                                             <label for="editInvoiceCredits">Invoice Credits</label>
                                             <div class="input-field currency-input">
                                                 <input 
-                                                    type="number" 
-                                                    id="editInvoiceCredits" 
-                                                    min="0"
-                                                    step="0.01"
+                                                    type="text" 
+                                                    id="editInvoiceCredits"
+                                                    placeholder="0.00"
+                                                    inputmode="decimal"
                                                 >
                                             </div>
                                         </div>
@@ -971,8 +1019,10 @@
                 invoiceDate: '2025-11-01',
                 vendor: 'Green Thumb Florist',
                 flowerCost: 150.00,
+                botanicalsCost: 0.00,
                 suppliesCost: 45.50,
                 greensCost: 32.00,
+                miscellaneousCost: 0.00,
                 invoiceCredits: 10.00,
                 total: 217.50,
                 createdTimestamp: '2025-11-01 10:30:00'
@@ -983,8 +1033,10 @@
                 invoiceDate: '2025-11-05',
                 vendor: 'Botanical Bliss',
                 flowerCost: 200.00,
+                botanicalsCost: 0.00,
                 suppliesCost: 50.00,
                 greensCost: 40.00,
+                miscellaneousCost: 0.00,
                 invoiceCredits: 0.00,
                 total: 290.00,
                 createdTimestamp: '2025-11-05 14:15:00'
@@ -1037,12 +1089,12 @@
             document.getElementById('editInvoiceForm').addEventListener('submit', handleEditSubmit);
 
             // Real-time calculation
-            const costInputs = ['#flowerCost', '#suppliesCost', '#greensCost', '#invoiceCredits'];
+            const costInputs = ['#flowerCost', '#botanicalsCost', '#suppliesCost', '#greensCost', '#miscellaneousCost', '#invoiceCredits'];
             costInputs.forEach(selector => {
                 document.querySelector(selector).addEventListener('input', calculateTotal);
             });
 
-            const editCostInputs = ['#editFlowerCost', '#editSuppliesCost', '#editGreensCost', '#editInvoiceCredits'];
+            const editCostInputs = ['#editFlowerCost', '#editBotanicalsCost', '#editSuppliesCost', '#editGreensCost', '#editMiscellaneousCost', '#editInvoiceCredits'];
             editCostInputs.forEach(selector => {
                 document.querySelector(selector).addEventListener('input', calculateEditTotal);
             });
@@ -1146,21 +1198,25 @@
         // ============================================
         function calculateTotal() {
             const flowerCost = parseFloat(document.getElementById('flowerCost').value) || 0;
+            const botanicalsCost = parseFloat(document.getElementById('botanicalsCost').value) || 0;
             const suppliesCost = parseFloat(document.getElementById('suppliesCost').value) || 0;
             const greensCost = parseFloat(document.getElementById('greensCost').value) || 0;
+            const miscellaneousCost = parseFloat(document.getElementById('miscellaneousCost').value) || 0;
             const credits = parseFloat(document.getElementById('invoiceCredits').value) || 0;
 
-            const total = flowerCost + suppliesCost + greensCost - credits;
+            const total = flowerCost + botanicalsCost + suppliesCost + greensCost + miscellaneousCost - credits;
             displayTotal(total, 'totalDisplay');
         }
 
         function calculateEditTotal() {
             const flowerCost = parseFloat(document.getElementById('editFlowerCost').value) || 0;
+            const botanicalsCost = parseFloat(document.getElementById('editBotanicalsCost').value) || 0;
             const suppliesCost = parseFloat(document.getElementById('editSuppliesCost').value) || 0;
             const greensCost = parseFloat(document.getElementById('editGreensCost').value) || 0;
+            const miscellaneousCost = parseFloat(document.getElementById('editMiscellaneousCost').value) || 0;
             const credits = parseFloat(document.getElementById('editInvoiceCredits').value) || 0;
 
-            const total = flowerCost + suppliesCost + greensCost - credits;
+            const total = flowerCost + botanicalsCost + suppliesCost + greensCost + miscellaneousCost - credits;
             displayTotal(total, 'editTotalDisplay');
         }
 
@@ -1194,8 +1250,10 @@
                 invoiceNumber: document.getElementById('invoiceNumber').value.trim(),
                 invoiceDate: document.getElementById('invoiceDate').value,
                 flowerCost: parseFloat(document.getElementById('flowerCost').value) || 0,
+                botanicalsCost: parseFloat(document.getElementById('botanicalsCost').value) || 0,
                 suppliesCost: parseFloat(document.getElementById('suppliesCost').value) || 0,
                 greensCost: parseFloat(document.getElementById('greensCost').value) || 0,
+                miscellaneousCost: parseFloat(document.getElementById('miscellaneousCost').value) || 0,
                 invoiceCredits: parseFloat(document.getElementById('invoiceCredits').value) || 0
             };
 
@@ -1218,6 +1276,10 @@
                 document.getElementById('invoiceForm').reset();
                 calculateTotal();
                 setTodayDate();
+                
+                // Auto-focus invoice number field and scroll to top for next entry
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.getElementById('invoiceNumber').focus();
             }, 1500);
         }
 
@@ -1391,8 +1453,10 @@
             document.getElementById('editInvoiceNumber').value = invoice.invoiceNumber;
             document.getElementById('editInvoiceDate').value = invoice.invoiceDate;
             document.getElementById('editFlowerCost').value = invoice.flowerCost.toFixed(2);
+            document.getElementById('editBotanicalsCost').value = (invoice.botanicalsCost || 0).toFixed(2);
             document.getElementById('editSuppliesCost').value = invoice.suppliesCost.toFixed(2);
             document.getElementById('editGreensCost').value = invoice.greensCost.toFixed(2);
+            document.getElementById('editMiscellaneousCost').value = (invoice.miscellaneousCost || 0).toFixed(2);
             document.getElementById('editInvoiceCredits').value = invoice.invoiceCredits.toFixed(2);
 
             calculateEditTotal();

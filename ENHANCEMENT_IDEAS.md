@@ -41,6 +41,14 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 - **Status:** Completed
 - **Implemented:** November 13, 2025 (v0.98)
 
+### Auto-Focus Invoice Number After Submission
+- **Description:** After successfully submitting an invoice, automatically place cursor in the Invoice Number field and scroll window to top of form
+- **Benefit:** Streamlines batch invoice entry workflow - users can immediately start entering next invoice without manual clicking/scrolling
+- **Priority:** Medium
+- **Status:** Completed
+- **Implemented:** November 13, 2025
+- **Notes:** Particularly useful when entering multiple invoices in succession
+
 ---
 
 ## Proposed Enhancements
@@ -86,13 +94,6 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 - **Benefit:** Better state management, clearer UX expectations
 - **Priority:** Medium
 - **Status:** Needs discussion
-
-### 8. Auto-Focus Invoice Number After Submission
-- **Description:** After successfully submitting an invoice, automatically place cursor in the Invoice Number field and scroll window to top of form
-- **Benefit:** Streamlines batch invoice entry workflow - users can immediately start entering next invoice without manual clicking/scrolling
-- **Priority:** Medium
-- **Status:** Approved
-- **Notes:** Particularly useful when entering multiple invoices in succession
 
 ---
 

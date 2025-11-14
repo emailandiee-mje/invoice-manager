@@ -1,7 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
- * @version 0.99
+ * @version 0.991
  */
 
 /**
@@ -999,7 +999,7 @@ function doGet(e) {
             <\/div>
 
             <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
-                <p>© 2025 Bonnie's Invoice Manager | Version 0.99<\/p>
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.991<\/p>
                 <p class="mt-1 text-xs">Created lovingly by MJE AppWorks<\/p>
             <\/div>
         <\/div>
@@ -1422,6 +1422,10 @@ function doGet(e) {
                     calculateTotal();
                     setTodayDate();
                     loadVendors();
+                    
+                    // Auto-focus invoice number field and scroll to top for next entry
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    document.getElementById('invoiceNumber').focus();
                 } else {
                     showToast(result.message || 'An error occurred', 'error');
                 }
