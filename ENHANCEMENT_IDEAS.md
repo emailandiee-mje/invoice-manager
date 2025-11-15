@@ -101,6 +101,31 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 - **Priority:** Medium
 - **Status:** Needs discussion with customer/stakeholders to understand best field placement
 
+### 9. Event Type Checkboxes
+- **Description:** Add three checkboxes on Create Invoice and Edit Invoice screens to categorize orders: Wedding, Funeral, and Holiday
+- **Benefit:** Enable event-type tracking for business analysis, seasonal trends, and reporting (e.g., "How much of our business comes from weddings vs. funerals?")
+- **Priority:** High
+- **Status:** Approved - Customer requested
+- **Implementation Notes:**
+  - Add three checkbox fields: "Wedding", "Funeral", "Holiday"
+  - Multiple checkboxes can be selected (e.g., a holiday wedding)
+  - Store as boolean/checkbox columns in the sheet
+  - Include in both Create and Edit invoice screens
+  - Optional fields (can be left unchecked)
+
+### 10. Real-Time Duplicate Invoice Number Detection
+- **Description:** Check for duplicate invoice numbers immediately when user leaves the Invoice Number field (onBlur event), rather than waiting until form submission
+- **Benefit:** Provides instant feedback to user before they waste time entering entire invoice. Prevents frustration of completing form only to discover duplicate at submit time
+- **Priority:** High
+- **Status:** Approved - Customer requested
+- **Performance Impact:** Minimal (<1 second even with thousands of invoices)
+- **Implementation Notes:**
+  - Add onBlur event handler to Invoice Number field
+  - Display warning icon/message near field if duplicate detected
+  - Allow user to proceed if intentional (non-blocking warning)
+  - Keep existing submit-time validation as safety net
+  - Consider adding "View Existing Invoice" button to navigate to duplicate
+
 ---
 
 ## How to Use This Document
@@ -137,4 +162,4 @@ When implementing enhancements, consider:
 
 ---
 
-**Last Reviewed:** November 13, 2025
+**Last Reviewed:** November 15, 2025
