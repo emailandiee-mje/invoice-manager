@@ -280,12 +280,12 @@ QUARTER(Invoice Date)
 **3. c_Month_Year**
 *For sorting and displaying trends over time.*
 ```
-FORMAT_DATE("%Y-%m", Invoice Date)
+FORMAT_DATETIME("%Y-%m", Invoice Date)
 ```
 
 **4. c_Month_Name**
 ```
-FORMAT_DATE("%B", Invoice Date)
+FORMAT_DATETIME("%B", Invoice Date)
 ```
 
 **5. c_Week_of_Year**
@@ -295,7 +295,7 @@ WEEK(Invoice Date)
 
 **6. c_Day_of_Week**
 ```
-FORMAT_DATE("%A", Invoice Date)
+FORMAT_DATETIME("%A", Invoice Date)
 ```
 
 **7. c_Invoice_Count**
@@ -314,58 +314,159 @@ Flower Cost / Total Due
 
 #### Part B: Create Blend-Specific Fields in Your Charts
 
-Now, for the core profit metrics that combine `Invoice` costs with `Markup` multipliers. These **must be created inside each chart** that uses your blended data.
+Now, for the core profit metrics that combine `Invoice` costs with `Markup` multipliers. **These CANNOT be created in the blend editor itself.** According to Looker Studio documentation:
 
-**How to Add Chart-Level Calculated Fields:**
+> "When you're creating calculated fields in a table in the blend, the formula can only reference fields found in that table. To create a calculated field based on fields from different data sources, add those fields to their respective tables in the blend, then create a chart-specific calculated field."
 
-1.  Add a new chart (e.g., a Table or Scorecard) to your report.
-2.  For the chart's `Data Source`, select your **"Invoices with Markups"** blend.
-3.  In the **Data Panel** on the right, click **Add a metric** (or **Add a dimension**), then click **CREATE FIELD**.
-4.  Enter the field name and formula from the list below.
+**CRITICAL STEPS - You Must Do This In Order:**
 
-**⚠️ Important:** These fields only exist within the chart where you create them. To reuse them, **copy the chart** (Ctrl+C) and **paste it** (Ctrl+V), then change the chart type as needed. This copies the fields with it.
+**Step 1: First, add ALL base fields to your blend**
+
+Before creating any calculated fields, you need to ensure all the base fields from both data sources are included in your blend:
+
+1. **Edit your "Invoices with Markups" blend** (Resource → Manage blended data → Click EDIT on your blend)
+2. **From the Invoices table (left side), ensure these fields are included:**
+   - Invoice Date
+   - Vendor
+   - Flower Cost
+   - Botanicals Cost
+   - Supplies Cost
+   - Greens Cost
+   - Miscellaneous Cost
+   - Invoice Credits
+   - Total Due
+   - Invoice Number (and any other fields you want to display)
+3. **From the Markups table (right side), ensure these fields are included:**
+   - Flowers Markup
+   - Botanicals Markup
+   - Supplies Markup
+   - Greens Markup
+   - Miscellaneous Markup
+4. **Click SAVE** to save the blend
+
+**Step 2: Create a chart using the blended data source**
+
+1. Add a new chart to your report (e.g., a **Table** chart works best for building and testing)
+2. For the chart's **Data Source**, select your **"Invoices with Markups"** blend
+3. Add some basic dimensions (like Invoice Date, Vendor) to the chart so you can see the data
+
+**Step 3: Now create chart-level calculated fields**
+
+With ALL base fields available in the blend, you can now create calculated fields in the chart:
+
+1. In the chart's **Data Panel** (right side), click **Add a metric**
+2. At the bottom of the dropdown, click **CREATE FIELD**
+3. Enter the field name and formula
+4. Click **Save**
+5. The field will be added to your chart
+
+**Step-by-Step Workflow for Building Dependent Fields:**
+
+Create fields in this order (since some depend on others):
+
+**Round 1: Create base retail price fields**
+- `c_Retail_Price_Flowers`
+- `c_Retail_Price_Botanicals`
+- `c_Retail_Price_Supplies`
+- `c_Retail_Price_Greens`
+- `c_Retail_Price_Misc`
+
+**Round 2: Create fields that combine the base fields**
+- `c_Wholesale_Cost`
+- `c_Total_Retail_Price` (uses the 5 retail price fields above)
+- `c_Final_Retail_Price` (uses c_Total_Retail_Price)
+
+**Round 3: Create profit calculations**
+- `c_Total_Profit` (uses c_Final_Retail_Price and c_Wholesale_Cost)
+- `c_Profit_Margin_Percent` (uses c_Total_Profit and c_Final_Retail_Price)
+
+**⚠️ CRITICAL: Referencing Fields in Chart-Level Calculated Fields**
+
+When referencing fields in your chart-level calculated field formulas:
+
+**For fields from your blend (original Google Sheets fields):**
+- Reference them **exactly as they appear in the field list**
+- Example: `Flower Cost`, `Flowers Markup`, `Invoice Credits`
+
+**For other chart-level calculated fields you've already created:**
+- You **cannot reference them** in Looker Studio chart-level calculated fields!
+- According to the documentation: *"You can't reference other chart-specific calculated fields in your formula, even if those fields are defined in the same chart."*
+
+**SOLUTION: Create Complete Formulas Using Only Base Fields**
+
+Since you cannot reference other chart-level calculated fields, **each formula must be self-contained** and reference only the base fields from your blend (the fields that come directly from your Google Sheets).
 
 **Core Business Metrics (Create at Chart Level):**
 
+Create these calculated fields in your chart. Each formula references ONLY the base fields from the blend:
+
 **1. c_Wholesale_Cost**
-*This is simply the total amount from the invoice.*
+*This is the total cost from the vendor invoice.*
 ```
 Total Due
 ```
 
-**2. c_Retail_Price_Flowers**
-*Calculates the retail price based on the markup.*
+**2. c_Total_Retail_Price**
+*The total price after all markups are applied (before credits). This calculates all category retail prices in one formula.*
 ```
-Flower Cost * Flowers Markup
-```
-*(Repeat for Botanicals, Supplies, Greens, and Miscellaneous)*
-
-**3. c_Total_Retail_Price**
-*The total price after all markups are applied, before credits. You must create the individual retail price fields first.*
-```
-c_Retail_Price_Flowers + c_Retail_Price_Botanicals + c_Retail_Price_Supplies + c_Retail_Price_Greens + c_Retail_Price_Miscellaneous
+(Flower Cost * Flowers Markup) + (Botanicals Cost * Botanicals Markup) + (Supplies Cost * Supplies Markup) + (Greens Cost * Greens Markup) + (Miscellaneous Cost * Miscellaneous Markup)
 ```
 
-**4. c_Final_Retail_Price**
-*The final price after invoice-level credits are applied.*
+**3. c_Final_Retail_Price**
+*The final retail price after invoice-level credits are applied.*
 ```
-c_Total_Retail_Price - Invoice Credits
+(Flower Cost * Flowers Markup) + (Botanicals Cost * Botanicals Markup) + (Supplies Cost * Supplies Markup) + (Greens Cost * Greens Markup) + (Miscellaneous Cost * Miscellaneous Markup) - Invoice Credits
 ```
 
-**5. c_Total_Profit**
+**4. c_Total_Profit**
 *The difference between the final retail price and the wholesale cost.*
 ```
-c_Final_Retail_Price - c_Wholesale_Cost
+((Flower Cost * Flowers Markup) + (Botanicals Cost * Botanicals Markup) + (Supplies Cost * Supplies Markup) + (Greens Cost * Greens Markup) + (Miscellaneous Cost * Miscellaneous Markup) - Invoice Credits) - Total Due
 ```
 
-**6. c_Profit_Margin_Percent**
+**5. c_Profit_Margin_Percent**
 *The percentage of profit relative to the final retail price. After creating, edit the field to set its type to `Numeric` > `Percent`.*
 ```
 CASE
-  WHEN c_Final_Retail_Price = 0 THEN 0
-  ELSE c_Total_Profit / c_Final_Retail_Price
+  WHEN ((Flower Cost * Flowers Markup) + (Botanicals Cost * Botanicals Markup) + (Supplies Cost * Supplies Markup) + (Greens Cost * Greens Markup) + (Miscellaneous Cost * Miscellaneous Markup) - Invoice Credits) = 0 THEN 0
+  ELSE (((Flower Cost * Flowers Markup) + (Botanicals Cost * Botanicals Markup) + (Supplies Cost * Supplies Markup) + (Greens Cost * Greens Markup) + (Miscellaneous Cost * Miscellaneous Markup) - Invoice Credits) - Total Due) / ((Flower Cost * Flowers Markup) + (Botanicals Cost * Botanicals Markup) + (Supplies Cost * Supplies Markup) + (Greens Cost * Greens Markup) + (Miscellaneous Cost * Miscellaneous Markup) - Invoice Credits)
 END
 ```
+
+**Optional: Individual Category Retail Prices (if you want to display them separately)**
+
+If you want to show retail prices by category in your charts, create these individual fields:
+
+**c_Retail_Price_Flowers**
+```
+Flower Cost * Flowers Markup
+```
+
+**c_Retail_Price_Botanicals**
+```
+Botanicals Cost * Botanicals Markup
+```
+
+**c_Retail_Price_Supplies**
+```
+Supplies Cost * Supplies Markup
+```
+
+**c_Retail_Price_Greens**
+```
+Greens Cost * Greens Markup
+```
+
+**c_Retail_Price_Misc**
+```
+Miscellaneous Cost * Miscellaneous Markup
+```
+
+**⚠️ Important Notes:**
+- These chart-level calculated fields only exist within the specific chart where you create them
+- To reuse these fields in other charts, **copy the entire chart** (Ctrl+C) and **paste it** (Ctrl+V), then change the chart type and configuration as needed. This copies all the calculated fields with it.
+- Alternatively, create all your calculated fields in one "master" table chart, then copy that chart whenever you need to create a new visualization
+- Yes, the formulas are long and repetitive - this is a Looker Studio limitation for blended data sources
 
 ---
 
