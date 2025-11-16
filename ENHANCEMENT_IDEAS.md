@@ -88,6 +88,25 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
   - Matches validation pattern from create form
   - Prevents accidental removal of vendor during edits
 
+### Arrow Key Navigation in Vendor Field
+- **Description:** Allow users to navigate the vendor dropdown using arrow keys (up/down)
+- **Benefit:** Improved keyboard accessibility and faster data entry
+- **Priority:** High
+- **Status:** Completed
+- **Implemented:** November 15, 2025 (v0.999)
+- **Implementation Details:**
+  - **Enter Key:** Selects the currently highlighted item and closes dropdown
+  - **Escape Key:** Closes dropdown without selecting
+  - **Tab Key:** Selects currently highlighted item (if any) and moves focus to next field
+  - **Arrow Up/Down:** Navigate through visible dropdown items
+  - **Wrapping Behavior:** Up arrow on first item wraps to last item; down arrow on last item wraps to first item
+  - **Filtered Lists:** Arrow keys navigate only through visible/filtered items
+  - **Keyboard vs Mouse:** Keyboard selection takes precedence over mouse hover states (distinct visual indicator)
+  - **Focus Management:** Focus remains in vendor field during navigation; Tab exits field
+  - **Visual Feedback:** Keyboard-highlighted item has distinct outline and stronger background color
+  - **Scroll Behavior:** Highlighted item automatically scrolls into view in dropdown list
+  - **State Management:** Highlight resets on blur and when filtering list
+
 ---
 
 ## Proposed Enhancements
@@ -98,37 +117,31 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 - **Priority:** Low
 - **Status:** Under consideration
 
-### 2. Arrow Key Navigation in Vendor Field
-- **Description:** Allow users to navigate the vendor dropdown using arrow keys (up/down)
-- **Benefit:** Improved keyboard accessibility and faster data entry
-- **Priority:** High
-- **Status:** Under consideration
-
-### 3. Consolidate Search Buttons
+### 2. Consolidate Search Buttons
 - **Description:** Currently there are two separate search buttons (by number and by date). Consider consolidating into one search interface
 - **Benefit:** Cleaner UI, less confusion
 - **Priority:** Low
 - **Status:** Under consideration
 
-### 4. Search by Vendor
+### 3. Search by Vendor
 - **Description:** Add ability to search for all invoices from a specific vendor
 - **Benefit:** Useful for vendor-specific reporting and analysis
 - **Priority:** Medium
 - **Status:** Under consideration
 
-### 5. Clear Search Results on Tab Switch
+### 4. Clear Search Results on Tab Switch
 - **Description:** Decide whether switching between tabs should clear search results, and whether a dedicated "Clear" button is needed
 - **Benefit:** Better state management, clearer UX expectations
 - **Priority:** Medium
 - **Status:** Needs discussion with customer/stakeholders
 
-### 6. Add Freeform Comment Field
+### 5. Add Freeform Comment Field
 - **Description:** Add freeform comment field to Create New Invoice and Edit Invoice screens
 - **Benefit:** Provide context for purchases
 - **Priority:** Medium
 - **Status:** Needs discussion with customer/stakeholders to understand best field placement
 
-### 7. Event Type Checkboxes
+### 6. Event Type Checkboxes
 - **Description:** Add three checkboxes on Create Invoice and Edit Invoice screens to categorize orders: Wedding, Funeral, and Holiday
 - **Benefit:** Enable event-type tracking for business analysis, seasonal trends, and reporting (e.g., "How much of our business comes from weddings vs. funerals?")
 - **Priority:** High

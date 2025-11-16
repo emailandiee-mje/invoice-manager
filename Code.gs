@@ -1,7 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
- * @version 0.998 - Require Vendor Field on Edit
+ * @version 0.999 - Arrow Key Navigation in Vendor Field
  */
 
 /**
@@ -166,15 +166,25 @@ function doGet(e) {
             color: #e5e7eb;
         }
 
-        .vendor-dropdown li:hover,
-        .vendor-dropdown li.selected {
-            background: rgba(236, 72, 153, 0.1);
+        .vendor-dropdown li:hover {
+            background: rgba(236, 72, 153, 0.05);
             color: var(--primary);
         }
 
-        .dark-mode .vendor-dropdown li:hover,
-        .dark-mode .vendor-dropdown li.selected {
-            background: rgba(236, 72, 153, 0.2);
+        .vendor-dropdown li.keyboard-highlighted {
+            background: rgba(236, 72, 153, 0.15);
+            color: var(--primary);
+            outline: 2px solid var(--primary);
+            outline-offset: -2px;
+        }
+
+        .dark-mode .vendor-dropdown li:hover {
+            background: rgba(236, 72, 153, 0.1);
+        }
+
+        .dark-mode .vendor-dropdown li.keyboard-highlighted {
+            background: rgba(236, 72, 153, 0.25);
+            outline-color: var(--primary);
         }
 
         .vendor-dropdown li.add-new {
@@ -1037,7 +1047,7 @@ function doGet(e) {
             <\/div>
 
             <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
-                <p>© 2025 Bonnie's Invoice Manager | Version 0.998<\/p>
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.999<\/p>
                 <p class="mt-1 text-xs">Created lovingly by MJE AppWorks<\/p>
             <\/div>
         <\/div>
@@ -1049,7 +1059,8 @@ function doGet(e) {
             editingInvoiceId: null,
             searchResults: [],
             vendors: [],
-            isDarkMode: localStorage.getItem('darkMode') === 'true'
+            isDarkMode: localStorage.getItem('darkMode') === 'true',
+            highlightedVendorIndex: -1
         };
 
         document.addEventListener('DOMContentLoaded', initApp);
@@ -1116,8 +1127,13 @@ function doGet(e) {
             vendorInput.addEventListener('blur', () => {
                 setTimeout(() => {
                     vendorList.classList.add('hidden');
+                    state.highlightedVendorIndex = -1;
+                    clearVendorHighlight();
                 }, 200);
             });
+
+            // Keyboard navigation for vendor dropdown
+            vendorInput.addEventListener('keydown', handleVendorKeydown);
 
             const editVendorInput = document.getElementById('editVendorSelect');
             const editVendorList = document.getElementById('editVendorList');
@@ -1209,6 +1225,96 @@ function doGet(e) {
                 if (searchTerm.length > 0) {
                     vendorList.classList.remove('hidden');
                 }
+            }
+
+            // Reset keyboard highlight when filtering
+            state.highlightedVendorIndex = -1;
+            clearVendorHighlight();
+        }
+
+        function getVisibleVendorItems() {
+            const vendorList = document.getElementById('vendorList');
+            const allItems = Array.from(vendorList.querySelectorAll('li'));
+            return allItems.filter(item => item.style.display !== 'none');
+        }
+
+        function updateVendorHighlight() {
+            clearVendorHighlight();
+            const visibleItems = getVisibleVendorItems();
+            if (state.highlightedVendorIndex >= 0 && state.highlightedVendorIndex < visibleItems.length) {
+                const item = visibleItems[state.highlightedVendorIndex];
+                item.classList.add('keyboard-highlighted');
+                // Scroll into view
+                item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+        }
+
+        function clearVendorHighlight() {
+            const vendorList = document.getElementById('vendorList');
+            vendorList.querySelectorAll('li.keyboard-highlighted').forEach(item => {
+                item.classList.remove('keyboard-highlighted');
+            });
+        }
+
+        function selectHighlightedVendor() {
+            const visibleItems = getVisibleVendorItems();
+            if (state.highlightedVendorIndex >= 0 && state.highlightedVendorIndex < visibleItems.length) {
+                const item = visibleItems[state.highlightedVendorIndex];
+                document.getElementById('vendorSelect').value = item.textContent;
+                document.getElementById('vendorList').classList.add('hidden');
+                state.highlightedVendorIndex = -1;
+                clearVendorHighlight();
+            }
+        }
+
+        function handleVendorKeydown(e) {
+            const vendorList = document.getElementById('vendorList');
+            const isDropdownVisible = !vendorList.classList.contains('hidden');
+            
+            if (!isDropdownVisible) return;
+
+            const visibleItems = getVisibleVendorItems();
+            if (visibleItems.length === 0) return;
+
+            switch(e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    state.highlightedVendorIndex++;
+                    // Wrap to beginning if at end
+                    if (state.highlightedVendorIndex >= visibleItems.length) {
+                        state.highlightedVendorIndex = 0;
+                    }
+                    updateVendorHighlight();
+                    break;
+
+                case 'ArrowUp':
+                    e.preventDefault();
+                    state.highlightedVendorIndex--;
+                    // Wrap to end if at beginning
+                    if (state.highlightedVendorIndex < 0) {
+                        state.highlightedVendorIndex = visibleItems.length - 1;
+                    }
+                    updateVendorHighlight();
+                    break;
+
+                case 'Enter':
+                    e.preventDefault();
+                    selectHighlightedVendor();
+                    break;
+
+                case 'Escape':
+                    e.preventDefault();
+                    vendorList.classList.add('hidden');
+                    state.highlightedVendorIndex = -1;
+                    clearVendorHighlight();
+                    break;
+
+                case 'Tab':
+                    // Allow default tab behavior but select if highlighted
+                    if (state.highlightedVendorIndex >= 0) {
+                        selectHighlightedVendor();
+                    }
+                    break;
             }
         }
 
