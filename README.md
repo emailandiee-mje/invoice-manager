@@ -79,7 +79,6 @@ _BonniesApp/
 ├── TEST_PLAN.md                # Testing procedures
 ├── DEFECTS.md                  # Bug tracking and resolutions
 ├── ENHANCEMENT_IDEAS.md        # Feature roadmap
-├── LOOKER_STUDIO_GUIDE.md      # Dashboard integration guide
 ├── CONTRIBUTING.md             # Contribution guidelines
 ├── SECURITY.md                 # Security policy
 └── LICENSE                     # MIT License

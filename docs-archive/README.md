@@ -11,6 +11,9 @@ These files were used for initial GitHub repository setup and are no longer need
 - `FILE_STRUCTURE.md` - Project structure documentation (information now in README.md)
 - `QUICK_START.md` - Quick reference guide (consolidated into DEPLOYMENT.md)
 
+### Integration Guides (Archived Nov 2025)
+- `LOOKER_STUDIO_GUIDE.md` - Looker Studio integration guide (contained inaccurate information; basic integration steps now in DEPLOYMENT.md)
+
 ### Bug Fix Documentation (Nov 2025)
 These files document the troubleshooting and resolution of a search function serialization issue:
 - `QUICK_FIX.md` - Quick reference for search function fix
