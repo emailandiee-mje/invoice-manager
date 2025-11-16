@@ -1,6 +1,6 @@
 # Enhancement Ideas & Feature Requests
 
-**Created:** November 13, 2025  
+**Created:** November 13, 2025
 **Source:** Testing feedback and user suggestions
 
 ---
@@ -63,6 +63,31 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
   - Keeps existing submit-time validation as safety net
   - Server-side function `checkInvoiceNumberExists()` performs efficient lookup
 
+### Display Edited Invoice After Update
+- **Description:** After editing an invoice, automatically display the updated invoice details by triggering a search for that invoice
+- **Benefit:** Immediate visual confirmation of changes, improved UX flow, eliminates need to manually search for the invoice again
+- **Priority:** Medium-High
+- **Status:** Completed
+- **Implemented:** November 15, 2025 (v0.997)
+- **Implementation Details:**
+  - After successful update, auto-populate search field with invoice number
+  - Automatically trigger search to display updated invoice
+  - Close edit form and show results for immediate confirmation
+  - Reuses existing search functionality for consistency
+
+### Require Vendor Field on Edit
+- **Description:** Make vendor field required when editing invoices to match create form validation and ensure data integrity
+- **Benefit:** Consistent validation rules, prevents empty vendor fields, maintains data quality
+- **Priority:** High
+- **Status:** Completed
+- **Implemented:** November 15, 2025 (v0.998)
+- **Client Confirmation:** Client confirmed vendor is required for data integrity purposes
+- **Implementation Details:**
+  - Added vendor validation to edit form submission
+  - Displays clear error message if vendor is empty
+  - Matches validation pattern from create form
+  - Prevents accidental removal of vendor during edits
+
 ---
 
 ## Proposed Enhancements
@@ -76,7 +101,7 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 ### 2. Arrow Key Navigation in Vendor Field
 - **Description:** Allow users to navigate the vendor dropdown using arrow keys (up/down)
 - **Benefit:** Improved keyboard accessibility and faster data entry
-- **Priority:** Medium
+- **Priority:** High
 - **Status:** Under consideration
 
 ### 3. Consolidate Search Buttons
@@ -91,31 +116,19 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 - **Priority:** Medium
 - **Status:** Under consideration
 
-### 5. Display Edited Invoice After Update
-- **Description:** After editing an invoice, display the updated invoice details or return to a search showing just that invoice
-- **Benefit:** Immediate confirmation of changes, better UX flow
-- **Priority:** Low
-- **Status:** Under consideration
-
-### 6. Review Vendor Optional Rule on Edit
-- **Description:** Currently vendor is optional when editing (line 218 of TEST_PLAN.md). Verify if this is the desired behavior
-- **Benefit:** Data consistency and integrity
-- **Priority:** High
-- **Status:** Needs review
-
-### 7. Clear Search Results on Tab Switch
+### 5. Clear Search Results on Tab Switch
 - **Description:** Decide whether switching between tabs should clear search results, and whether a dedicated "Clear" button is needed
 - **Benefit:** Better state management, clearer UX expectations
 - **Priority:** Medium
 - **Status:** Needs discussion with customer/stakeholders
 
-### 8. Add Freeform Comment Field
+### 6. Add Freeform Comment Field
 - **Description:** Add freeform comment field to Create New Invoice and Edit Invoice screens
 - **Benefit:** Provide context for purchases
 - **Priority:** Medium
 - **Status:** Needs discussion with customer/stakeholders to understand best field placement
 
-### 9. Event Type Checkboxes
+### 7. Event Type Checkboxes
 - **Description:** Add three checkboxes on Create Invoice and Edit Invoice screens to categorize orders: Wedding, Funeral, and Holiday
 - **Benefit:** Enable event-type tracking for business analysis, seasonal trends, and reporting (e.g., "How much of our business comes from weddings vs. funerals?")
 - **Priority:** High

@@ -1,7 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
- * @version 0.997 - Display Edited Invoice After Update
+ * @version 0.998 - Require Vendor Field on Edit
  */
 
 /**
@@ -1037,7 +1037,7 @@ function doGet(e) {
             <\/div>
 
             <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
-                <p>© 2025 Bonnie's Invoice Manager | Version 0.997<\/p>
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.998<\/p>
                 <p class="mt-1 text-xs">Created lovingly by MJE AppWorks<\/p>
             <\/div>
         <\/div>
@@ -1631,6 +1631,12 @@ function doGet(e) {
                 miscellaneousCost: parseFloat(document.getElementById('editMiscellaneousCost').value) || 0,
                 invoiceCredits: parseFloat(document.getElementById('editInvoiceCredits').value) || 0
             };
+
+            // Validate vendor is required
+            if (!updatedData.vendor || updatedData.vendor === '') {
+                showToast('Vendor is required', 'error');
+                return false;
+            }
 
             // Validate invoice date
             if (!updatedData.invoiceDate || updatedData.invoiceDate === '') {
