@@ -1,7 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
- * @version 0.995 - Real-Time Duplicate Detection
+ * @version 0.997 - Display Edited Invoice After Update
  */
 
 /**
@@ -1037,7 +1037,7 @@ function doGet(e) {
             <\/div>
 
             <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
-                <p>© 2025 Bonnie's Invoice Manager | Version 0.995<\/p>
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.997<\/p>
                 <p class="mt-1 text-xs">Created lovingly by MJE AppWorks<\/p>
             <\/div>
         <\/div>
@@ -1671,9 +1671,23 @@ function doGet(e) {
                     showLoading(false);
                     if (result.success) {
                         showToast('Invoice updated successfully!', 'success');
+                        
+                        // Auto-populate search with the updated invoice number and display it
+                        const invoiceNumber = document.getElementById('editInvoiceNumber').value;
+                        document.getElementById('searchInvoiceNumber').value = invoiceNumber;
+                        
+                        // Close edit form first
                         cancelEdit();
-                        document.getElementById('searchInvoiceNumber').value = '';
-                        document.getElementById('searchResults').innerHTML = '';
+                        
+                        // Trigger search to display the updated invoice
+                        google.script.run
+                            .withSuccessHandler(function(results) {
+                                displaySearchResults(results);
+                            })
+                            .withFailureHandler(function(error) {
+                                showToast('Could not display updated invoice: ' + error, 'warning');
+                            })
+                            .searchInvoices('number', invoiceNumber);
                     } else {
                         showToast(result.message || 'An error occurred', 'error');
                     }
