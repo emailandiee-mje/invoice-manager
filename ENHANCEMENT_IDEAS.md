@@ -49,6 +49,20 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 - **Implemented:** November 13, 2025
 - **Notes:** Particularly useful when entering multiple invoices in succession
 
+### Real-Time Duplicate Invoice Number Detection
+- **Description:** Check for duplicate invoice numbers immediately when user leaves the Invoice Number field (onBlur event), rather than waiting until form submission
+- **Benefit:** Provides instant feedback to user before they waste time entering entire invoice. Prevents frustration of completing form only to discover duplicate at submit time
+- **Priority:** High
+- **Status:** Completed
+- **Implemented:** November 15, 2025 (v0.994)
+- **Performance Impact:** Minimal (<1 second even with thousands of invoices)
+- **Implementation Details:**
+  - Added onBlur event handler to Invoice Number field
+  - Displays warning icon/message near field if duplicate detected
+  - Non-blocking warning allows user to proceed if intentional
+  - Keeps existing submit-time validation as safety net
+  - Server-side function `checkInvoiceNumberExists()` performs efficient lookup
+
 ---
 
 ## Proposed Enhancements
@@ -112,19 +126,6 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
   - Store as boolean/checkbox columns in the sheet
   - Include in both Create and Edit invoice screens
   - Optional fields (can be left unchecked)
-
-### 10. Real-Time Duplicate Invoice Number Detection
-- **Description:** Check for duplicate invoice numbers immediately when user leaves the Invoice Number field (onBlur event), rather than waiting until form submission
-- **Benefit:** Provides instant feedback to user before they waste time entering entire invoice. Prevents frustration of completing form only to discover duplicate at submit time
-- **Priority:** High
-- **Status:** Approved - Customer requested
-- **Performance Impact:** Minimal (<1 second even with thousands of invoices)
-- **Implementation Notes:**
-  - Add onBlur event handler to Invoice Number field
-  - Display warning icon/message near field if duplicate detected
-  - Allow user to proceed if intentional (non-blocking warning)
-  - Keep existing submit-time validation as safety net
-  - Consider adding "View Existing Invoice" button to navigate to duplicate
 
 ---
 

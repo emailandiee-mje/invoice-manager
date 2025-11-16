@@ -1,7 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
- * @version 0.991
+ * @version 0.995 - Real-Time Duplicate Detection
  */
 
 /**
@@ -542,6 +542,38 @@ function doGet(e) {
             color: #6b7280;
         }
 
+        .duplicate-warning {
+            display: none;
+            margin-top: 8px;
+            padding: 12px 16px;
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+            border-radius: 8px;
+            font-size: 14px;
+            color: #92400e;
+            animation: slideIn 0.3s ease;
+        }
+
+        .dark-mode .duplicate-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        .duplicate-warning.show {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .duplicate-warning i {
+            color: var(--warning);
+            font-size: 18px;
+        }
+
+        .duplicate-warning .warning-text {
+            flex: 1;
+        }
+
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -657,6 +689,12 @@ function doGet(e) {
                                         >
                                     <\/div>
                                     <div class="field-hint">Unique identifier for this invoice<\/div>
+                                    <div class="duplicate-warning" id="duplicateWarning">
+                                        <i class="fas fa-exclamation-triangle"><\/i>
+                                        <div class="warning-text">
+                                            <strong>Warning:<\/strong> An invoice with this number already exists.
+                                        <\/div>
+                                    <\/div>
                                     <div class="error-message hidden" id="invoiceNumberError"><\/div>
                                 <\/div>
 
@@ -726,7 +764,7 @@ function doGet(e) {
                                                 inputmode="decimal"
                                             >
                                         <\/div>
-                                        <div class="field-hint">Cost of plants and botanicals<\/div>
+                                        <div class="field-hint">Cost of plants, botanicals, and tropicals<\/div>
                                         <div class="error-message hidden" id="botanicalsCostError"><\/div>
                                     <\/div>
 
@@ -741,7 +779,7 @@ function doGet(e) {
                                                 inputmode="decimal"
                                             >
                                         <\/div>
-                                        <div class="field-hint">Cost of supplies<\/div>
+                                        <div class="field-hint">Cost of hard goods and supplies<\/div>
                                         <div class="error-message hidden" id="suppliesCostError"><\/div>
                                     <\/div>
 
@@ -999,7 +1037,7 @@ function doGet(e) {
             <\/div>
 
             <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
-                <p>© 2025 Bonnie's Invoice Manager | Version 0.991<\/p>
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.995<\/p>
                 <p class="mt-1 text-xs">Created lovingly by MJE AppWorks<\/p>
             <\/div>
         <\/div>
@@ -1112,6 +1150,11 @@ function doGet(e) {
             document.getElementById('searchByNumberBtn').addEventListener('click', searchByNumber);
             document.getElementById('searchByDateBtn').addEventListener('click', searchByDate);
             document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
+
+            // Real-time duplicate detection on invoice number field
+            const invoiceNumberField = document.getElementById('invoiceNumber');
+            invoiceNumberField.addEventListener('blur', checkDuplicateInvoiceNumber);
+            invoiceNumberField.addEventListener('input', handleInvoiceNumberInput);
 
             setTodayDate();
         }
@@ -1697,6 +1740,61 @@ function doGet(e) {
                 overlay.classList.remove('active');
             }
         }
+
+        function checkDuplicateInvoiceNumber() {
+            const invoiceNumberInput = document.getElementById('invoiceNumber');
+            const duplicateWarning = document.getElementById('duplicateWarning');
+            const invoiceNumber = invoiceNumberInput.value.trim();
+
+            // Clear warning if field is empty
+            if (!invoiceNumber) {
+                duplicateWarning.classList.remove('show');
+                return;
+            }
+
+            // Call server to check for duplicate
+            google.script.run
+                .withSuccessHandler(function(exists) {
+                    if (exists) {
+                        duplicateWarning.classList.add('show');
+                    } else {
+                        duplicateWarning.classList.remove('show');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error('Error checking duplicate:', error);
+                    // Don't show warning on error
+                    duplicateWarning.classList.remove('show');
+                })
+                .checkInvoiceNumberExists(invoiceNumber);
+        }
+
+        function handleInvoiceNumberInput() {
+            const invoiceNumberInput = document.getElementById('invoiceNumber');
+            const duplicateWarning = document.getElementById('duplicateWarning');
+            const invoiceNumber = invoiceNumberInput.value.trim();
+
+            // Only clear warning if field becomes empty or value changes
+            // Re-check for duplicate as user types
+            if (!invoiceNumber) {
+                duplicateWarning.classList.remove('show');
+                return;
+            }
+
+            // Check for duplicate in real-time as they type
+            google.script.run
+                .withSuccessHandler(function(exists) {
+                    if (exists) {
+                        duplicateWarning.classList.add('show');
+                    } else {
+                        duplicateWarning.classList.remove('show');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    console.error('Error checking duplicate:', error);
+                })
+                .checkInvoiceNumberExists(invoiceNumber);
+        }
     <\/script>
 <\/body>
 <\/html>
@@ -2235,6 +2333,45 @@ function checkForDuplicateInvoice(invoiceNumber, invoiceDate) {
   }
 }
 
+/**
+ * checkInvoiceNumberExists - Checks if an invoice number already exists (for real-time validation)
+ * @param {string} invoiceNumber - The invoice number to check
+ * @return {boolean} True if invoice number exists, false otherwise
+ */
+function checkInvoiceNumberExists(invoiceNumber) {
+  try {
+    Logger.log('=== checkInvoiceNumberExists START ===');
+    Logger.log('Checking invoice number: ' + invoiceNumber);
+    
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName('Invoices');
+    
+    if (!sheet) {
+      Logger.log('Invoices sheet not found');
+      return false;
+    }
+    
+    const values = sheet.getDataRange().getValues();
+    Logger.log('Total rows in sheet: ' + values.length);
+    
+    // Skip header row, check column B (index 1) for invoice numbers
+    for (let i = 1; i < values.length; i++) {
+      const existingNumber = values[i][1]; // Column B = Invoice Number
+      
+      if (existingNumber === invoiceNumber) {
+        Logger.log('DUPLICATE INVOICE NUMBER FOUND at row ' + (i + 1));
+        return true;
+      }
+    }
+    
+    Logger.log('No duplicate invoice number found');
+    return false;
+  } catch (e) {
+    Logger.log('ERROR in checkInvoiceNumberExists: ' + e.message);
+    return false;
+  }
+}
+
 function validateAllFields(data) {
   const errors = [];
   let isValid = true;
@@ -2722,5 +2859,3 @@ function getDiagnostics() {
   
   return result;
 }
-
-
