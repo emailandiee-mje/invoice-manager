@@ -4,6 +4,13 @@ This folder contains historical documentation that is no longer actively maintai
 
 ## Contents
 
+### GitHub Setup Documentation (Archived Nov 2025)
+These files were used for initial GitHub repository setup and are no longer needed:
+- `GITHUB_DEPLOYMENT.md` - Complete GitHub publishing guide (setup complete)
+- `GITHUB_QUICK_START.md` - Quick reference for GitHub setup (setup complete)
+- `FILE_STRUCTURE.md` - Project structure documentation (information now in README.md)
+- `QUICK_START.md` - Quick reference guide (consolidated into DEPLOYMENT.md)
+
 ### Bug Fix Documentation (Nov 2025)
 These files document the troubleshooting and resolution of a search function serialization issue:
 - `QUICK_FIX.md` - Quick reference for search function fix
@@ -26,8 +33,19 @@ These files document the troubleshooting and resolution of a search function ser
 - `QUICK_TEST.md` - Quick testing guide (integrated into TEST_PLAN.md)
 
 ### Unused Code Files
-- `FormValidation.gs` - Modular validation functions (all duplicated inline in Code.gs)
-- `SheetOperations.gs` - Modular sheet operations (all duplicated inline in Code.gs)
+- `FormValidation.gs` - Modular validation functions (all consolidated in Code.gs)
+- `HTML.gs` - Modular HTML template (all consolidated in Code.gs)
+- `SheetOperations.gs` - Modular sheet operations (all consolidated in Code.gs)
+
+## Current Documentation
+
+For active documentation, see the main project folder:
+- **README.md** - Project overview and features
+- **DEPLOYMENT.md** - Deployment instructions and customization
+- **PROJECT_PLAN.md** - Technical specifications
+- **TEST_PLAN.md** - Testing procedures
+- **DEFECTS.md** - Active bug tracking
+- **ENHANCEMENT_IDEAS.md** - Feature roadmap
 
 **Note:** These files represent good modular architecture but are not used by the deployed application. Code.gs contains inline copies of all functions.
 

@@ -73,17 +73,19 @@ _BonniesApp/
 ├── docs-archive/               # Historical documentation & archived files
 ├── Code.gs                     # Complete application (all logic & UI)
 ├── preview.html                # Standalone preview for VS Code
-├── README.md                   # This file - START HERE
-├── DEPLOYMENT.md               # Step-by-step deployment guide
+├── README.md                   # This file - project overview
+├── DEPLOYMENT.md               # Complete deployment guide
 ├── PROJECT_PLAN.md             # Technical specifications & architecture
-├── QUICK_START.md              # Quick reference guide
 ├── TEST_PLAN.md                # Testing procedures
 ├── DEFECTS.md                  # Bug tracking and resolutions
-├── ENHANCEMENT_IDEAS.md        # Future feature ideas
-└── FILE_STRUCTURE.md           # Detailed workspace organization
+├── ENHANCEMENT_IDEAS.md        # Feature roadmap
+├── LOOKER_STUDIO_GUIDE.md      # Dashboard integration guide
+├── CONTRIBUTING.md             # Contribution guidelines
+├── SECURITY.md                 # Security policy
+└── LICENSE                     # MIT License
 ```
 
-> **Note:** The `docs-archive/` folder contains historical troubleshooting documentation and archived code files (including the previously separate HTML.gs). The application now uses only `Code.gs` for deployment, which contains all backend logic and embedded HTML/CSS/JavaScript.
+> **Note:** The `docs-archive/` folder contains historical documentation, archived guides, and legacy code files. The application now uses only `Code.gs` for deployment, which contains all backend logic and embedded HTML/CSS/JavaScript.
 
 ---
 

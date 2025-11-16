@@ -1,29 +1,64 @@
-# Bonnie's Invoice Manager - Implementation Guide
+# Bonnie's Invoice Manager - Deployment Guide
 
-## Quick Start Guide
-
-This folder contains a fully-functional, modern invoice management application built with Google Apps Script. The app is ready to be deployed to Google's free infrastructure.
+Complete guide for deploying and using the Invoice Management System.
 
 ---
 
-## 📁 Files in This Project
+## ⚡ Quick Start (15 Minutes)
 
-### Application
+**Total time:** 15-20 minutes from start to fully deployed app
+
+### Step 1: Create Google Sheet (2 min)
+1. Go to [sheets.google.com](https://sheets.google.com)
+2. Create blank spreadsheet
+3. Name it: **"Bonnie's Invoice Management"**
+4. Rename sheet to: **"Invoices"**
+5. Leave open
+
+### Step 2: Set Up Google Apps Script (3 min)
+1. **Extensions** → **Apps Script**
+2. Select all code in default Code.gs and delete
+3. Copy all contents from **`Code.gs`** (from project folder)
+4. Paste into the Apps Script editor
+5. Save (Ctrl+S or Cmd+S)
+
+### Step 3: Deploy (5 min)
+1. **Deploy** → **New deployment**
+2. Type: **Web app**
+3. Execute as: **Your Account**
+4. Access: **Anyone**
+5. Click **Deploy**
+6. Copy the URL shown
+
+### Step 4: Test (3 min)
+1. Open the deployment URL
+2. Submit a test invoice
+3. Check Google Sheets - data should appear
+4. Search by invoice number to test
+5. Edit an invoice to verify updates work
+
+### Step 5: Share (1 min)
+Send deployment URL to team members - they can start using immediately!
+
+---
+
+## 📁 Project Files
+
+### Application Files
 - **`Code.gs`** - Complete application with all backend logic and embedded HTML/CSS/JavaScript UI
 - **`preview.html`** - Standalone preview file for testing the UI locally in VS Code
 
 ### Documentation
-- **`README.md`** - Comprehensive overview and quick start guide
-- **`DEPLOYMENT.md`** - This file - step-by-step deployment instructions
-- **`PROJECT_PLAN.md`** - Detailed technical specifications and architecture
-- **`QUICK_START.md`** - Quick reference guide
+- **`README.md`** - Comprehensive overview and feature list
+- **`DEPLOYMENT.md`** - This file - deployment instructions and customization
+- **`PROJECT_PLAN.md`** - Technical specifications and architecture
 - **`TEST_PLAN.md`** - Testing procedures and validation
 - **`DEFECTS.md`** - Bug tracking and resolutions
-- **`ENHANCEMENT_IDEAS.md`** - Future feature ideas
+- **`ENHANCEMENT_IDEAS.md`** - Future feature ideas and roadmap
 
 ---
 
-## 🚀 Option 1: Preview in VS Code (Local Testing)
+## 🚀 Option 1: Preview UI Locally (No Deployment)
 
 To preview the UI/UX without deploying to Google:
 
@@ -167,6 +202,52 @@ To create a dashboard for reporting:
 
 ---
 
+## 🎨 Customization Guide
+
+### Change Primary Color
+
+In `Code.gs`, find the CSS section (around line 70):
+```css
+:root {
+    --primary: #ec4899;      /* Change this (currently pink) */
+    --secondary: #8b5cf6;    /* Purple */
+    --accent: #06b6d4;       /* Cyan */
+    --success: #10b981;      /* Green */
+    --error: #ef4444;        /* Red */
+}
+```
+
+**Popular color options:**
+- `#3b82f6` = Blue
+- `#f97316` = Orange
+- `#d946ef` = Purple
+- `#10b981` = Green
+
+### Customize Company Name
+
+In `Code.gs`, find line ~350:
+```html
+<h1 class="gradient-text text-5xl font-bold mb-4">
+    <i class="fas fa-receipt"></i> Bonnie's Invoice Manager
+</h1>
+```
+
+Change "Bonnie's Invoice Manager" to your company name.
+
+### Adjust Validation Rules
+
+In `Code.gs`, find the `validateAllFields()` function:
+```javascript
+if (data.invoiceNumber.length > 50) {
+    errors.push('Invoice number must be 50 characters or less');
+    isValid = false;
+}
+```
+
+Change `50` to your desired maximum length.
+
+---
+
 ## 🛠️ Troubleshooting
 
 ### "Permission Denied" Error
@@ -177,7 +258,14 @@ To create a dashboard for reporting:
 1. Go to Apps Script editor
 2. Click **Executions** (left sidebar)
 3. Look for errors in the execution log
-4. Check that all 4 .gs files are copied correctly
+4. Check that Code.gs is copied correctly
+
+### "I don't see my submitted data"
+**Solution:**
+1. Open Google Sheets in a new tab
+2. Check if "Invoices" sheet exists
+3. Verify data is there
+4. Refresh the app page
 
 ### Sheets not updating
 **Solution:**
@@ -185,8 +273,20 @@ To create a dashboard for reporting:
 2. Check Apps Script has permission to access the Sheet
 3. Try a test submission and check Apps Script logs
 
+### "Search doesn't work"
+**Solution:**
+- Check invoice number spelling (case-sensitive)
+- Try date range search instead
+- Verify at least 1 invoice exists in Sheets
+
 ### Dark mode not saving
 **Solution:** Browser might be in private mode. Test in regular browsing mode.
+
+### "App looks broken on mobile"
+**Solution:**
+- Clear browser cache and reload
+- Try a different browser
+- Check for JavaScript errors (F12 → Console)
 
 ### Search returns no results
 **Solution:** 
@@ -227,12 +327,50 @@ Expected Total: $290.00
 If you need to modify the code:
 
 1. Go to Apps Script editor
-2. Edit the relevant .gs file
+2. Edit Code.gs
 3. Click **Save**
 4. Click **Deploy** → **Manage Deployments**
-5. Click the existing deployment (trash icon)
-6. Create new deployment following Step 4 above
-7. Share the new URL
+5. Click the pencil icon (edit) on existing deployment
+6. Click **Deploy**
+7. The URL remains the same - no need to share a new one
+
+---
+
+## 🎯 Common Tasks
+
+### Submit an Invoice
+1. Open app URL
+2. Tab: "New Invoice"
+3. Enter Invoice Number (e.g., INV-2025-001)
+4. Select Invoice Date
+5. Enter costs
+6. Click "Submit Invoice"
+
+✅ **Done!** Check Sheets to verify
+
+### Find an Invoice
+1. Tab: "Search & Edit"
+2. Enter partial invoice number
+3. Click "Search"
+4. Click "Edit" to modify
+
+### Edit an Invoice
+1. Search for the invoice
+2. Click "Edit" button
+3. Modify costs or date
+4. Click "Update Invoice"
+
+✅ **Done!** Data updated in Sheets
+
+### Toggle Dark Mode
+- Click moon/sun icon (top right)
+- Preference saves automatically
+
+### Share with Team
+- Copy deployment URL from Google Apps Script
+- Send via email or Slack
+- Team members click link and start using
+- All share same Google Sheets
 
 ---
 
@@ -245,14 +383,13 @@ The app is fully responsive and works on:
 
 ---
 
-## 💡 Advanced Customization
+## 💡 Pro Tips
 
-All code is well-commented and consolidated in Code.gs:
-
-- **Styling:** Edit CSS in the embedded HTML template (search for `<style>` in Code.gs)
-- **Validation Rules:** Edit validation functions in Code.gs (search for `validateAllFields`)
-- **Colors:** Change `--primary`, `--secondary`, `--accent` in CSS :root variables
-- **Columns:** Edit column indices in sheet operation functions
+1. **Backup data regularly** - Download as CSV from Sheets
+2. **Use Looker Studio** - Create professional reports
+3. **Set timezone** - Sheets → Settings → set your timezone
+4. **Test with sample data** - Try the preview first
+5. **Mobile users** - Works great on phones with responsive layout
 
 ---
 
@@ -263,7 +400,7 @@ If you encounter issues:
 1. Check the **Troubleshooting** section above
 2. Review the **PROJECT_PLAN.md** for technical details
 3. Check Apps Script Executions log for error messages
-4. Ensure all 4 code files are present in Apps Script
+4. Test with `preview.html` to isolate UI vs. backend issues
 
 ---
 
