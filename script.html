@@ -147,8 +147,10 @@
             .getVendors();
     }
 
-    function populateVendorList() {
-        const vendorList = document.getElementById('vendorList');
+    // Generic function to populate vendor lists for both create and edit forms
+    function populateVendorListGeneric(prefix = '') {
+        const vendorList = document.getElementById(prefix + 'vendorList');
+        const vendorSelect = document.getElementById(prefix + 'vendorSelect');
         vendorList.innerHTML = '';
 
         state.vendors.forEach(vendor => {
@@ -156,16 +158,27 @@
             li.textContent = vendor;
             li.setAttribute('role', 'option');
             li.addEventListener('click', () => {
-                document.getElementById('vendorSelect').value = vendor;
+                vendorSelect.value = vendor;
                 vendorList.classList.add('hidden');
             });
             vendorList.appendChild(li);
         });
     }
 
-    function filterVendorList(searchTerm) {
-        const vendorList = document.getElementById('vendorList');
-        const items = vendorList.querySelectorAll('li:not(.add-new)');
+    // Wrapper functions for backward compatibility
+    function populateVendorList() {
+        populateVendorListGeneric('');
+    }
+
+    function populateEditVendorList() {
+        populateVendorListGeneric('edit');
+    }
+
+    // Generic function to filter vendor lists for both create and edit forms
+    function filterVendorListGeneric(searchTerm, prefix = '') {
+        const vendorList = document.getElementById(prefix + 'vendorList');
+        const selector = prefix === '' ? 'li:not(.add-new)' : 'li';
+        const items = vendorList.querySelectorAll(selector);
         let hasVisibleItems = false;
 
         items.forEach(item => {
@@ -186,9 +199,20 @@
             }
         }
 
-        // Reset keyboard highlight when filtering
-        state.highlightedVendorIndex = -1;
-        clearVendorHighlight();
+        // Reset keyboard highlight when filtering (only for create form)
+        if (prefix === '') {
+            state.highlightedVendorIndex = -1;
+            clearVendorHighlight();
+        }
+    }
+
+    // Wrapper functions for backward compatibility
+    function filterVendorList(searchTerm) {
+        filterVendorListGeneric(searchTerm, '');
+    }
+
+    function filterEditVendorList(searchTerm) {
+        filterVendorListGeneric(searchTerm, 'edit');
     }
 
     function getVisibleVendorItems() {
@@ -277,45 +301,7 @@
         }
     }
 
-    function populateEditVendorList() {
-        const editVendorList = document.getElementById('editVendorList');
-        editVendorList.innerHTML = '';
-
-        state.vendors.forEach(vendor => {
-            const li = document.createElement('li');
-            li.textContent = vendor;
-            li.setAttribute('role', 'option');
-            li.addEventListener('click', () => {
-                document.getElementById('editVendorSelect').value = vendor;
-                editVendorList.classList.add('hidden');
-            });
-            editVendorList.appendChild(li);
-        });
-    }
-
-    function filterEditVendorList(searchTerm) {
-        const editVendorList = document.getElementById('editVendorList');
-        const items = editVendorList.querySelectorAll('li');
-        let hasVisibleItems = false;
-
-        items.forEach(item => {
-            const text = item.textContent.toLowerCase();
-            if (text.includes(searchTerm)) {
-                item.style.display = '';
-                hasVisibleItems = true;
-            } else {
-                item.style.display = 'none';
-            }
-        });
-
-        if (searchTerm === '' || hasVisibleItems) {
-            editVendorList.classList.remove('hidden');
-        } else {
-            if (searchTerm.length > 0) {
-                editVendorList.classList.remove('hidden');
-            }
-        }
-    }
+    // populateEditVendorList and filterEditVendorList now use generic functions defined above
 
     function switchTab(e) {
         const tabName = e.target.closest('.tab-button').getAttribute('data-tab');
