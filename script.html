@@ -319,28 +319,26 @@
         state.currentTab = tabName;
     }
 
-    function calculateTotal() {
-        const flowerCost = parseFloat(document.getElementById('flowerCost').value) || 0;
-        const botanicalsCost = parseFloat(document.getElementById('botanicalsCost').value) || 0;
-        const suppliesCost = parseFloat(document.getElementById('suppliesCost').value) || 0;
-        const greensCost = parseFloat(document.getElementById('greensCost').value) || 0;
-        const miscellaneousCost = parseFloat(document.getElementById('miscellaneousCost').value) || 0;
-        const credits = parseFloat(document.getElementById('invoiceCredits').value) || 0;
+    // Generic function to calculate total for both create and edit forms
+    function calculateTotalGeneric(prefix = '') {
+        const flowerCost = parseFloat(document.getElementById(prefix + 'flowerCost').value) || 0;
+        const botanicalsCost = parseFloat(document.getElementById(prefix + 'botanicalsCost').value) || 0;
+        const suppliesCost = parseFloat(document.getElementById(prefix + 'suppliesCost').value) || 0;
+        const greensCost = parseFloat(document.getElementById(prefix + 'greensCost').value) || 0;
+        const miscellaneousCost = parseFloat(document.getElementById(prefix + 'miscellaneousCost').value) || 0;
+        const credits = parseFloat(document.getElementById(prefix + 'invoiceCredits').value) || 0;
 
         const total = flowerCost + botanicalsCost + suppliesCost + greensCost + miscellaneousCost - credits;
-        displayTotal(total, 'totalDisplay');
+        displayTotal(total, prefix + 'totalDisplay');
+    }
+
+    // Wrapper functions for backward compatibility
+    function calculateTotal() {
+        calculateTotalGeneric('');
     }
 
     function calculateEditTotal() {
-        const flowerCost = parseFloat(document.getElementById('editFlowerCost').value) || 0;
-        const botanicalsCost = parseFloat(document.getElementById('editBotanicalsCost').value) || 0;
-        const suppliesCost = parseFloat(document.getElementById('editSuppliesCost').value) || 0;
-        const greensCost = parseFloat(document.getElementById('editGreensCost').value) || 0;
-        const miscellaneousCost = parseFloat(document.getElementById('editMiscellaneousCost').value) || 0;
-        const credits = parseFloat(document.getElementById('editInvoiceCredits').value) || 0;
-
-        const total = flowerCost + botanicalsCost + suppliesCost + greensCost + miscellaneousCost - credits;
-        displayTotal(total, 'editTotalDisplay');
+        calculateTotalGeneric('edit');
     }
 
     function displayTotal(amount, elementId) {
