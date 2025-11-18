@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Management System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <?!= include('styles') ?>
+</head>
+<body class="light-mode">
+    <button class="toggle-theme" id="themeToggle" title="Toggle dark mode">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner" style="margin: 0 auto 16px;"></div>
+            <p class="text-gray-600">Processing your request...</p>
+        </div>
+    </div>
+
+    <div class="min-h-screen py-8 px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12 animate-fade-in">
+                <h1 class="gradient-text text-5xl font-bold mb-4">
+                    <i class="fas fa-receipt"></i> Bonnie's Invoice Manager
+                </h1>
+                <p class="text-gray-600 dark-mode:text-gray-200 text-lg">
+                    Professional invoice management for your business
+                </p>
+            </div>
+
+            <div class="glass-effect rounded-2xl overflow-hidden shadow-2xl">
+                <div class="border-b border-gray-200 dark-mode:border-gray-700 px-6 pt-6">
+                    <div class="flex gap-4 overflow-x-auto">
+                        <button class="tab-button active" data-tab="create">
+                            <i class="fas fa-plus-circle"></i> New Invoice
+                        </button>
+                        <button class="tab-button" data-tab="search">
+                            <i class="fas fa-search"></i> Search & Edit
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-8">
+                    <div id="tab-create" class="tab-content active">
+                        <h2 class="text-2xl font-bold mb-8 text-gray-800 dark-mode:text-white">
+                            Create New Invoice
+                        </h2>
+
+                        <form id="invoiceForm" novalidate>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="invoiceNumber">Invoice Number *</label>
+                                    <div class="input-field">
+                                        <input 
+                                            type="text" 
+                                            id="invoiceNumber" 
+                                            name="invoiceNumber"
+                                            placeholder="e.g., INV-2025-001"
+                                            required
+                                        >
+                                    </div>
+                                    <div class="field-hint">Unique identifier for this invoice</div>
+                                    <div class="duplicate-warning" id="duplicateWarning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        <div class="warning-text">
+                                            <strong>Warning:</strong> An invoice with this number already exists.
+                                        </div>
+                                    </div>
+                                    <div class="error-message hidden" id="invoiceNumberError"></div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="invoiceDate">Invoice Date *</label>
+                                    <div class="input-field">
+                                        <input 
+                                            type="date" 
+                                            id="invoiceDate" 
+                                            name="invoiceDate"
+                                            required
+                                        >
+                                    </div>
+                                    <div class="field-hint">When was this invoice issued?</div>
+                                    <div class="error-message hidden" id="invoiceDateError"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="vendorSelect">Vendor *</label>
+                                    <div class="input-field vendor-input-wrapper">
+                                        <input 
+                                            type="text" 
+                                            id="vendorSelect" 
+                                            name="vendorSelect"
+                                            placeholder="Select or type vendor name"
+                                            autocomplete="off"
+                                            required
+                                        >
+                                        <ul id="vendorList" class="vendor-dropdown hidden" role="listbox"></ul>
+                                    </div>
+                                    <div class="field-hint">Select from list or type a new vendor name</div>
+                                    <div class="error-message hidden" id="vendorSelectError"></div>
+                                </div>
+                            </div>
+
+                            <div class="mb-8">
+                                <h3 class="text-lg font-semibold mb-6 text-gray-800 dark-mode:text-white">
+                                    <i class="fas fa-dollar-sign text-pink-500"></i> Cost Breakdown
+                                </h3>
+                                
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="flowerCost">Flower Cost</label>
+                                        <div class="input-field currency-input">
+                                            <input 
+                                                type="text" 
+                                                id="flowerCost" 
+                                                name="flowerCost"
+                                                placeholder="0.00"
+                                                inputmode="decimal"
+                                            >
+                                        </div>
+                                        <div class="field-hint">Cost of flowers</div>
+                                        <div class="error-message hidden" id="flowerCostError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="botanicalsCost">Botanicals Cost</label>
+                                        <div class="input-field currency-input">
+                                            <input 
+                                                type="text" 
+                                                id="botanicalsCost" 
+                                                name="botanicalsCost"
+                                                placeholder="0.00"
+                                                inputmode="decimal"
+                                            >
+                                        </div>
+                                        <div class="field-hint">Cost of plants, botanicals, and tropicals</div>
+                                        <div class="error-message hidden" id="botanicalsCostError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="suppliesCost">Supplies Cost</label>
+                                        <div class="input-field currency-input">
+                                            <input 
+                                                type="text" 
+                                                id="suppliesCost" 
+                                                name="suppliesCost"
+                                                placeholder="0.00"
+                                                inputmode="decimal"
+                                            >
+                                        </div>
+                                        <div class="field-hint">Cost of hard goods and supplies</div>
+                                        <div class="error-message hidden" id="suppliesCostError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="greensCost">Greens Cost</label>
+                                        <div class="input-field currency-input">
+                                            <input 
+                                                type="text" 
+                                                id="greensCost" 
+                                                name="greensCost"
+                                                placeholder="0.00"
+                                                inputmode="decimal"
+                                            >
+                                        </div>
+                                        <div class="field-hint">Cost of greens</div>
+                                        <div class="error-message hidden" id="greensCostError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="miscellaneousCost">Miscellaneous Cost</label>
+                                        <div class="input-field currency-input">
+                                            <input 
+                                                type="text" 
+                                                id="miscellaneousCost" 
+                                                name="miscellaneousCost"
+                                                placeholder="0.00"
+                                                inputmode="decimal"
+                                            >
+                                        </div>
+                                        <div class="field-hint">Delivery, gas, and other costs</div>
+                                        <div class="error-message hidden" id="miscellaneousCostError"></div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="invoiceCredits">Invoice Credits</label>
+                                        <div class="input-field currency-input">
+                                            <input 
+                                                type="text" 
+                                                id="invoiceCredits" 
+                                                name="invoiceCredits"
+                                                placeholder="0.00"
+                                                inputmode="decimal"
+                                            >
+                                        </div>
+                                        <div class="field-hint">Credits to deduct</div>
+                                        <div class="error-message hidden" id="invoiceCreditsError"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="total-display mb-8">
+                                <div class="label">Total Due</div>
+                                <div class="amount" id="totalDisplay">$0.00</div>
+                            </div>
+
+                            <div class="mb-8">
+                                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark-mode:text-white">
+                                    <i class="fas fa-tag text-pink-500"></i> Event Type (Optional)
+                                </h3>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isWedding" name="isWedding" value="1">
+                                        <label for="isWedding"><i class="fas fa-ring"></i> Wedding</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isFuneral" name="isFuneral" value="1">
+                                        <label for="isFuneral"><i class="fas fa-heart-broken"></i> Funeral</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isParty" name="isParty" value="1">
+                                        <label for="isParty"><i class="fas fa-music"></i> Party/Occasion</label>
+                                    </div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isStoreStock" name="isStoreStock" value="1">
+                                        <label for="isStoreStock"><i class="fas fa-store"></i> Store Stock</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-4 flex-wrap">
+                                <button type="submit" class="btn btn-primary flex-1 sm:flex-none">
+                                    <i class="fas fa-check-circle"></i> Submit Invoice
+                                </button>
+                                <button type="reset" class="btn btn-secondary flex-1 sm:flex-none">
+                                    <i class="fas fa-redo"></i> Clear Form
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="tab-search" class="tab-content">
+                        <h2 class="text-2xl font-bold mb-8 text-gray-800 dark-mode:text-white">
+                            Search & Edit Invoices
+                        </h2>
+
+                        <div class="grid md:grid-cols-2 gap-6 mb-8">
+                            <div class="form-group">
+                                <label for="searchInvoiceNumber">Search by Invoice Number</label>
+                                <div class="flex gap-2">
+                                    <div class="input-field flex-1">
+                                        <input 
+                                            type="text" 
+                                            id="searchInvoiceNumber" 
+                                            placeholder="e.g., INV-2025"
+                                        >
+                                    </div>
+                                    <button type="button" class="btn btn-primary" id="searchByNumberBtn">
+                                        <i class="fas fa-search"></i> Search
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Search by Date Range</label>
+                                <div class="flex gap-2 mb-2">
+                                    <div class="input-field flex-1">
+                                        <input 
+                                            type="date" 
+                                            id="searchDateFrom" 
+                                            placeholder="From"
+                                        >
+                                    </div>
+                                    <div class="input-field flex-1">
+                                        <input 
+                                            type="date" 
+                                            id="searchDateTo" 
+                                            placeholder="To"
+                                        >
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-primary w-full" id="searchByDateBtn">
+                                    <i class="fas fa-calendar"></i> Search by Date
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="searchResults" class="mt-8"></div>
+
+                        <div id="editFormContainer" class="hidden mt-12 pt-12 border-t border-gray-200 dark-mode:border-gray-700">
+                            <h3 class="text-2xl font-bold mb-8 text-gray-800 dark-mode:text-white">
+                                <i class="fas fa-edit"></i> Edit Invoice
+                            </h3>
+
+                            <form id="editInvoiceForm" novalidate>
+                                <input type="hidden" id="editInvoiceId">
+
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="editInvoiceNumber">Invoice Number (Read-only)</label>
+                                        <div class="input-field">
+                                            <input 
+                                                type="text" 
+                                                id="editInvoiceNumber" 
+                                                disabled
+                                            >
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="editInvoiceDate">Invoice Date</label>
+                                        <div class="input-field">
+                                            <input 
+                                                type="date" 
+                                                id="editInvoiceDate" 
+                                                required
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="editVendorSelect">Vendor</label>
+                                        <div class="input-field vendor-input-wrapper">
+                                            <input 
+                                                type="text" 
+                                                id="editVendorSelect" 
+                                                name="editVendorSelect"
+                                                placeholder="Select or type vendor name"
+                                                autocomplete="off"
+                                            >
+                                            <ul id="editVendorList" class="vendor-dropdown hidden" role="listbox"></ul>
+                                        </div>
+                                        <div class="field-hint">Select from list or type a vendor name</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-8">
+                                    <h3 class="text-lg font-semibold mb-6 text-gray-800 dark-mode:text-white">
+                                        <i class="fas fa-dollar-sign text-pink-500"></i> Cost Breakdown
+                                    </h3>
+                                    
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="editFlowerCost">Flower Cost</label>
+                                            <div class="input-field currency-input">
+                                                <input 
+                                                    type="text" 
+                                                    id="editFlowerCost" 
+                                                    inputmode="decimal"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="editBotanicalsCost">Botanicals Cost</label>
+                                            <div class="input-field currency-input">
+                                                <input 
+                                                    type="text" 
+                                                    id="editBotanicalsCost" 
+                                                    inputmode="decimal"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="editSuppliesCost">Supplies Cost</label>
+                                            <div class="input-field currency-input">
+                                                <input 
+                                                    type="text" 
+                                                    id="editSuppliesCost" 
+                                                    inputmode="decimal"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="editGreensCost">Greens Cost</label>
+                                            <div class="input-field currency-input">
+                                                <input 
+                                                    type="text" 
+                                                    id="editGreensCost" 
+                                                    inputmode="decimal"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="editMiscellaneousCost">Miscellaneous Cost</label>
+                                            <div class="input-field currency-input">
+                                                <input 
+                                                    type="text" 
+                                                    id="editMiscellaneousCost" 
+                                                    inputmode="decimal"
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="editInvoiceCredits">Invoice Credits</label>
+                                            <div class="input-field currency-input">
+                                                <input 
+                                                    type="text" 
+                                                    id="editInvoiceCredits" 
+                                                    inputmode="decimal"
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="total-display mb-8">
+                                    <div class="label">Updated Total Due</div>
+                                    <div class="amount" id="editTotalDisplay">$0.00</div>
+                                </div>
+
+                                <div class="mb-8">
+                                    <h3 class="text-lg font-semibold mb-4 text-gray-800 dark-mode:text-white">
+                                        <i class="fas fa-tag text-pink-500"></i> Event Type (Optional)
+                                    </h3>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="editIsWedding" name="editIsWedding" value="1">
+                                            <label for="editIsWedding"><i class="fas fa-ring"></i> Wedding</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="editIsFuneral" name="editIsFuneral" value="1">
+                                            <label for="editIsFuneral"><i class="fas fa-heart-broken"></i> Funeral</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="editIsParty" name="editIsParty" value="1">
+                                            <label for="editIsParty"><i class="fas fa-music"></i> Party/Occasion</label>
+                                        </div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="editIsStoreStock" name="editIsStoreStock" value="1">
+                                            <label for="editIsStoreStock"><i class="fas fa-store"></i> Store Stock</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-4 flex-wrap">
+                                    <button type="submit" class="btn btn-success flex-1 sm:flex-none">
+                                        <i class="fas fa-save"></i> Update Invoice
+                                    </button>
+                                    <button type="button" class="btn btn-secondary flex-1 sm:flex-none" id="cancelEditBtn">
+                                        <i class="fas fa-times"></i> Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.9997</p>
+                <p class="mt-1 text-xs">Created lovingly by MJE AppWorks</p>
+            </div>
+        </div>
+    </div>
+
+    <?!= include('script') ?>
+</body>
+</html>

@@ -1,0 +1,919 @@
+<script>
+    const state = {
+        currentTab: 'create',
+        editingInvoiceId: null,
+        searchResults: [],
+        vendors: [],
+        isDarkMode: localStorage.getItem('darkMode') === 'true',
+        highlightedVendorIndex: -1
+    };
+
+    document.addEventListener('DOMContentLoaded', initApp);
+
+    function initApp() {
+        setupTheme();
+        loadVendors();
+        setupEventListeners();
+        setTodayDate();
+    }
+
+    function setupTheme() {
+        const body = document.body;
+        if (state.isDarkMode) {
+            body.classList.remove('light-mode');
+            body.classList.add('dark-mode');
+            document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"></i>';
+            // Apply dark mode colors to badges
+            document.querySelectorAll('.event-badge').forEach(badge => {
+                badge.style.setProperty('color', '#ffffff', 'important');
+                badge.querySelectorAll('i').forEach(icon => {
+                    icon.style.setProperty('color', '#ffffff', 'important');
+                });
+            });
+        } else {
+            body.classList.add('light-mode');
+            body.classList.remove('dark-mode');
+            document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"></i>';
+            // Remove inline dark mode colors from badges
+            document.querySelectorAll('.event-badge').forEach(badge => {
+                badge.style.removeProperty('color');
+                badge.querySelectorAll('i').forEach(icon => {
+                    icon.style.removeProperty('color');
+                });
+            });
+        }
+    }
+
+    document.getElementById('themeToggle').addEventListener('click', function() {
+        state.isDarkMode = !state.isDarkMode;
+        localStorage.setItem('darkMode', state.isDarkMode);
+        setupTheme();
+    });
+
+    function setupEventListeners() {
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', switchTab);
+        });
+
+        document.getElementById('invoiceForm').addEventListener('submit', handleFormSubmit);
+        document.getElementById('invoiceForm').addEventListener('reset', handleFormReset);
+        document.getElementById('editInvoiceForm').addEventListener('submit', handleEditSubmit);
+
+        const costInputs = ['#flowerCost', '#botanicalsCost', '#suppliesCost', '#greensCost', '#miscellaneousCost', '#invoiceCredits'];
+        costInputs.forEach(selector => {
+            document.querySelector(selector).addEventListener('input', calculateTotal);
+        });
+
+        const editCostInputs = ['#editFlowerCost', '#editBotanicalsCost', '#editSuppliesCost', '#editGreensCost', '#editMiscellaneousCost', '#editInvoiceCredits'];
+        editCostInputs.forEach(selector => {
+            document.querySelector(selector).addEventListener('input', calculateEditTotal);
+        });
+
+        const vendorInput = document.getElementById('vendorSelect');
+        const vendorList = document.getElementById('vendorList');
+        
+        vendorInput.addEventListener('focus', () => {
+            if (vendorList.childNodes.length > 0) {
+                vendorList.classList.remove('hidden');
+            }
+        });
+
+        vendorInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            filterVendorList(searchTerm);
+        });
+
+        vendorInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                vendorList.classList.add('hidden');
+                state.highlightedVendorIndex = -1;
+                clearVendorHighlight();
+            }, 200);
+        });
+
+        // Keyboard navigation for vendor dropdown
+        vendorInput.addEventListener('keydown', handleVendorKeydown);
+
+        const editVendorInput = document.getElementById('editVendorSelect');
+        const editVendorList = document.getElementById('editVendorList');
+        
+        editVendorInput.addEventListener('focus', () => {
+            populateEditVendorList();
+            if (editVendorList.childNodes.length > 0) {
+                editVendorList.classList.remove('hidden');
+            }
+        });
+
+        editVendorInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            filterEditVendorList(searchTerm);
+        });
+
+        editVendorInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                editVendorList.classList.add('hidden');
+            }, 200);
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.vendor-input-wrapper')) {
+                vendorList.classList.add('hidden');
+                editVendorList.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('searchByNumberBtn').addEventListener('click', searchByNumber);
+        document.getElementById('searchByDateBtn').addEventListener('click', searchByDate);
+        document.getElementById('cancelEditBtn').addEventListener('click', cancelEdit);
+
+        // Real-time duplicate detection on invoice number field
+        const invoiceNumberField = document.getElementById('invoiceNumber');
+        invoiceNumberField.addEventListener('blur', checkDuplicateInvoiceNumber);
+        invoiceNumberField.addEventListener('input', handleInvoiceNumberInput);
+
+        setTodayDate();
+    }
+
+    function loadVendors() {
+        google.script.run
+            .withSuccessHandler(function(vendors) {
+                state.vendors = vendors || [];
+                populateVendorList();
+            })
+            .withFailureHandler(function(error) {
+                Logger.log('Error loading vendors: ' + error);
+                state.vendors = [];
+            })
+            .getVendors();
+    }
+
+    function populateVendorList() {
+        const vendorList = document.getElementById('vendorList');
+        vendorList.innerHTML = '';
+
+        state.vendors.forEach(vendor => {
+            const li = document.createElement('li');
+            li.textContent = vendor;
+            li.setAttribute('role', 'option');
+            li.addEventListener('click', () => {
+                document.getElementById('vendorSelect').value = vendor;
+                vendorList.classList.add('hidden');
+            });
+            vendorList.appendChild(li);
+        });
+    }
+
+    function filterVendorList(searchTerm) {
+        const vendorList = document.getElementById('vendorList');
+        const items = vendorList.querySelectorAll('li:not(.add-new)');
+        let hasVisibleItems = false;
+
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                item.style.display = '';
+                hasVisibleItems = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        if (searchTerm === '' || hasVisibleItems) {
+            vendorList.classList.remove('hidden');
+        } else {
+            if (searchTerm.length > 0) {
+                vendorList.classList.remove('hidden');
+            }
+        }
+
+        // Reset keyboard highlight when filtering
+        state.highlightedVendorIndex = -1;
+        clearVendorHighlight();
+    }
+
+    function getVisibleVendorItems() {
+        const vendorList = document.getElementById('vendorList');
+        const allItems = Array.from(vendorList.querySelectorAll('li'));
+        return allItems.filter(item => item.style.display !== 'none');
+    }
+
+    function updateVendorHighlight() {
+        clearVendorHighlight();
+        const visibleItems = getVisibleVendorItems();
+        if (state.highlightedVendorIndex >= 0 && state.highlightedVendorIndex < visibleItems.length) {
+            const item = visibleItems[state.highlightedVendorIndex];
+            item.classList.add('keyboard-highlighted');
+            // Scroll into view
+            item.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+    }
+
+    function clearVendorHighlight() {
+        const vendorList = document.getElementById('vendorList');
+        vendorList.querySelectorAll('li.keyboard-highlighted').forEach(item => {
+            item.classList.remove('keyboard-highlighted');
+        });
+    }
+
+    function selectHighlightedVendor() {
+        const visibleItems = getVisibleVendorItems();
+        if (state.highlightedVendorIndex >= 0 && state.highlightedVendorIndex < visibleItems.length) {
+            const item = visibleItems[state.highlightedVendorIndex];
+            document.getElementById('vendorSelect').value = item.textContent;
+            document.getElementById('vendorList').classList.add('hidden');
+            state.highlightedVendorIndex = -1;
+            clearVendorHighlight();
+        }
+    }
+
+    function handleVendorKeydown(e) {
+        const vendorList = document.getElementById('vendorList');
+        const isDropdownVisible = !vendorList.classList.contains('hidden');
+        
+        if (!isDropdownVisible) return;
+
+        const visibleItems = getVisibleVendorItems();
+        if (visibleItems.length === 0) return;
+
+        switch(e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                state.highlightedVendorIndex++;
+                // Wrap to beginning if at end
+                if (state.highlightedVendorIndex >= visibleItems.length) {
+                    state.highlightedVendorIndex = 0;
+                }
+                updateVendorHighlight();
+                break;
+
+            case 'ArrowUp':
+                e.preventDefault();
+                state.highlightedVendorIndex--;
+                // Wrap to end if at beginning
+                if (state.highlightedVendorIndex < 0) {
+                    state.highlightedVendorIndex = visibleItems.length - 1;
+                }
+                updateVendorHighlight();
+                break;
+
+            case 'Enter':
+                e.preventDefault();
+                selectHighlightedVendor();
+                break;
+
+            case 'Escape':
+                e.preventDefault();
+                vendorList.classList.add('hidden');
+                state.highlightedVendorIndex = -1;
+                clearVendorHighlight();
+                break;
+
+            case 'Tab':
+                // Allow default tab behavior but select if highlighted
+                if (state.highlightedVendorIndex >= 0) {
+                    selectHighlightedVendor();
+                }
+                break;
+        }
+    }
+
+    function populateEditVendorList() {
+        const editVendorList = document.getElementById('editVendorList');
+        editVendorList.innerHTML = '';
+
+        state.vendors.forEach(vendor => {
+            const li = document.createElement('li');
+            li.textContent = vendor;
+            li.setAttribute('role', 'option');
+            li.addEventListener('click', () => {
+                document.getElementById('editVendorSelect').value = vendor;
+                editVendorList.classList.add('hidden');
+            });
+            editVendorList.appendChild(li);
+        });
+    }
+
+    function filterEditVendorList(searchTerm) {
+        const editVendorList = document.getElementById('editVendorList');
+        const items = editVendorList.querySelectorAll('li');
+        let hasVisibleItems = false;
+
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                item.style.display = '';
+                hasVisibleItems = true;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        if (searchTerm === '' || hasVisibleItems) {
+            editVendorList.classList.remove('hidden');
+        } else {
+            if (searchTerm.length > 0) {
+                editVendorList.classList.remove('hidden');
+            }
+        }
+    }
+
+    function switchTab(e) {
+        const tabName = e.target.closest('.tab-button').getAttribute('data-tab');
+        
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        e.target.closest('.tab-button').classList.add('active');
+
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.remove('active');
+        });
+        document.getElementById('tab-' + tabName).classList.add('active');
+
+        state.currentTab = tabName;
+    }
+
+    function calculateTotal() {
+        const flowerCost = parseFloat(document.getElementById('flowerCost').value) || 0;
+        const botanicalsCost = parseFloat(document.getElementById('botanicalsCost').value) || 0;
+        const suppliesCost = parseFloat(document.getElementById('suppliesCost').value) || 0;
+        const greensCost = parseFloat(document.getElementById('greensCost').value) || 0;
+        const miscellaneousCost = parseFloat(document.getElementById('miscellaneousCost').value) || 0;
+        const credits = parseFloat(document.getElementById('invoiceCredits').value) || 0;
+
+        const total = flowerCost + botanicalsCost + suppliesCost + greensCost + miscellaneousCost - credits;
+        displayTotal(total, 'totalDisplay');
+    }
+
+    function calculateEditTotal() {
+        const flowerCost = parseFloat(document.getElementById('editFlowerCost').value) || 0;
+        const botanicalsCost = parseFloat(document.getElementById('editBotanicalsCost').value) || 0;
+        const suppliesCost = parseFloat(document.getElementById('editSuppliesCost').value) || 0;
+        const greensCost = parseFloat(document.getElementById('editGreensCost').value) || 0;
+        const miscellaneousCost = parseFloat(document.getElementById('editMiscellaneousCost').value) || 0;
+        const credits = parseFloat(document.getElementById('editInvoiceCredits').value) || 0;
+
+        const total = flowerCost + botanicalsCost + suppliesCost + greensCost + miscellaneousCost - credits;
+        displayTotal(total, 'editTotalDisplay');
+    }
+
+    function displayTotal(amount, elementId) {
+        const element = document.getElementById(elementId);
+        element.textContent = formatCurrency(amount);
+        
+        if (amount < 0) {
+            element.classList.add('text-red-500');
+        } else {
+            element.classList.remove('text-red-500');
+        }
+    }
+
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD'
+        }).format(amount);
+    }
+
+    function handleFormReset(e) {
+        // Let the form reset happen naturally first
+        setTimeout(() => {
+            clearErrors();
+            setTodayDate();
+            displayTotal(0, 'totalDisplay');
+        }, 0);
+    }
+
+    function handleFormSubmit(e) {
+        e.preventDefault();
+        clearErrors();
+
+        const invoiceData = {
+            vendor: document.getElementById('vendorSelect').value.trim(),
+            invoiceNumber: document.getElementById('invoiceNumber').value.trim(),
+            invoiceDate: document.getElementById('invoiceDate').value,
+            flowerCost: document.getElementById('flowerCost').value.trim(),
+            botanicalsCost: document.getElementById('botanicalsCost').value.trim(),
+            suppliesCost: document.getElementById('suppliesCost').value.trim(),
+            greensCost: document.getElementById('greensCost').value.trim(),
+            miscellaneousCost: document.getElementById('miscellaneousCost').value.trim(),
+            invoiceCredits: document.getElementById('invoiceCredits').value.trim(),
+            isWedding: document.getElementById('isWedding').checked ? 1 : 0,
+            isFuneral: document.getElementById('isFuneral').checked ? 1 : 0,
+            isParty: document.getElementById('isParty').checked ? 1 : 0,
+            isStoreStock: document.getElementById('isStoreStock').checked ? 1 : 0
+        };
+
+        if (!validateForm(invoiceData)) {
+            return;
+        }
+
+        // Only convert to numbers AFTER validation passes
+        invoiceData.flowerCost = parseFloat(invoiceData.flowerCost) || 0;
+        invoiceData.botanicalsCost = parseFloat(invoiceData.botanicalsCost) || 0;
+        invoiceData.suppliesCost = parseFloat(invoiceData.suppliesCost) || 0;
+        invoiceData.greensCost = parseFloat(invoiceData.greensCost) || 0;
+        invoiceData.miscellaneousCost = parseFloat(invoiceData.miscellaneousCost) || 0;
+        invoiceData.invoiceCredits = parseFloat(invoiceData.invoiceCredits) || 0;
+
+        submitToServer(invoiceData);
+    }
+
+    function validateForm(data) {
+        let isValid = true;
+
+        if (!data.vendor) {
+            showError('vendorSelectError', 'Vendor is required');
+            isValid = false;
+        } else if (data.vendor.length > 100) {
+            showError('vendorSelectError', 'Vendor name must be 100 characters or less');
+            isValid = false;
+        }
+
+        if (!data.invoiceNumber) {
+            showError('invoiceNumberError', 'Invoice number is required');
+            isValid = false;
+        } else if (data.invoiceNumber.length > 50) {
+            showError('invoiceNumberError', 'Invoice number must be 50 characters or less');
+            isValid = false;
+        }
+
+        if (!data.invoiceDate) {
+            showError('invoiceDateError', 'Invoice date is required');
+            isValid = false;
+        } else if (new Date(data.invoiceDate) > new Date()) {
+            showError('invoiceDateError', 'Invoice date cannot be in the future');
+            isValid = false;
+        }
+
+        // Validate Flower Cost - must be numeric or empty
+        if (data.flowerCost !== '') {
+            const flowerNum = parseFloat(data.flowerCost);
+            if (isNaN(flowerNum)) {
+                showError('flowerCostError', 'Amount must be a valid number (e.g., 10.50)');
+                isValid = false;
+            } else if (flowerNum < 0) {
+                showError('flowerCostError', 'Amount cannot be negative');
+                isValid = false;
+            }
+        }
+
+        // Validate Botanicals Cost - must be numeric or empty
+        if (data.botanicalsCost !== '') {
+            const botanicalsNum = parseFloat(data.botanicalsCost);
+            if (isNaN(botanicalsNum)) {
+                showError('botanicalsCostError', 'Amount must be a valid number (e.g., 10.50)');
+                isValid = false;
+            } else if (botanicalsNum < 0) {
+                showError('botanicalsCostError', 'Amount cannot be negative');
+                isValid = false;
+            }
+        }
+
+        // Validate Supplies Cost - must be numeric or empty
+        if (data.suppliesCost !== '') {
+            const suppliesNum = parseFloat(data.suppliesCost);
+            if (isNaN(suppliesNum)) {
+                showError('suppliesCostError', 'Amount must be a valid number (e.g., 10.50)');
+                isValid = false;
+            } else if (suppliesNum < 0) {
+                showError('suppliesCostError', 'Amount cannot be negative');
+                isValid = false;
+            }
+        }
+
+        // Validate Greens Cost - must be numeric or empty
+        if (data.greensCost !== '') {
+            const greensNum = parseFloat(data.greensCost);
+            if (isNaN(greensNum)) {
+                showError('greensCostError', 'Amount must be a valid number (e.g., 10.50)');
+                isValid = false;
+            } else if (greensNum < 0) {
+                showError('greensCostError', 'Amount cannot be negative');
+                isValid = false;
+            }
+        }
+
+        // Validate Miscellaneous Cost - must be numeric or empty
+        if (data.miscellaneousCost !== '') {
+            const miscNum = parseFloat(data.miscellaneousCost);
+            if (isNaN(miscNum)) {
+                showError('miscellaneousCostError', 'Amount must be a valid number (e.g., 10.50)');
+                isValid = false;
+            } else if (miscNum < 0) {
+                showError('miscellaneousCostError', 'Amount cannot be negative');
+                isValid = false;
+            }
+        }
+
+        // Validate Invoice Credits - must be numeric or empty
+        if (data.invoiceCredits !== '') {
+            const creditsNum = parseFloat(data.invoiceCredits);
+            if (isNaN(creditsNum)) {
+                showError('invoiceCreditsError', 'Credits must be a valid number (e.g., 10.50)');
+                isValid = false;
+            } else if (creditsNum < 0) {
+                showError('invoiceCreditsError', 'Credits cannot be negative');
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
+
+    function submitToServer(data) {
+        showLoading(true);
+
+        const vendorExists = state.vendors.some(v => v.toLowerCase() === data.vendor.toLowerCase());
+        
+        const submitCallback = function(result) {
+            showLoading(false);
+            if (result.success) {
+                showToast('Invoice submitted successfully! ID: ' + result.invoiceId, 'success');
+                document.getElementById('invoiceForm').reset();
+                calculateTotal();
+                setTodayDate();
+                loadVendors();
+                
+                // Auto-focus invoice number field and scroll to top for next entry
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                document.getElementById('invoiceNumber').focus();
+            } else {
+                showToast(result.message || 'An error occurred', 'error');
+            }
+        };
+
+        if (!vendorExists) {
+            google.script.run
+                .withSuccessHandler(function(vendorResult) {
+                    if (vendorResult.success) {
+                        google.script.run
+                            .withSuccessHandler(submitCallback)
+                            .withFailureHandler(function(error) {
+                                showLoading(false);
+                                showToast('Error submitting invoice: ' + error, 'error');
+                            })
+                            .submitInvoice(data);
+                    } else {
+                        showLoading(false);
+                        showToast('Error adding vendor: ' + vendorResult.message, 'error');
+                    }
+                })
+                .withFailureHandler(function(error) {
+                    showLoading(false);
+                    showToast('Error adding vendor: ' + error, 'error');
+                })
+                .addNewVendor(data.vendor);
+        } else {
+            google.script.run
+                .withSuccessHandler(submitCallback)
+                .withFailureHandler(function(error) {
+                    showLoading(false);
+                    showToast('Error: ' + error, 'error');
+                })
+                .submitInvoice(data);
+        }
+    }
+
+    function searchByNumber() {
+        const searchValue = document.getElementById('searchInvoiceNumber').value.trim();
+
+        if (!searchValue) {
+            showToast('Please enter an invoice number', 'info');
+            return;
+        }
+
+        showLoading(true);
+
+        google.script.run
+            .withSuccessHandler(function(results) {
+                showLoading(false);
+                displaySearchResults(results);
+            })
+            .withFailureHandler(function(error) {
+                showLoading(false);
+                showToast('Search error: ' + error, 'error');
+            })
+            .searchInvoices('number', searchValue);
+    }
+
+    function searchByDate() {
+        const fromDate = document.getElementById('searchDateFrom').value;
+        const toDate = document.getElementById('searchDateTo').value;
+
+        if (!fromDate || !toDate) {
+            showToast('Please select both start and end dates', 'info');
+            return;
+        }
+
+        if (new Date(fromDate) > new Date(toDate)) {
+            showToast('Start date must be before end date', 'error');
+            return;
+        }
+
+        showLoading(true);
+
+        google.script.run
+            .withSuccessHandler(function(results) {
+                showLoading(false);
+                displaySearchResults(results);
+            })
+            .withFailureHandler(function(error) {
+                showLoading(false);
+                showToast('Search error: ' + error, 'error');
+            })
+            .searchInvoices('dateRange', { from: fromDate, to: toDate });
+    }
+
+    function displaySearchResults(results) {
+        const container = document.getElementById('searchResults');
+        
+        if (!results || results.length === 0) {
+            container.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><h3 class="text-gray-700 dark-mode:text-gray-300 text-lg font-semibold mt-4">No invoices found</h3><p class="text-gray-500 dark-mode:text-gray-400">Try adjusting your search criteria</p></div>';
+            return;
+        }
+
+        state.searchResults = results;
+
+        let html = '<div class="overflow-x-auto"><table class="search-result-table"><thead><tr><th>Invoice #</th><th>Invoice Date</th><th>Vendor</th><th>Event Types</th><th>Total</th><th>Created</th><th>Action</th></tr></thead><tbody>';
+
+        results.forEach((invoice, index) => {
+            // Build event type badges
+            let eventBadges = '';
+            const badgeStyle = state.isDarkMode ? 'style="color: #ffffff !important;"' : '';
+            if (invoice.isWedding === 1) eventBadges += '<span class="event-badge wedding" ' + badgeStyle + '><i class="fas fa-ring" ' + badgeStyle + '></i> Wedding</span>';
+            if (invoice.isFuneral === 1) eventBadges += '<span class="event-badge funeral" ' + badgeStyle + '><i class="fas fa-heart-broken" ' + badgeStyle + '></i> Funeral</span>';
+            if (invoice.isParty === 1) eventBadges += '<span class="event-badge party" ' + badgeStyle + '><i class="fas fa-music" ' + badgeStyle + '></i> Party</span>';
+            if (invoice.isStoreStock === 1) eventBadges += '<span class="event-badge stock" ' + badgeStyle + '><i class="fas fa-store" ' + badgeStyle + '></i> Stock</span>';
+            
+            if (eventBadges === '') {
+                eventBadges = '<span style="color: #9ca3af; font-size: 12px;">—</span>';
+            }
+            
+            html += '<tr><td class="font-semibold">' + invoice.invoiceNumber + '</td><td>' + formatDate(invoice.invoiceDate) + '</td><td>' + (invoice.vendor || 'N/A') + '</td><td>' + eventBadges + '</td><td class="font-semibold">' + formatCurrency(invoice.total) + '</td><td class="text-sm text-gray-500 dark-mode:text-gray-400">' + (invoice.createdTimestamp || 'N/A') + '</td><td><button class="edit-button" onclick="editInvoice(' + index + ')"><i class="fas fa-edit"></i> Edit</button></td></tr>';
+        });
+
+        html += '</tbody></table></div>';
+
+        container.innerHTML = html;
+        
+        // Apply dark mode styles to badges
+        if (state.isDarkMode) {
+            document.querySelectorAll('.event-badge').forEach(badge => {
+                badge.style.setProperty('color', '#ffffff', 'important');
+                badge.querySelectorAll('i').forEach(icon => {
+                    icon.style.setProperty('color', '#ffffff', 'important');
+                });
+            });
+        }
+    }
+
+    function formatDate(dateString) {
+        // Parse YYYY-MM-DD format without timezone conversion
+        const parts = dateString.split('-');
+        if (parts.length === 3) {
+            const year = parts[0];
+            const monthNum = parseInt(parts[1]);
+            const day = parseInt(parts[2]);
+            
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const monthName = months[monthNum - 1];
+            
+            return monthName + ' ' + day + ', ' + year;
+        }
+        // Fallback for other formats
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    function editInvoice(index) {
+        const invoice = state.searchResults[index];
+        state.editingInvoiceId = invoice.id;
+
+        document.getElementById('editInvoiceId').value = invoice.id;
+        document.getElementById('editInvoiceNumber').value = invoice.invoiceNumber;
+        document.getElementById('editInvoiceDate').value = invoice.invoiceDate;
+        document.getElementById('editVendorSelect').value = invoice.vendor || '';
+        document.getElementById('editFlowerCost').value = invoice.flowerCost.toFixed(2);
+        document.getElementById('editBotanicalsCost').value = (invoice.botanicalsCost || 0).toFixed(2);
+        document.getElementById('editSuppliesCost').value = invoice.suppliesCost.toFixed(2);
+        document.getElementById('editGreensCost').value = invoice.greensCost.toFixed(2);
+        document.getElementById('editMiscellaneousCost').value = (invoice.miscellaneousCost || 0).toFixed(2);
+        document.getElementById('editInvoiceCredits').value = invoice.invoiceCredits.toFixed(2);
+
+        // Populate event type checkboxes
+        document.getElementById('editIsWedding').checked = invoice.isWedding === 1;
+        document.getElementById('editIsFuneral').checked = invoice.isFuneral === 1;
+        document.getElementById('editIsParty').checked = invoice.isParty === 1;
+        document.getElementById('editIsStoreStock').checked = invoice.isStoreStock === 1;
+
+        calculateEditTotal();
+
+        document.getElementById('editFormContainer').classList.remove('hidden');
+        document.getElementById('editFormContainer').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function handleEditSubmit(e) {
+        e.preventDefault();
+        clearErrors();
+
+        const updatedData = {
+            id: document.getElementById('editInvoiceId').value,
+            vendor: document.getElementById('editVendorSelect').value.trim(),
+            invoiceDate: document.getElementById('editInvoiceDate').value,
+            flowerCost: parseFloat(document.getElementById('editFlowerCost').value) || 0,
+            botanicalsCost: parseFloat(document.getElementById('editBotanicalsCost').value) || 0,
+            suppliesCost: parseFloat(document.getElementById('editSuppliesCost').value) || 0,
+            greensCost: parseFloat(document.getElementById('editGreensCost').value) || 0,
+            miscellaneousCost: parseFloat(document.getElementById('editMiscellaneousCost').value) || 0,
+            invoiceCredits: parseFloat(document.getElementById('editInvoiceCredits').value) || 0,
+            isWedding: document.getElementById('editIsWedding').checked ? 1 : 0,
+            isFuneral: document.getElementById('editIsFuneral').checked ? 1 : 0,
+            isParty: document.getElementById('editIsParty').checked ? 1 : 0,
+            isStoreStock: document.getElementById('editIsStoreStock').checked ? 1 : 0
+        };
+
+        // Validate vendor is required
+        if (!updatedData.vendor || updatedData.vendor === '') {
+            showToast('Vendor is required', 'error');
+            return false;
+        }
+
+        // Validate invoice date
+        if (!updatedData.invoiceDate || updatedData.invoiceDate === '') {
+            showToast('Invoice date is required', 'error');
+            return false;
+        }
+
+        // Validate costs are not negative
+        if (updatedData.flowerCost < 0) {
+            showToast('Flower cost cannot be negative', 'error');
+            return false;
+        }
+        if (updatedData.botanicalsCost < 0) {
+            showToast('Botanicals cost cannot be negative', 'error');
+            return false;
+        }
+        if (updatedData.suppliesCost < 0) {
+            showToast('Supplies cost cannot be negative', 'error');
+            return false;
+        }
+        if (updatedData.greensCost < 0) {
+            showToast('Greens cost cannot be negative', 'error');
+            return false;
+        }
+        if (updatedData.miscellaneousCost < 0) {
+            showToast('Miscellaneous cost cannot be negative', 'error');
+            return false;
+        }
+        if (updatedData.invoiceCredits < 0) {
+            showToast('Invoice credits cannot be negative', 'error');
+            return false;
+        }
+
+        showLoading(true);
+
+        google.script.run
+            .withSuccessHandler(function(result) {
+                showLoading(false);
+                if (result.success) {
+                    showToast('Invoice updated successfully!', 'success');
+                    
+                    // Auto-populate search with the updated invoice number and display it
+                    const invoiceNumber = document.getElementById('editInvoiceNumber').value;
+                    document.getElementById('searchInvoiceNumber').value = invoiceNumber;
+                    
+                    // Close edit form first
+                    cancelEdit();
+                    
+                    // Trigger search to display the updated invoice
+                    google.script.run
+                        .withSuccessHandler(function(results) {
+                            displaySearchResults(results);
+                        })
+                        .withFailureHandler(function(error) {
+                            showToast('Could not display updated invoice: ' + error, 'warning');
+                        })
+                        .searchInvoices('number', invoiceNumber);
+                } else {
+                    showToast(result.message || 'An error occurred', 'error');
+                }
+            })
+            .withFailureHandler(function(error) {
+                showLoading(false);
+                showToast('Error: ' + error, 'error');
+            })
+            .updateInvoice(updatedData);
+    }
+
+    function cancelEdit() {
+        document.getElementById('editFormContainer').classList.add('hidden');
+        document.getElementById('editInvoiceForm').reset();
+        state.editingInvoiceId = null;
+    }
+
+    function setTodayDate() {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const dateString = year + '-' + month + '-' + day;
+        
+        const dateInput = document.getElementById('invoiceDate');
+        if (dateInput) {
+            dateInput.value = dateString;
+        }
+    }
+
+    function showError(elementId, message) {
+        const errorElement = document.getElementById(elementId);
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.classList.add('hidden');
+        });
+    }
+
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = 'toast ' + type;
+        const iconType = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle';
+        toast.innerHTML = '<i class="fas fa-' + iconType + '"></i><span>' + message + '</span>';
+        
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.animation = 'slideUp 0.3s ease reverse';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    function showLoading(show) {
+        const overlay = document.getElementById('loadingOverlay');
+        if (show) {
+            overlay.classList.add('active');
+        } else {
+            overlay.classList.remove('active');
+        }
+    }
+
+    function checkDuplicateInvoiceNumber() {
+        const invoiceNumberInput = document.getElementById('invoiceNumber');
+        const duplicateWarning = document.getElementById('duplicateWarning');
+        const invoiceNumber = invoiceNumberInput.value.trim();
+
+        // Clear warning if field is empty
+        if (!invoiceNumber) {
+            duplicateWarning.classList.remove('show');
+            return;
+        }
+
+        // Call server to check for duplicate
+        google.script.run
+            .withSuccessHandler(function(exists) {
+                if (exists) {
+                    duplicateWarning.classList.add('show');
+                } else {
+                    duplicateWarning.classList.remove('show');
+                }
+            })
+            .withFailureHandler(function(error) {
+                console.error('Error checking duplicate:', error);
+                // Don't show warning on error
+                duplicateWarning.classList.remove('show');
+            })
+            .checkInvoiceNumberExists(invoiceNumber);
+    }
+
+    function handleInvoiceNumberInput() {
+        const invoiceNumberInput = document.getElementById('invoiceNumber');
+        const duplicateWarning = document.getElementById('duplicateWarning');
+        const invoiceNumber = invoiceNumberInput.value.trim();
+
+        // Only clear warning if field becomes empty or value changes
+        // Re-check for duplicate as user types
+        if (!invoiceNumber) {
+            duplicateWarning.classList.remove('show');
+            return;
+        }
+
+        // Check for duplicate in real-time as they type
+        google.script.run
+            .withSuccessHandler(function(exists) {
+                if (exists) {
+                    duplicateWarning.classList.add('show');
+                } else {
+                    duplicateWarning.classList.remove('show');
+                }
+            })
+            .withFailureHandler(function(error) {
+                console.error('Error checking duplicate:', error);
+            })
+            .checkInvoiceNumberExists(invoiceNumber);
+    }
+</script>
