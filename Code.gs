@@ -1,7 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
- * @version 0.9997 - Modular Architecture
+ * @version 0.901 - Updated Checkboxes
  */
 
 /**
@@ -690,8 +690,8 @@ function appendInvoice(invoiceData) {
     const lastRow = invoiceSheet.getLastRow();
     invoiceSheet.getRange(lastRow, 64).setValue(invoiceData.isWedding || 0);      // BL: isWedding
     invoiceSheet.getRange(lastRow, 65).setValue(invoiceData.isFuneral || 0);      // BM: isFuneral
-    invoiceSheet.getRange(lastRow, 66).setValue(invoiceData.isParty || 0);        // BN: isParty
-    invoiceSheet.getRange(lastRow, 67).setValue(invoiceData.isStoreStock || 0);   // BO: isStoreStock
+    invoiceSheet.getRange(lastRow, 66).setValue(0);                               // BN: isHoliday (retained, not used)
+    invoiceSheet.getRange(lastRow, 67).setValue(invoiceData.isParty || 0);        // BO: isParty
     
     return invoiceId;
   } catch (error) {
@@ -733,11 +733,11 @@ function updateInvoiceRow(invoiceId, updatedData) {
         
         // Update event type flags (columns 64-67: BL-BO)
         // Use the values directly since client sends 1 or 0 explicitly
-        Logger.log('>>> updateInvoiceRow event flags: Wedding=' + updatedData.isWedding + ', Funeral=' + updatedData.isFuneral + ', Party=' + updatedData.isParty + ', Stock=' + updatedData.isStoreStock);
+        Logger.log('>>> updateInvoiceRow event flags: Wedding=' + updatedData.isWedding + ', Funeral=' + updatedData.isFuneral + ', Party=' + updatedData.isParty);
         invoiceSheet.getRange(rowNumber, 64).setValue(updatedData.isWedding); // BL: isWedding
         invoiceSheet.getRange(rowNumber, 65).setValue(updatedData.isFuneral); // BM: isFuneral
-        invoiceSheet.getRange(rowNumber, 66).setValue(updatedData.isParty); // BN: isParty
-        invoiceSheet.getRange(rowNumber, 67).setValue(updatedData.isStoreStock); // BO: isStoreStock
+        // Column 66 (BN: isHoliday) retained but not updated from UI
+        invoiceSheet.getRange(rowNumber, 67).setValue(updatedData.isParty); // BO: isParty
         
         return true;
       }
@@ -813,12 +813,12 @@ function searchByInvoiceNumberV2(searchTerm) {
           createdTimestamp: createdTimestampStr,
           isWedding: data[i].length > 63 ? Number(data[i][63]) || 0 : 0,      // BL (column 64, index 63)
           isFuneral: data[i].length > 64 ? Number(data[i][64]) || 0 : 0,      // BM (column 65, index 64)
-          isParty: data[i].length > 65 ? Number(data[i][65]) || 0 : 0,        // BN (column 66, index 65)
-          isStoreStock: data[i].length > 66 ? Number(data[i][66]) || 0 : 0    // BO (column 67, index 66)
+          // isHoliday at BN (column 66, index 65) - retained but not returned
+          isParty: data[i].length > 66 ? Number(data[i][66]) || 0 : 0         // BO (column 67, index 66)
         };
         
         plainResults.push(invoiceObj);
-        Logger.log('>>> Added invoice: ' + invoiceObj.invoiceNumber + ' | Wedding=' + invoiceObj.isWedding + ', Funeral=' + invoiceObj.isFuneral + ', Party=' + invoiceObj.isParty + ', Stock=' + invoiceObj.isStoreStock);
+        Logger.log('>>> Added invoice: ' + invoiceObj.invoiceNumber + ' | Wedding=' + invoiceObj.isWedding + ', Funeral=' + invoiceObj.isFuneral + ', Party=' + invoiceObj.isParty);
       }
     }
     
@@ -910,12 +910,12 @@ function searchByDateRangeV2(fromDate, toDate) {
           createdTimestamp: createdTimestampStr,
           isWedding: data[i].length > 63 ? Number(data[i][63]) || 0 : 0,      // BL (column 64, index 63)
           isFuneral: data[i].length > 64 ? Number(data[i][64]) || 0 : 0,      // BM (column 65, index 64)
-          isParty: data[i].length > 65 ? Number(data[i][65]) || 0 : 0,        // BN (column 66, index 65)
-          isStoreStock: data[i].length > 66 ? Number(data[i][66]) || 0 : 0    // BO (column 67, index 66)
+          // isHoliday at BN (column 66, index 65) - retained but not returned
+          isParty: data[i].length > 66 ? Number(data[i][66]) || 0 : 0         // BO (column 67, index 66)
         };
         
         plainResults.push(invoiceObj);
-        Logger.log('>>> Added invoice: ' + invoiceObj.invoiceNumber + ' | Wedding=' + invoiceObj.isWedding + ', Funeral=' + invoiceObj.isFuneral + ', Party=' + invoiceObj.isParty + ', Stock=' + invoiceObj.isStoreStock);
+        Logger.log('>>> Added invoice: ' + invoiceObj.invoiceNumber + ' | Wedding=' + invoiceObj.isWedding + ', Funeral=' + invoiceObj.isFuneral + ', Party=' + invoiceObj.isParty);
       }
     }
     

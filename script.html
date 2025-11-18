@@ -400,8 +400,7 @@
             invoiceCredits: document.getElementById('invoiceCredits').value.trim(),
             isWedding: document.getElementById('isWedding').checked ? 1 : 0,
             isFuneral: document.getElementById('isFuneral').checked ? 1 : 0,
-            isParty: document.getElementById('isParty').checked ? 1 : 0,
-            isStoreStock: document.getElementById('isStoreStock').checked ? 1 : 0
+            isParty: document.getElementById('isParty').checked ? 1 : 0
         };
 
         if (!validateForm(invoiceData)) {
@@ -644,7 +643,6 @@
             if (invoice.isWedding === 1) eventBadges += '<span class="event-badge wedding" ' + badgeStyle + '><i class="fas fa-ring" ' + badgeStyle + '></i> Wedding</span>';
             if (invoice.isFuneral === 1) eventBadges += '<span class="event-badge funeral" ' + badgeStyle + '><i class="fas fa-heart-broken" ' + badgeStyle + '></i> Funeral</span>';
             if (invoice.isParty === 1) eventBadges += '<span class="event-badge party" ' + badgeStyle + '><i class="fas fa-music" ' + badgeStyle + '></i> Party</span>';
-            if (invoice.isStoreStock === 1) eventBadges += '<span class="event-badge stock" ' + badgeStyle + '><i class="fas fa-store" ' + badgeStyle + '></i> Stock</span>';
             
             if (eventBadges === '') {
                 eventBadges = '<span style="color: #9ca3af; font-size: 12px;">—</span>';
@@ -705,7 +703,6 @@
         document.getElementById('editIsWedding').checked = invoice.isWedding === 1;
         document.getElementById('editIsFuneral').checked = invoice.isFuneral === 1;
         document.getElementById('editIsParty').checked = invoice.isParty === 1;
-        document.getElementById('editIsStoreStock').checked = invoice.isStoreStock === 1;
 
         calculateEditTotal();
 
@@ -729,8 +726,7 @@
             invoiceCredits: parseFloat(document.getElementById('editInvoiceCredits').value) || 0,
             isWedding: document.getElementById('editIsWedding').checked ? 1 : 0,
             isFuneral: document.getElementById('editIsFuneral').checked ? 1 : 0,
-            isParty: document.getElementById('editIsParty').checked ? 1 : 0,
-            isStoreStock: document.getElementById('editIsStoreStock').checked ? 1 : 0
+            isParty: document.getElementById('editIsParty').checked ? 1 : 0
         };
 
         // Validate vendor is required
