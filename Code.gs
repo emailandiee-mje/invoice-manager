@@ -119,17 +119,17 @@ function searchInvoices(searchType, searchValue) {
     let results = [];
     
     if (searchType === 'number') {
-      Logger.log('Calling searchByInvoiceNumberV2 with: ' + searchValue);
-      results = searchByInvoiceNumberV2(searchValue);
-      Logger.log('searchByInvoiceNumberV2 returned, type: ' + typeof results);
+      Logger.log('Calling searchByInvoiceNumber with: ' + searchValue);
+      results = searchByInvoiceNumber(searchValue);
+      Logger.log('searchByInvoiceNumber returned, type: ' + typeof results);
       Logger.log('Is array: ' + Array.isArray(results));
       if (results) {
         Logger.log('Results length: ' + results.length);
       }
     } else if (searchType === 'dateRange') {
-      Logger.log('Calling searchByDateRangeV2');
-      results = searchByDateRangeV2(searchValue.from, searchValue.to);
-      Logger.log('searchByDateRangeV2 returned, type: ' + typeof results);
+      Logger.log('Calling searchByDateRange');
+      results = searchByDateRange(searchValue.from, searchValue.to);
+      Logger.log('searchByDateRange returned, type: ' + typeof results);
       Logger.log('Is array: ' + Array.isArray(results));
       if (results) {
         Logger.log('Results length: ' + results.length);
@@ -800,9 +800,9 @@ function buildInvoiceObject(rowData, rowIndex) {
   };
 }
 
-function searchByInvoiceNumberV2(searchTerm) {
+function searchByInvoiceNumber(searchTerm) {
   try {
-    Logger.log('>>> searchByInvoiceNumberV2 START - searchTerm: ' + searchTerm);
+    Logger.log('>>> searchByInvoiceNumber START - searchTerm: ' + searchTerm);
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     const invoiceSheet = spreadsheet.getSheetByName('Invoices');
     
@@ -832,15 +832,15 @@ function searchByInvoiceNumberV2(searchTerm) {
     
     return plainResults;
   } catch (error) {
-    Logger.log('>>> ERROR in searchByInvoiceNumberV2: ' + error.toString());
+    Logger.log('>>> ERROR in searchByInvoiceNumber: ' + error.toString());
     Logger.log('>>> Stack: ' + error.stack);
     return [];
   }
 }
 
-function searchByDateRangeV2(fromDate, toDate) {
+function searchByDateRange(fromDate, toDate) {
   try {
-    Logger.log('>>> searchByDateRangeV2 START');
+    Logger.log('>>> searchByDateRange START');
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     const invoiceSheet = spreadsheet.getSheetByName('Invoices');
     
@@ -883,7 +883,7 @@ function searchByDateRangeV2(fromDate, toDate) {
     
     return plainResults;
   } catch (error) {
-    Logger.log('>>> ERROR in searchByDateRangeV2: ' + error.toString());
+    Logger.log('>>> ERROR in searchByDateRange: ' + error.toString());
     Logger.log('>>> Stack: ' + error.stack);
     return [];
   }
