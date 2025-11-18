@@ -750,6 +750,56 @@ function updateInvoiceRow(invoiceId, updatedData) {
   }
 }
 
+// Helper function to build invoice object from row data
+function buildInvoiceObject(rowData, rowIndex) {
+  const invoiceDateObj = rowData[2];
+  const createdTimestampObj = rowData[12];
+  
+  let invoiceDateStr = String(invoiceDateObj);
+  let createdTimestampStr = String(createdTimestampObj);
+  
+  // Convert Date objects to YYYY-MM-DD format using getFullYear/getMonth/getDate
+  try {
+    if (invoiceDateObj && typeof invoiceDateObj === 'object' && invoiceDateObj.getTime) {
+      const year = invoiceDateObj.getFullYear();
+      const month = String(invoiceDateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(invoiceDateObj.getDate()).padStart(2, '0');
+      invoiceDateStr = year + '-' + month + '-' + day;
+      Logger.log('>>> Invoice Date: Raw=' + invoiceDateObj + ' | Formatted=' + invoiceDateStr);
+    }
+  } catch (e) {
+    Logger.log('>>> Could not convert invoiceDate: ' + e);
+  }
+  
+  try {
+    if (createdTimestampObj && typeof createdTimestampObj === 'object' && createdTimestampObj.getTime) {
+      // Format the timestamp as readable string: "Nov 12, 2025, 2:47 PM"
+      createdTimestampStr = Utilities.formatDate(createdTimestampObj, Session.getScriptTimeZone(), 'MMM dd, yyyy, h:mm a');
+    }
+  } catch (e) {
+    Logger.log('>>> Could not convert createdTimestamp: ' + e);
+  }
+  
+  return {
+    id: String(rowData[0]),
+    invoiceNumber: String(rowData[1]),
+    invoiceDate: invoiceDateStr,
+    vendor: String(rowData[3]),
+    flowerCost: Number(rowData[4]),
+    botanicalsCost: Number(rowData[5]) || 0,
+    suppliesCost: Number(rowData[6]),
+    greensCost: Number(rowData[7]),
+    miscellaneousCost: Number(rowData[8]) || 0,
+    invoiceCredits: Number(rowData[9]),
+    total: Number(rowData[10]),
+    createdTimestamp: createdTimestampStr,
+    isWedding: rowData.length > 63 ? Number(rowData[63]) || 0 : 0,      // BL (column 64, index 63)
+    isFuneral: rowData.length > 64 ? Number(rowData[64]) || 0 : 0,      // BM (column 65, index 64)
+    // isHoliday at BN (column 66, index 65) - retained but not returned
+    isParty: rowData.length > 66 ? Number(rowData[66]) || 0 : 0         // BO (column 67, index 66)
+  };
+}
+
 function searchByInvoiceNumberV2(searchTerm) {
   try {
     Logger.log('>>> searchByInvoiceNumberV2 START - searchTerm: ' + searchTerm);
@@ -770,53 +820,7 @@ function searchByInvoiceNumberV2(searchTerm) {
     for (let i = 1; i < data.length; i++) {
       const invoiceNumber = String(data[i][1]).toLowerCase();
       if (invoiceNumber.includes(searchLower)) {
-        const invoiceDateObj = data[i][2];
-        const createdTimestampObj = data[i][12];
-        
-        let invoiceDateStr = String(invoiceDateObj);
-        let createdTimestampStr = String(createdTimestampObj);
-        
-        // Convert Date objects to YYYY-MM-DD format using getFullYear/getMonth/getDate
-        try {
-          if (invoiceDateObj && typeof invoiceDateObj === 'object' && invoiceDateObj.getTime) {
-            const year = invoiceDateObj.getFullYear();
-            const month = String(invoiceDateObj.getMonth() + 1).padStart(2, '0');
-            const day = String(invoiceDateObj.getDate()).padStart(2, '0');
-            invoiceDateStr = year + '-' + month + '-' + day;
-            Logger.log('>>> Invoice Date: Raw=' + invoiceDateObj + ' | Formatted=' + invoiceDateStr);
-          }
-        } catch (e) {
-          Logger.log('>>> Could not convert invoiceDate: ' + e);
-        }
-        
-        try {
-          if (createdTimestampObj && typeof createdTimestampObj === 'object' && createdTimestampObj.getTime) {
-            // Format the timestamp as readable string: "Nov 12, 2025, 2:47 PM"
-            createdTimestampStr = Utilities.formatDate(createdTimestampObj, Session.getScriptTimeZone(), 'MMM dd, yyyy, h:mm a');
-          }
-        } catch (e) {
-          Logger.log('>>> Could not convert createdTimestamp: ' + e);
-        }
-        
-        const invoiceObj = {
-          id: String(data[i][0]),
-          invoiceNumber: String(data[i][1]),
-          invoiceDate: invoiceDateStr,
-          vendor: String(data[i][3]),
-          flowerCost: Number(data[i][4]),
-          botanicalsCost: Number(data[i][5]) || 0,
-          suppliesCost: Number(data[i][6]),
-          greensCost: Number(data[i][7]),
-          miscellaneousCost: Number(data[i][8]) || 0,
-          invoiceCredits: Number(data[i][9]),
-          total: Number(data[i][10]),
-          createdTimestamp: createdTimestampStr,
-          isWedding: data[i].length > 63 ? Number(data[i][63]) || 0 : 0,      // BL (column 64, index 63)
-          isFuneral: data[i].length > 64 ? Number(data[i][64]) || 0 : 0,      // BM (column 65, index 64)
-          // isHoliday at BN (column 66, index 65) - retained but not returned
-          isParty: data[i].length > 66 ? Number(data[i][66]) || 0 : 0         // BO (column 67, index 66)
-        };
-        
+        const invoiceObj = buildInvoiceObject(data[i], i);
         plainResults.push(invoiceObj);
         Logger.log('>>> Added invoice: ' + invoiceObj.invoiceNumber + ' | Wedding=' + invoiceObj.isWedding + ', Funeral=' + invoiceObj.isFuneral + ', Party=' + invoiceObj.isParty);
       }
@@ -867,53 +871,7 @@ function searchByDateRangeV2(fromDate, toDate) {
       Logger.log('>>> Row ' + i + ' Comparison: ' + invoiceDate + ' >= ' + from + ' && ' + invoiceDate + ' <= ' + to + ' = ' + (invoiceDate >= from && invoiceDate <= to));
       
       if (invoiceDate >= from && invoiceDate <= to) {
-        const invoiceDateObj = data[i][2];
-        const createdTimestampObj = data[i][12];
-        
-        let invoiceDateStr = String(invoiceDateObj);
-        let createdTimestampStr = String(createdTimestampObj);
-        
-        // Convert Date objects to YYYY-MM-DD format using getFullYear/getMonth/getDate
-        try {
-          if (invoiceDateObj && typeof invoiceDateObj === 'object' && invoiceDateObj.getTime) {
-            const year = invoiceDateObj.getFullYear();
-            const month = String(invoiceDateObj.getMonth() + 1).padStart(2, '0');
-            const day = String(invoiceDateObj.getDate()).padStart(2, '0');
-            invoiceDateStr = year + '-' + month + '-' + day;
-            Logger.log('>>> Invoice Date: Raw=' + invoiceDateObj + ' | Formatted=' + invoiceDateStr);
-          }
-        } catch (e) {
-          Logger.log('>>> Could not convert invoiceDate: ' + e);
-        }
-        
-        try {
-          if (createdTimestampObj && typeof createdTimestampObj === 'object' && createdTimestampObj.getTime) {
-            // Format the timestamp as readable string: "Nov 12, 2025, 2:47 PM"
-            createdTimestampStr = Utilities.formatDate(createdTimestampObj, Session.getScriptTimeZone(), 'MMM dd, yyyy, h:mm a');
-          }
-        } catch (e) {
-          Logger.log('>>> Could not convert createdTimestamp: ' + e);
-        }
-        
-        const invoiceObj = {
-          id: String(data[i][0]),
-          invoiceNumber: String(data[i][1]),
-          invoiceDate: invoiceDateStr,
-          vendor: String(data[i][3]),
-          flowerCost: Number(data[i][4]),
-          botanicalsCost: Number(data[i][5]) || 0,
-          suppliesCost: Number(data[i][6]),
-          greensCost: Number(data[i][7]),
-          miscellaneousCost: Number(data[i][8]) || 0,
-          invoiceCredits: Number(data[i][9]),
-          total: Number(data[i][10]),
-          createdTimestamp: createdTimestampStr,
-          isWedding: data[i].length > 63 ? Number(data[i][63]) || 0 : 0,      // BL (column 64, index 63)
-          isFuneral: data[i].length > 64 ? Number(data[i][64]) || 0 : 0,      // BM (column 65, index 64)
-          // isHoliday at BN (column 66, index 65) - retained but not returned
-          isParty: data[i].length > 66 ? Number(data[i][66]) || 0 : 0         // BO (column 67, index 66)
-        };
-        
+        const invoiceObj = buildInvoiceObject(data[i], i);
         plainResults.push(invoiceObj);
         Logger.log('>>> Added invoice: ' + invoiceObj.invoiceNumber + ' | Wedding=' + invoiceObj.isWedding + ', Funeral=' + invoiceObj.isFuneral + ', Party=' + invoiceObj.isParty);
       }
