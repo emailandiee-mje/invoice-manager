@@ -632,6 +632,10 @@
         const invoice = state.searchResults[index];
         state.editingInvoiceId = invoice.id;
 
+        // Show the form FIRST so elements exist in DOM
+        document.getElementById('editFormContainer').classList.remove('hidden');
+
+        // Now populate the fields
         document.getElementById('editInvoiceId').value = invoice.id;
         document.getElementById('editInvoiceNumber').value = invoice.invoiceNumber;
         document.getElementById('editInvoiceDate').value = invoice.invoiceDate;
@@ -648,10 +652,13 @@
         document.getElementById('editIsFuneral').checked = invoice.isFuneral === 1;
         document.getElementById('editIsParty').checked = invoice.isParty === 1;
 
+        // Calculate total AFTER fields are populated
         calculateEditTotal();
 
-        document.getElementById('editFormContainer').classList.remove('hidden');
-        document.getElementById('editFormContainer').scrollIntoView({ behavior: 'smooth' });
+        // Scroll into view after a brief delay to allow DOM to update
+        setTimeout(() => {
+            document.getElementById('editFormContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
     }
 
     function handleEditSubmit(e) {
