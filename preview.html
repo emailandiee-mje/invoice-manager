@@ -397,6 +397,62 @@
             background: rgba(236, 72, 153, 0.1);
         }
 
+        .event-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 6px;
+            margin-bottom: 4px;
+        }
+
+        .event-badge i {
+            margin-right: 4px;
+            display: inline-block;
+            width: 16px;
+        }
+
+        .event-badge.wedding {
+            background: rgba(236, 72, 153, 0.2);
+            color: #ec4899;
+        }
+
+        .event-badge.funeral {
+            background: rgba(107, 114, 128, 0.2);
+            color: #4b5563;
+        }
+
+        .event-badge.party {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        .event-badge.stock {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .dark-mode .event-badge.wedding {
+            background: rgba(236, 72, 153, 0.3);
+            color: #f472b6;
+        }
+
+        .dark-mode .event-badge.funeral {
+            background: rgba(107, 114, 128, 0.3);
+            color: #d1d5db;
+        }
+
+        .dark-mode .event-badge.party {
+            background: rgba(139, 92, 246, 0.3);
+            color: #c4b5fd;
+        }
+
+        .dark-mode .event-badge.stock {
+            background: rgba(16, 185, 129, 0.3);
+            color: #6ee7b7;
+        }
+
         .edit-button {
             background: var(--secondary);
             color: white;
@@ -799,6 +855,29 @@
                                 </div>
                             </div>
 
+                            <!-- Event Type Checkboxes -->
+                            <div class="checkbox-group">
+                                <h3 class="text-lg font-semibold text-gray-800 dark-mode:text-white mb-4">Event Type</h3>
+                                <div class="flex flex-wrap gap-6">
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" id="isWedding" name="isWedding">
+                                        <span>💍 Wedding</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" id="isFuneral" name="isFuneral">
+                                        <span>🌸 Funeral</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" id="isParty" name="isParty">
+                                        <span>🎉 Party/Occasion</span>
+                                    </label>
+                                    <label class="checkbox-item">
+                                        <input type="checkbox" id="isStoreStock" name="isStoreStock">
+                                        <span>🏪 Store Stock</span>
+                                    </label>
+                                </div>
+                            </div>
+
                             <!-- Total Due Display -->
                             <div class="total-display mb-8">
                                 <div class="label">Total Invoice Amount</div>
@@ -983,6 +1062,29 @@
                                     </div>
                                 </div>
 
+                                <!-- Event Type Checkboxes for Edit -->
+                                <div class="checkbox-group">
+                                    <h3 class="text-lg font-semibold text-gray-800 dark-mode:text-white mb-4">Event Type</h3>
+                                    <div class="flex flex-wrap gap-6">
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" id="editIsWedding" name="editIsWedding">
+                                            <span>💍 Wedding</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" id="editIsFuneral" name="editIsFuneral">
+                                            <span>🌸 Funeral</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" id="editIsParty" name="editIsParty">
+                                            <span>🎉 Party/Occasion</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" id="editIsStoreStock" name="editIsStoreStock">
+                                            <span>🏪 Store Stock</span>
+                                        </label>
+                                    </div>
+                                </div>
+
                                 <div class="total-display mb-8">
                                     <div class="label">Updated Total Due</div>
                                     <div class="amount" id="editTotalDisplay">$0.00</div>
@@ -1036,6 +1138,10 @@
                 miscellaneousCost: 0.00,
                 invoiceCredits: 10.00,
                 total: 217.50,
+                isWedding: 1,
+                isFuneral: 0,
+                isParty: 1,
+                isStoreStock: 1,
                 createdTimestamp: '2025-11-01 10:30:00'
             },
             {
@@ -1050,6 +1156,10 @@
                 miscellaneousCost: 0.00,
                 invoiceCredits: 0.00,
                 total: 290.00,
+                isWedding: 0,
+                isFuneral: 1,
+                isParty: 0,
+                isStoreStock: 0,
                 createdTimestamp: '2025-11-05 14:15:00'
             }
         ];
@@ -1360,7 +1470,11 @@
                 suppliesCost: parseFloat(document.getElementById('suppliesCost').value) || 0,
                 greensCost: parseFloat(document.getElementById('greensCost').value) || 0,
                 miscellaneousCost: parseFloat(document.getElementById('miscellaneousCost').value) || 0,
-                invoiceCredits: parseFloat(document.getElementById('invoiceCredits').value) || 0
+                invoiceCredits: parseFloat(document.getElementById('invoiceCredits').value) || 0,
+                isWedding: document.getElementById('isWedding').checked ? 1 : 0,
+                isFuneral: document.getElementById('isFuneral').checked ? 1 : 0,
+                isParty: document.getElementById('isParty').checked ? 1 : 0,
+                isStoreStock: document.getElementById('isStoreStock').checked ? 1 : 0
             };
 
             if (!validateForm(invoiceData)) {
@@ -1509,6 +1623,7 @@
                                 <th>Invoice #</th>
                                 <th>Date</th>
                                 <th>Vendor</th>
+                                <th>Event Types</th>
                                 <th>Total</th>
                                 <th>Created</th>
                                 <th>Action</th>
@@ -1518,11 +1633,22 @@
             `;
 
             results.forEach((invoice, index) => {
+                let eventBadges = '';
+                if (invoice.isWedding === 1) eventBadges += '<span class="event-badge wedding"><i class="fas fa-ring"></i> Wedding</span>';
+                if (invoice.isFuneral === 1) eventBadges += '<span class="event-badge funeral"><i class="fas fa-heart-broken"></i> Funeral</span>';
+                if (invoice.isParty === 1) eventBadges += '<span class="event-badge party"><i class="fas fa-music"></i> Party</span>';
+                if (invoice.isStoreStock === 1) eventBadges += '<span class="event-badge stock"><i class="fas fa-store"></i> Stock</span>';
+                
+                if (eventBadges === '') {
+                    eventBadges = '<span style="color: #9ca3af; font-size: 12px;">—</span>';
+                }
+                
                 html += `
                     <tr>
                         <td class="font-semibold">${invoice.invoiceNumber}</td>
                         <td>${formatDate(invoice.invoiceDate)}</td>
                         <td>${invoice.vendor || 'N/A'}</td>
+                        <td>${eventBadges}</td>
                         <td class="font-semibold">${formatCurrency(invoice.total)}</td>
                         <td class="text-sm text-gray-500 dark-mode:text-gray-400">${invoice.createdTimestamp}</td>
                         <td>
@@ -1564,6 +1690,12 @@
             document.getElementById('editGreensCost').value = invoice.greensCost.toFixed(2);
             document.getElementById('editMiscellaneousCost').value = (invoice.miscellaneousCost || 0).toFixed(2);
             document.getElementById('editInvoiceCredits').value = invoice.invoiceCredits.toFixed(2);
+            
+            // Set event type checkboxes
+            document.getElementById('editIsWedding').checked = invoice.isWedding === 1;
+            document.getElementById('editIsFuneral').checked = invoice.isFuneral === 1;
+            document.getElementById('editIsParty').checked = invoice.isParty === 1;
+            document.getElementById('editIsStoreStock').checked = invoice.isStoreStock === 1;
 
             calculateEditTotal();
 
@@ -1573,6 +1705,23 @@
 
         function handleEditSubmit(e) {
             e.preventDefault();
+
+            const updatedData = {
+                id: document.getElementById('editInvoiceId').value,
+                vendor: document.getElementById('editVendorSelect').value.trim(),
+                invoiceNumber: document.getElementById('editInvoiceNumber').value.trim(),
+                invoiceDate: document.getElementById('editInvoiceDate').value,
+                flowerCost: parseFloat(document.getElementById('editFlowerCost').value) || 0,
+                botanicalsCost: parseFloat(document.getElementById('editBotanicalsCost').value) || 0,
+                suppliesCost: parseFloat(document.getElementById('editSuppliesCost').value) || 0,
+                greensCost: parseFloat(document.getElementById('editGreensCost').value) || 0,
+                miscellaneousCost: parseFloat(document.getElementById('editMiscellaneousCost').value) || 0,
+                invoiceCredits: parseFloat(document.getElementById('editInvoiceCredits').value) || 0,
+                isWedding: document.getElementById('editIsWedding').checked ? 1 : 0,
+                isFuneral: document.getElementById('editIsFuneral').checked ? 1 : 0,
+                isParty: document.getElementById('editIsParty').checked ? 1 : 0,
+                isStoreStock: document.getElementById('editIsStoreStock').checked ? 1 : 0
+            };
 
             showLoading(true);
             setTimeout(() => {

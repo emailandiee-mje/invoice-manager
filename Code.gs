@@ -1,7 +1,7 @@
 /**
  * Code.gs - Main Server Logic for Invoice Management App
  * Handles HTTP requests, form submissions, searches, and updates
- * @version 0.999 - Arrow Key Navigation in Vendor Field
+ * @version 0.9996 - Checkboxes
  */
 
 /**
@@ -620,6 +620,130 @@ function doGet(e) {
             color: white !important;
         }
 
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+            padding: 16px;
+            background: rgba(236, 72, 153, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+
+        .dark-mode .checkbox-group {
+            background: rgba(236, 72, 153, 0.1);
+            border-color: rgba(236, 72, 153, 0.3);
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background: rgba(236, 72, 153, 0.1);
+        }
+
+        .dark-mode .checkbox-item:hover {
+            background: rgba(236, 72, 153, 0.15);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .checkbox-item label {
+            cursor: pointer;
+            font-weight: 500;
+            margin: 0;
+            flex: 1;
+        }
+
+        .dark-mode .checkbox-item label {
+            color: #e5e7eb;
+        }
+
+        .event-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 6px;
+            margin-bottom: 4px;
+        }
+
+        .event-badge i {
+            margin-right: 4px;
+            display: inline-block;
+            width: 16px;
+        }
+
+        .event-badge.wedding {
+            background: rgba(236, 72, 153, 0.2);
+            color: var(--primary);
+        }
+
+        .event-badge.funeral {
+            background: rgba(107, 114, 128, 0.2);
+            color: #4b5563;
+        }
+
+        .event-badge.party {
+            background: rgba(139, 92, 246, 0.2);
+            color: var(--secondary);
+        }
+
+        .event-badge.stock {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        body.dark-mode .event-badge.wedding {
+            background: rgba(236, 72, 153, 0.3);
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .event-badge.wedding i {
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .event-badge.funeral {
+            background: rgba(107, 114, 128, 0.3);
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .event-badge.funeral i {
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .event-badge.party {
+            background: rgba(139, 92, 246, 0.3);
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .event-badge.party i {
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .event-badge.stock {
+            background: rgba(16, 185, 129, 0.3);
+            color: #ffffff !important;
+        }
+
+        body.dark-mode .event-badge.stock i {
+            color: #ffffff !important;
+        }
+
         @media (max-width: 768px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -845,6 +969,30 @@ function doGet(e) {
                                 <div class="amount" id="totalDisplay">$0.00<\/div>
                             <\/div>
 
+                            <div class="mb-8">
+                                <h3 class="text-lg font-semibold mb-4 text-gray-800 dark-mode:text-white">
+                                    <i class="fas fa-tag text-pink-500"><\/i> Event Type (Optional)
+                                <\/h3>
+                                <div class="checkbox-group">
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isWedding" name="isWedding" value="1">
+                                        <label for="isWedding"><i class="fas fa-ring"><\/i> Wedding<\/label>
+                                    <\/div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isFuneral" name="isFuneral" value="1">
+                                        <label for="isFuneral"><i class="fas fa-heart-broken"><\/i> Funeral<\/label>
+                                    <\/div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isParty" name="isParty" value="1">
+                                        <label for="isParty"><i class="fas fa-music"><\/i> Party/Occasion<\/label>
+                                    <\/div>
+                                    <div class="checkbox-item">
+                                        <input type="checkbox" id="isStoreStock" name="isStoreStock" value="1">
+                                        <label for="isStoreStock"><i class="fas fa-store"><\/i> Store Stock<\/label>
+                                    <\/div>
+                                <\/div>
+                            <\/div>
+
                             <div class="flex gap-4 flex-wrap">
                                 <button type="submit" class="btn btn-primary flex-1 sm:flex-none">
                                     <i class="fas fa-check-circle"><\/i> Submit Invoice
@@ -1032,6 +1180,30 @@ function doGet(e) {
                                     <div class="amount" id="editTotalDisplay">$0.00<\/div>
                                 <\/div>
 
+                                <div class="mb-8">
+                                    <h3 class="text-lg font-semibold mb-4 text-gray-800 dark-mode:text-white">
+                                        <i class="fas fa-tag text-pink-500"><\/i> Event Type (Optional)
+                                    <\/h3>
+                                    <div class="checkbox-group">
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="editIsWedding" name="editIsWedding" value="1">
+                                            <label for="editIsWedding"><i class="fas fa-ring"><\/i> Wedding<\/label>
+                                        <\/div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="editIsFuneral" name="editIsFuneral" value="1">
+                                            <label for="editIsFuneral"><i class="fas fa-heart-broken"><\/i> Funeral<\/label>
+                                        <\/div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="editIsParty" name="editIsParty" value="1">
+                                            <label for="editIsParty"><i class="fas fa-music"><\/i> Party/Occasion<\/label>
+                                        <\/div>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" id="editIsStoreStock" name="editIsStoreStock" value="1">
+                                            <label for="editIsStoreStock"><i class="fas fa-store"><\/i> Store Stock<\/label>
+                                        <\/div>
+                                    <\/div>
+                                <\/div>
+
                                 <div class="flex gap-4 flex-wrap">
                                     <button type="submit" class="btn btn-success flex-1 sm:flex-none">
                                         <i class="fas fa-save"><\/i> Update Invoice
@@ -1047,7 +1219,7 @@ function doGet(e) {
             <\/div>
 
             <div class="text-center mt-12 text-gray-600 dark-mode:text-gray-200 text-sm">
-                <p>© 2025 Bonnie's Invoice Manager | Version 0.999<\/p>
+                <p>© 2025 Bonnie's Invoice Manager | Version 0.9996<\/p>
                 <p class="mt-1 text-xs">Created lovingly by MJE AppWorks<\/p>
             <\/div>
         <\/div>
@@ -1078,10 +1250,24 @@ function doGet(e) {
                 body.classList.remove('light-mode');
                 body.classList.add('dark-mode');
                 document.getElementById('themeToggle').innerHTML = '<i class="fas fa-sun"><\/i>';
+                // Apply dark mode colors to badges
+                document.querySelectorAll('.event-badge').forEach(badge => {
+                    badge.style.setProperty('color', '#ffffff', 'important');
+                    badge.querySelectorAll('i').forEach(icon => {
+                        icon.style.setProperty('color', '#ffffff', 'important');
+                    });
+                });
             } else {
                 body.classList.add('light-mode');
                 body.classList.remove('dark-mode');
                 document.getElementById('themeToggle').innerHTML = '<i class="fas fa-moon"><\/i>';
+                // Remove inline dark mode colors from badges
+                document.querySelectorAll('.event-badge').forEach(badge => {
+                    badge.style.removeProperty('color');
+                    badge.querySelectorAll('i').forEach(icon => {
+                        icon.style.removeProperty('color');
+                    });
+                });
             }
         }
 
@@ -1438,7 +1624,11 @@ function doGet(e) {
                 suppliesCost: document.getElementById('suppliesCost').value.trim(),
                 greensCost: document.getElementById('greensCost').value.trim(),
                 miscellaneousCost: document.getElementById('miscellaneousCost').value.trim(),
-                invoiceCredits: document.getElementById('invoiceCredits').value.trim()
+                invoiceCredits: document.getElementById('invoiceCredits').value.trim(),
+                isWedding: document.getElementById('isWedding').checked ? 1 : 0,
+                isFuneral: document.getElementById('isFuneral').checked ? 1 : 0,
+                isParty: document.getElementById('isParty').checked ? 1 : 0,
+                isStoreStock: document.getElementById('isStoreStock').checked ? 1 : 0
             };
 
             if (!validateForm(invoiceData)) {
@@ -1672,15 +1862,37 @@ function doGet(e) {
 
             state.searchResults = results;
 
-            let html = '<div class="overflow-x-auto"><table class="search-result-table"><thead><tr><th>Invoice #<\/th><th>Invoice Date<\/th><th>Vendor<\/th><th>Total<\/th><th>Created<\/th><th>Action<\/th><\/tr><\/thead><tbody>';
+            let html = '<div class="overflow-x-auto"><table class="search-result-table"><thead><tr><th>Invoice #<\/th><th>Invoice Date<\/th><th>Vendor<\/th><th>Event Types<\/th><th>Total<\/th><th>Created<\/th><th>Action<\/th><\/tr><\/thead><tbody>';
 
             results.forEach((invoice, index) => {
-                html += '<tr><td class="font-semibold">' + invoice.invoiceNumber + '<\/td><td>' + formatDate(invoice.invoiceDate) + '<\/td><td>' + (invoice.vendor || 'N/A') + '<\/td><td class="font-semibold">' + formatCurrency(invoice.total) + '<\/td><td class="text-sm text-gray-500 dark-mode:text-gray-400">' + (invoice.createdTimestamp || 'N/A') + '<\/td><td><button class="edit-button" onclick="editInvoice(' + index + ')"><i class="fas fa-edit"><\/i> Edit<\/button><\/td><\/tr>';
+                // Build event type badges
+                let eventBadges = '';
+                const badgeStyle = state.isDarkMode ? 'style="color: #ffffff !important;"' : '';
+                if (invoice.isWedding === 1) eventBadges += '<span class="event-badge wedding" ' + badgeStyle + '><i class="fas fa-ring" ' + badgeStyle + '></i> Wedding</span>';
+                if (invoice.isFuneral === 1) eventBadges += '<span class="event-badge funeral" ' + badgeStyle + '><i class="fas fa-heart-broken" ' + badgeStyle + '></i> Funeral</span>';
+                if (invoice.isParty === 1) eventBadges += '<span class="event-badge party" ' + badgeStyle + '><i class="fas fa-music" ' + badgeStyle + '></i> Party</span>';
+                if (invoice.isStoreStock === 1) eventBadges += '<span class="event-badge stock" ' + badgeStyle + '><i class="fas fa-store" ' + badgeStyle + '></i> Stock</span>';
+                
+                if (eventBadges === '') {
+                    eventBadges = '<span style="color: #9ca3af; font-size: 12px;">—<\/span>';
+                }
+                
+                html += '<tr><td class="font-semibold">' + invoice.invoiceNumber + '<\/td><td>' + formatDate(invoice.invoiceDate) + '<\/td><td>' + (invoice.vendor || 'N/A') + '<\/td><td>' + eventBadges + '<\/td><td class="font-semibold">' + formatCurrency(invoice.total) + '<\/td><td class="text-sm text-gray-500 dark-mode:text-gray-400">' + (invoice.createdTimestamp || 'N/A') + '<\/td><td><button class="edit-button" onclick="editInvoice(' + index + ')"><i class="fas fa-edit"><\/i> Edit<\/button><\/td><\/tr>';
             });
 
             html += '<\/tbody><\/table><\/div>';
 
             container.innerHTML = html;
+            
+            // Apply dark mode styles to badges
+            if (state.isDarkMode) {
+                document.querySelectorAll('.event-badge').forEach(badge => {
+                    badge.style.setProperty('color', '#ffffff', 'important');
+                    badge.querySelectorAll('i').forEach(icon => {
+                        icon.style.setProperty('color', '#ffffff', 'important');
+                    });
+                });
+            }
         }
 
         function formatDate(dateString) {
@@ -1716,6 +1928,12 @@ function doGet(e) {
             document.getElementById('editMiscellaneousCost').value = (invoice.miscellaneousCost || 0).toFixed(2);
             document.getElementById('editInvoiceCredits').value = invoice.invoiceCredits.toFixed(2);
 
+            // Populate event type checkboxes
+            document.getElementById('editIsWedding').checked = invoice.isWedding === 1;
+            document.getElementById('editIsFuneral').checked = invoice.isFuneral === 1;
+            document.getElementById('editIsParty').checked = invoice.isParty === 1;
+            document.getElementById('editIsStoreStock').checked = invoice.isStoreStock === 1;
+
             calculateEditTotal();
 
             document.getElementById('editFormContainer').classList.remove('hidden');
@@ -1735,7 +1953,11 @@ function doGet(e) {
                 suppliesCost: parseFloat(document.getElementById('editSuppliesCost').value) || 0,
                 greensCost: parseFloat(document.getElementById('editGreensCost').value) || 0,
                 miscellaneousCost: parseFloat(document.getElementById('editMiscellaneousCost').value) || 0,
-                invoiceCredits: parseFloat(document.getElementById('editInvoiceCredits').value) || 0
+                invoiceCredits: parseFloat(document.getElementById('editInvoiceCredits').value) || 0,
+                isWedding: document.getElementById('editIsWedding').checked ? 1 : 0,
+                isFuneral: document.getElementById('editIsFuneral').checked ? 1 : 0,
+                isParty: document.getElementById('editIsParty').checked ? 1 : 0,
+                isStoreStock: document.getElementById('editIsStoreStock').checked ? 1 : 0
             };
 
             // Validate vendor is required
@@ -2087,7 +2309,11 @@ function updateInvoice(updatedData) {
       greensCost: updatedData.greensCost,
       miscellaneousCost: updatedData.miscellaneousCost,
       invoiceCredits: updatedData.invoiceCredits,
-      total: newTotal
+      total: newTotal,
+      isWedding: updatedData.isWedding,
+      isFuneral: updatedData.isFuneral,
+      isParty: updatedData.isParty,
+      isStoreStock: updatedData.isStoreStock
     });
 
     Logger.log('Invoice updated successfully. ID: ' + updatedData.id);
@@ -2546,26 +2772,37 @@ function appendInvoice(invoiceData) {
     const userEmail = Session.getEffectiveUser().getEmail();
     const timestamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'MM/dd/yyyy HH:mm:ss');
     
+    // Build the row with core invoice data (columns A-P only)
+    // Let Google Sheets table auto-fill handle columns Q-BK (formulas)
+    // Manually set event type flags in columns BL-BO (64-67) after append
     const newRow = [
-      invoiceId,
-      invoiceData.invoiceNumber,
-      invoiceData.invoiceDate,
-      invoiceData.vendor,
-      invoiceData.flowerCost,
-      invoiceData.botanicalsCost,
-      invoiceData.suppliesCost,
-      invoiceData.greensCost,
-      invoiceData.miscellaneousCost,
-      invoiceData.invoiceCredits,
-      invoiceData.total,
-      'Active',
-      timestamp,
-      timestamp,
-      userEmail,
-      userEmail
+      invoiceId,                              // A: ID
+      invoiceData.invoiceNumber,              // B: Invoice Number
+      invoiceData.invoiceDate,                // C: Invoice Date
+      invoiceData.vendor,                     // D: Vendor
+      invoiceData.flowerCost,                 // E: Flower Cost
+      invoiceData.botanicalsCost,             // F: Botanicals Cost
+      invoiceData.suppliesCost,               // G: Supplies Cost
+      invoiceData.greensCost,                 // H: Greens Cost
+      invoiceData.miscellaneousCost,          // I: Miscellaneous Cost
+      invoiceData.invoiceCredits,             // J: Invoice Credits
+      invoiceData.total,                      // K: Total Due
+      'Active',                               // L: Status
+      timestamp,                              // M: Created Timestamp
+      timestamp,                              // N: Last Modified Timestamp
+      userEmail,                              // O: Created By
+      userEmail                               // P: Last Modified By
     ];
     
     invoiceSheet.appendRow(newRow);
+    
+    // Set event type flags in columns BL-BO (64-67) for the newly appended row
+    const lastRow = invoiceSheet.getLastRow();
+    invoiceSheet.getRange(lastRow, 64).setValue(invoiceData.isWedding || 0);      // BL: isWedding
+    invoiceSheet.getRange(lastRow, 65).setValue(invoiceData.isFuneral || 0);      // BM: isFuneral
+    invoiceSheet.getRange(lastRow, 66).setValue(invoiceData.isParty || 0);        // BN: isParty
+    invoiceSheet.getRange(lastRow, 67).setValue(invoiceData.isStoreStock || 0);   // BO: isStoreStock
+    
     return invoiceId;
   } catch (error) {
     Logger.log('Error in appendInvoice: ' + error);
@@ -2592,17 +2829,25 @@ function updateInvoiceRow(invoiceId, updatedData) {
         // Update the row
         const rowNumber = i + 1; // Sheets are 1-indexed
         
-        invoiceSheet.getRange(rowNumber, 3).setValue(updatedData.invoiceDate); // Invoice Date
-        invoiceSheet.getRange(rowNumber, 4).setValue(updatedData.vendor); // Vendor
-        invoiceSheet.getRange(rowNumber, 5).setValue(updatedData.flowerCost); // Flower Cost
-        invoiceSheet.getRange(rowNumber, 6).setValue(updatedData.botanicalsCost); // Botanicals Cost
-        invoiceSheet.getRange(rowNumber, 7).setValue(updatedData.suppliesCost); // Supplies Cost
-        invoiceSheet.getRange(rowNumber, 8).setValue(updatedData.greensCost); // Greens Cost
-        invoiceSheet.getRange(rowNumber, 9).setValue(updatedData.miscellaneousCost); // Miscellaneous Cost
-        invoiceSheet.getRange(rowNumber, 10).setValue(updatedData.invoiceCredits); // Invoice Credits
-        invoiceSheet.getRange(rowNumber, 11).setValue(updatedData.total); // Total Due
-        invoiceSheet.getRange(rowNumber, 14).setValue(timestamp); // Last Modified Timestamp
-        invoiceSheet.getRange(rowNumber, 16).setValue(userEmail); // Last Modified By
+        invoiceSheet.getRange(rowNumber, 3).setValue(updatedData.invoiceDate); // Invoice Date (C)
+        invoiceSheet.getRange(rowNumber, 4).setValue(updatedData.vendor); // Vendor (D)
+        invoiceSheet.getRange(rowNumber, 5).setValue(updatedData.flowerCost); // Flower Cost (E)
+        invoiceSheet.getRange(rowNumber, 6).setValue(updatedData.botanicalsCost); // Botanicals Cost (F)
+        invoiceSheet.getRange(rowNumber, 7).setValue(updatedData.suppliesCost); // Supplies Cost (G)
+        invoiceSheet.getRange(rowNumber, 8).setValue(updatedData.greensCost); // Greens Cost (H)
+        invoiceSheet.getRange(rowNumber, 9).setValue(updatedData.miscellaneousCost); // Miscellaneous Cost (I)
+        invoiceSheet.getRange(rowNumber, 10).setValue(updatedData.invoiceCredits); // Invoice Credits (J)
+        invoiceSheet.getRange(rowNumber, 11).setValue(updatedData.total); // Total Due (K)
+        invoiceSheet.getRange(rowNumber, 14).setValue(timestamp); // Last Modified Timestamp (N)
+        invoiceSheet.getRange(rowNumber, 16).setValue(userEmail); // Last Modified By (P)
+        
+        // Update event type flags (columns 64-67: BL-BO)
+        // Use the values directly since client sends 1 or 0 explicitly
+        Logger.log('>>> updateInvoiceRow event flags: Wedding=' + updatedData.isWedding + ', Funeral=' + updatedData.isFuneral + ', Party=' + updatedData.isParty + ', Stock=' + updatedData.isStoreStock);
+        invoiceSheet.getRange(rowNumber, 64).setValue(updatedData.isWedding); // BL: isWedding
+        invoiceSheet.getRange(rowNumber, 65).setValue(updatedData.isFuneral); // BM: isFuneral
+        invoiceSheet.getRange(rowNumber, 66).setValue(updatedData.isParty); // BN: isParty
+        invoiceSheet.getRange(rowNumber, 67).setValue(updatedData.isStoreStock); // BO: isStoreStock
         
         return true;
       }
@@ -2675,11 +2920,15 @@ function searchByInvoiceNumberV2(searchTerm) {
           miscellaneousCost: Number(data[i][8]) || 0,
           invoiceCredits: Number(data[i][9]),
           total: Number(data[i][10]),
-          createdTimestamp: createdTimestampStr
+          createdTimestamp: createdTimestampStr,
+          isWedding: data[i].length > 63 ? Number(data[i][63]) || 0 : 0,      // BL (column 64, index 63)
+          isFuneral: data[i].length > 64 ? Number(data[i][64]) || 0 : 0,      // BM (column 65, index 64)
+          isParty: data[i].length > 65 ? Number(data[i][65]) || 0 : 0,        // BN (column 66, index 65)
+          isStoreStock: data[i].length > 66 ? Number(data[i][66]) || 0 : 0    // BO (column 67, index 66)
         };
         
         plainResults.push(invoiceObj);
-        Logger.log('>>> Added invoice: ' + invoiceObj.invoiceNumber);
+        Logger.log('>>> Added invoice: ' + invoiceObj.invoiceNumber + ' | Wedding=' + invoiceObj.isWedding + ', Funeral=' + invoiceObj.isFuneral + ', Party=' + invoiceObj.isParty + ', Stock=' + invoiceObj.isStoreStock);
       }
     }
     
@@ -2768,11 +3017,15 @@ function searchByDateRangeV2(fromDate, toDate) {
           miscellaneousCost: Number(data[i][8]) || 0,
           invoiceCredits: Number(data[i][9]),
           total: Number(data[i][10]),
-          createdTimestamp: createdTimestampStr
+          createdTimestamp: createdTimestampStr,
+          isWedding: data[i].length > 63 ? Number(data[i][63]) || 0 : 0,      // BL (column 64, index 63)
+          isFuneral: data[i].length > 64 ? Number(data[i][64]) || 0 : 0,      // BM (column 65, index 64)
+          isParty: data[i].length > 65 ? Number(data[i][65]) || 0 : 0,        // BN (column 66, index 65)
+          isStoreStock: data[i].length > 66 ? Number(data[i][66]) || 0 : 0    // BO (column 67, index 66)
         };
         
         plainResults.push(invoiceObj);
-        Logger.log('>>> Added invoice: ' + invoiceObj.invoiceNumber);
+        Logger.log('>>> Added invoice: ' + invoiceObj.invoiceNumber + ' | Wedding=' + invoiceObj.isWedding + ', Funeral=' + invoiceObj.isFuneral + ', Party=' + invoiceObj.isParty + ', Stock=' + invoiceObj.isStoreStock);
       }
     }
     
