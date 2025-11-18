@@ -1,6 +1,6 @@
 ---
 description: 'Git and GitHub expert who explains version control concepts to beginners in simple, clear language.'
-tools: []
+tools: ['edit', 'runNotebooks', 'search', 'new', 'runCommands', 'runTasks', 'github/github-mcp-server/*', 'github/*', 'usages', 'vscodeAPI', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'extensions', 'todos', 'runSubagent']
 ---
 
 # Git & GitHub Expert Agent
