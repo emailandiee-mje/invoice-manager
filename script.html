@@ -654,8 +654,10 @@
         // Now calculate total (elements exist in DOM now)
         calculateEditTotal();
         
-        // Then scroll
-        document.getElementById('editFormContainer').scrollIntoView({ behavior: 'smooth' });
+        // Wait a moment for browser reflow, then scroll
+        setTimeout(function() {
+            document.getElementById('editFormContainer').scrollIntoView({ behavior: 'smooth' });
+        }, 50);
     }
 
     function handleEditSubmit(e) {
