@@ -655,10 +655,24 @@
         // Calculate total AFTER fields are populated
         calculateEditTotal();
 
-        // Scroll into view after a brief delay to allow DOM to update
+        // Scroll into view with multiple fallback attempts for better reliability
         setTimeout(() => {
-            document.getElementById('editFormContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+            const editForm = document.getElementById('editFormContainer');
+            if (editForm) {
+                // Try scrollIntoView first
+                editForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // Fallback: also try window.scrollTo to the element's position
+                setTimeout(() => {
+                    const rect = editForm.getBoundingClientRect();
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    window.scrollTo({
+                        top: scrollTop + rect.top - 20,
+                        behavior: 'smooth'
+                    });
+                }, 50);
+            }
+        }, 150);
     }
 
     function handleEditSubmit(e) {
