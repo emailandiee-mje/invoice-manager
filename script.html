@@ -648,9 +648,13 @@
         document.getElementById('editIsFuneral').checked = invoice.isFuneral === 1;
         document.getElementById('editIsParty').checked = invoice.isParty === 1;
 
-        calculateEditTotal();
-
+        // Unhide the form first so elements are accessible
         document.getElementById('editFormContainer').classList.remove('hidden');
+        
+        // Now calculate total (elements exist in DOM now)
+        calculateEditTotal();
+        
+        // Then scroll
         document.getElementById('editFormContainer').scrollIntoView({ behavior: 'smooth' });
     }
 
