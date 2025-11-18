@@ -402,6 +402,21 @@
         submitToServer(invoiceData);
     }
 
+    // Generic function to validate numeric fields
+    function validateNumericField(value, errorElementId, fieldLabel) {
+        if (value !== '') {
+            const num = parseFloat(value);
+            if (isNaN(num)) {
+                showError(errorElementId, `${fieldLabel} must be a valid number (e.g., 10.50)`);
+                return false;
+            } else if (num < 0) {
+                showError(errorElementId, `${fieldLabel} cannot be negative`);
+                return false;
+            }
+        }
+        return true;
+    }
+
     function validateForm(data) {
         let isValid = true;
 
@@ -429,77 +444,13 @@
             isValid = false;
         }
 
-        // Validate Flower Cost - must be numeric or empty
-        if (data.flowerCost !== '') {
-            const flowerNum = parseFloat(data.flowerCost);
-            if (isNaN(flowerNum)) {
-                showError('flowerCostError', 'Amount must be a valid number (e.g., 10.50)');
-                isValid = false;
-            } else if (flowerNum < 0) {
-                showError('flowerCostError', 'Amount cannot be negative');
-                isValid = false;
-            }
-        }
-
-        // Validate Botanicals Cost - must be numeric or empty
-        if (data.botanicalsCost !== '') {
-            const botanicalsNum = parseFloat(data.botanicalsCost);
-            if (isNaN(botanicalsNum)) {
-                showError('botanicalsCostError', 'Amount must be a valid number (e.g., 10.50)');
-                isValid = false;
-            } else if (botanicalsNum < 0) {
-                showError('botanicalsCostError', 'Amount cannot be negative');
-                isValid = false;
-            }
-        }
-
-        // Validate Supplies Cost - must be numeric or empty
-        if (data.suppliesCost !== '') {
-            const suppliesNum = parseFloat(data.suppliesCost);
-            if (isNaN(suppliesNum)) {
-                showError('suppliesCostError', 'Amount must be a valid number (e.g., 10.50)');
-                isValid = false;
-            } else if (suppliesNum < 0) {
-                showError('suppliesCostError', 'Amount cannot be negative');
-                isValid = false;
-            }
-        }
-
-        // Validate Greens Cost - must be numeric or empty
-        if (data.greensCost !== '') {
-            const greensNum = parseFloat(data.greensCost);
-            if (isNaN(greensNum)) {
-                showError('greensCostError', 'Amount must be a valid number (e.g., 10.50)');
-                isValid = false;
-            } else if (greensNum < 0) {
-                showError('greensCostError', 'Amount cannot be negative');
-                isValid = false;
-            }
-        }
-
-        // Validate Miscellaneous Cost - must be numeric or empty
-        if (data.miscellaneousCost !== '') {
-            const miscNum = parseFloat(data.miscellaneousCost);
-            if (isNaN(miscNum)) {
-                showError('miscellaneousCostError', 'Amount must be a valid number (e.g., 10.50)');
-                isValid = false;
-            } else if (miscNum < 0) {
-                showError('miscellaneousCostError', 'Amount cannot be negative');
-                isValid = false;
-            }
-        }
-
-        // Validate Invoice Credits - must be numeric or empty
-        if (data.invoiceCredits !== '') {
-            const creditsNum = parseFloat(data.invoiceCredits);
-            if (isNaN(creditsNum)) {
-                showError('invoiceCreditsError', 'Credits must be a valid number (e.g., 10.50)');
-                isValid = false;
-            } else if (creditsNum < 0) {
-                showError('invoiceCreditsError', 'Credits cannot be negative');
-                isValid = false;
-            }
-        }
+        // Validate cost fields using generic function
+        isValid = validateNumericField(data.flowerCost, 'flowerCostError', 'Amount') && isValid;
+        isValid = validateNumericField(data.botanicalsCost, 'botanicalsCostError', 'Amount') && isValid;
+        isValid = validateNumericField(data.suppliesCost, 'suppliesCostError', 'Amount') && isValid;
+        isValid = validateNumericField(data.greensCost, 'greensCostError', 'Amount') && isValid;
+        isValid = validateNumericField(data.miscellaneousCost, 'miscellaneousCostError', 'Amount') && isValid;
+        isValid = validateNumericField(data.invoiceCredits, 'invoiceCreditsError', 'Credits') && isValid;
 
         return isValid;
     }
@@ -725,30 +676,21 @@
             return false;
         }
 
-        // Validate costs are not negative
-        if (updatedData.flowerCost < 0) {
-            showToast('Flower cost cannot be negative', 'error');
-            return false;
-        }
-        if (updatedData.botanicalsCost < 0) {
-            showToast('Botanicals cost cannot be negative', 'error');
-            return false;
-        }
-        if (updatedData.suppliesCost < 0) {
-            showToast('Supplies cost cannot be negative', 'error');
-            return false;
-        }
-        if (updatedData.greensCost < 0) {
-            showToast('Greens cost cannot be negative', 'error');
-            return false;
-        }
-        if (updatedData.miscellaneousCost < 0) {
-            showToast('Miscellaneous cost cannot be negative', 'error');
-            return false;
-        }
-        if (updatedData.invoiceCredits < 0) {
-            showToast('Invoice credits cannot be negative', 'error');
-            return false;
+        // Validate costs are not negative using generic function
+        const costFields = [
+            { value: updatedData.flowerCost, label: 'Flower cost' },
+            { value: updatedData.botanicalsCost, label: 'Botanicals cost' },
+            { value: updatedData.suppliesCost, label: 'Supplies cost' },
+            { value: updatedData.greensCost, label: 'Greens cost' },
+            { value: updatedData.miscellaneousCost, label: 'Miscellaneous cost' },
+            { value: updatedData.invoiceCredits, label: 'Invoice credits' }
+        ];
+        
+        for (const field of costFields) {
+            if (field.value < 0) {
+                showToast(`${field.label} cannot be negative`, 'error');
+                return false;
+            }
         }
 
         showLoading(true);
