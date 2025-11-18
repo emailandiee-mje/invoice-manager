@@ -583,12 +583,21 @@
                 eventBadges = '<span style="color: #9ca3af; font-size: 12px;">—</span>';
             }
             
-            html += '<tr><td class="font-semibold">' + invoice.invoiceNumber + '</td><td>' + formatDate(invoice.invoiceDate) + '</td><td>' + (invoice.vendor || 'N/A') + '</td><td>' + eventBadges + '</td><td class="font-semibold">' + formatCurrency(invoice.total) + '</td><td class="text-sm text-gray-500 dark-mode:text-gray-400">' + (invoice.createdTimestamp || 'N/A') + '</td><td><button class="edit-button" onclick="editInvoice(' + index + ')"><i class="fas fa-edit"></i> Edit</button></td></tr>';
+            html += '<tr><td class="font-semibold">' + invoice.invoiceNumber + '</td><td>' + formatDate(invoice.invoiceDate) + '</td><td>' + (invoice.vendor || 'N/A') + '</td><td>' + eventBadges + '</td><td class="font-semibold">' + formatCurrency(invoice.total) + '</td><td class="text-sm text-gray-500 dark-mode:text-gray-400">' + (invoice.createdTimestamp || 'N/A') + '</td><td><button class="edit-button" data-index="' + index + '"><i class="fas fa-edit"></i> Edit</button></td></tr>';
         });
 
         html += '</tbody></table></div>';
 
         container.innerHTML = html;
+        
+        // Add click event listeners to all edit buttons using event delegation
+        const editButtons = container.querySelectorAll('.edit-button');
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                editInvoice(index);
+            });
+        });
         
         // Apply dark mode styles to badges
         if (state.isDarkMode) {
