@@ -73,6 +73,10 @@
         const vendorList = document.getElementById('vendorList');
         
         vendorInput.addEventListener('focus', () => {
+            // Repopulate vendor list if empty
+            if (vendorList.childNodes.length === 0 && state.vendors.length > 0) {
+                populateVendorList();
+            }
             if (vendorList.childNodes.length > 0) {
                 vendorList.classList.remove('hidden');
             }
