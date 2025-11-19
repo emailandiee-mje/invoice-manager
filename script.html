@@ -116,6 +116,8 @@
         editVendorInput.addEventListener('blur', () => {
             setTimeout(() => {
                 editVendorList.classList.add('hidden');
+                state.highlightedVendorIndex = -1;
+                clearVendorHighlight();
             }, 200);
         });
 
