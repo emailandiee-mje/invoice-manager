@@ -15,19 +15,23 @@ Complete guide for deploying and using the Invoice Management System.
 4. Rename sheet to: **"Invoices"**
 5. Leave open
 
-### Step 2: Set Up Google Apps Script (3 min)
+### Step 2: Set Up Google Apps Script (5 min)
 1. **Extensions** → **Apps Script**
-2. Select all code in default Code.gs and delete
-3. Copy all contents from **`Code.gs`** (from project folder)
-4. Paste into the Apps Script editor
-5. Save (Ctrl+S or Cmd+S)
+2. You'll see a default `Code.gs` file - keep it
+3. Copy **4 files** from the project folder:
+   - **Code.gs** - Replace default code with project Code.gs
+   - **index.html** - Add new file (File → New → HTML file, name: index)
+   - **script.html** - Add new file (File → New → HTML file, name: script)
+   - **styles.html** - Add new file (File → New → HTML file, name: styles)
+4. Save all files (Ctrl+S or Cmd+S for each)
 
 ### Step 3: Deploy (5 min)
 1. **Deploy** → **New deployment**
 2. Type: **Web app**
-3. Execute as: **Your Account**
-4. Access: **Anyone**
+3. Execute as: **Me (your-email@gmail.com)**
+4. Who has access: **Anyone**
 5. Click **Deploy**
+6. **Important:** If prompted to authorize, click "Authorize access" and follow the prompts
 6. Copy the URL shown
 
 ### Step 4: Test (3 min)
@@ -44,17 +48,23 @@ Send deployment URL to team members - they can start using immediately!
 
 ## 📁 Project Files
 
-### Application Files
-- **`Code.gs`** - Complete application with all backend logic and embedded HTML/CSS/JavaScript UI
-- **`preview.html`** - Standalone preview file for testing the UI locally in VS Code
+### Application Files (Required for Deployment)
+- **`Code.gs`** - Server-side logic and functions (1,030 lines)
+- **`index.html`** - HTML structure and UI layout
+- **`script.html`** - Client-side JavaScript functionality
+- **`styles.html`** - CSS styling and themes
+- **`preview.html`** - Standalone preview file for local testing (not deployed)
 
 ### Documentation
 - **`README.md`** - Comprehensive overview and feature list
 - **`DEPLOYMENT.md`** - This file - deployment instructions and customization
 - **`PROJECT_PLAN.md`** - Technical specifications and architecture
-- **`TEST_PLAN.md`** - Testing procedures and validation
+- **`TEST_PLAN.md`** - Testing procedures and validation (190+ tests)
 - **`DEFECTS.md`** - Bug tracking and resolutions
 - **`ENHANCEMENT_IDEAS.md`** - Future feature ideas and roadmap
+- **`CONTRIBUTING.md`** - Contribution guidelines
+- **`SECURITY.md`** - Security policy
+- **`LICENSE`** - MIT License
 
 ---
 
@@ -97,30 +107,59 @@ Follow these steps to deploy the app to your Google Account:
 
 1. With your Sheets open, go to **Extensions** → **Apps Script**
 2. You'll be taken to the Apps Script editor in a new tab
-3. Delete the default `Code.gs` file (right-click → delete)
+3. The default `Code.gs` file will be present - keep this file
 
-### Step 3: Copy the Code
+### Step 3: Add All Application Files
 
-1. The default `Code.gs` file should already be present in the Apps Script editor
-2. Select all the default code and delete it
-3. Open `Code.gs` from this project folder
-4. Copy **all contents** from `Code.gs`
-5. Paste into the Apps Script editor
-6. Click the **Save** icon (💾) or press `Ctrl+S` (Windows) / `Cmd+S` (Mac)
+**Copy Code.gs:**
+1. In the Apps Script editor, select all default code in `Code.gs` and delete it
+2. Open `Code.gs` from this project folder
+3. Copy **all contents** and paste into the Apps Script editor
+4. Click **Save** (💾)
 
-> **Note:** The application uses a single `Code.gs` file that contains all backend logic and embedded HTML/CSS/JavaScript. No additional files are needed.
+**Add index.html:**
+1. Click **File** → **New** → **HTML file**
+2. Name it: `index` (without .html extension)
+3. Open `index.html` from the project folder
+4. Copy all contents and paste into the editor
+5. Click **Save**
+
+**Add script.html:**
+1. Click **File** → **New** → **HTML file**
+2. Name it: `script` (without .html extension)
+3. Open `script.html` from the project folder
+4. Copy all contents and paste into the editor
+5. Click **Save**
+
+**Add styles.html:**
+1. Click **File** → **New** → **HTML file**
+2. Name it: `styles` (without .html extension)
+3. Open `styles.html` from the project folder
+4. Copy all contents and paste into the editor
+5. Click **Save**
+
+> **Note:** The application uses a modular architecture with separate files for server logic (Code.gs), HTML structure (index.html), JavaScript (script.html), and CSS (styles.html).
 
 ### Step 4: Deploy as Web App
 
 1. In the Apps Script editor, click **Deploy** (top right button)
 2. Click **New deployment**
-3. Select the gear icon → choose **Web app**
-4. Configure as follows:
-   - **Execute as:** Select your Google Account
-   - **Who has access:** "Anyone"
+3. Click the gear icon next to "Select type" → choose **Web app**
+4. Configure deployment settings:
+   - **Description:** "Invoice Management System v1.0" (optional)
+   - **Execute as:** **Me (your-email@gmail.com)** ← This runs the app under YOUR account
+   - **Who has access:** **Anyone** ← Customers can access without signing in
 5. Click **Deploy**
-6. You'll see a dialog with a URL - **COPY THIS URL** (you'll share this with users)
-7. Click **Done**
+6. **First-time authorization:**
+   - Click **Authorize access**
+   - Select your Google Account
+   - Click **Advanced** (if you see a warning)
+   - Click **Go to [Your Project Name] (unsafe)**
+   - Click **Allow**
+7. You'll see a dialog with a URL - **COPY THIS URL** (this is what you'll share)
+8. Click **Done**
+
+> **Important:** By setting "Execute as: Me" and "Who has access: Anyone", the app runs under your Google Account while allowing anyone with the link to use it. Your customers do NOT need to sign into Google - they just need the URL.
 
 ### Step 5: Test the App
 
@@ -175,11 +214,62 @@ Follow these steps to deploy the app to your Google Account:
 
 ## 🔒 Security & Permissions
 
-- **Authentication:** Relies on Google Account login (built-in)
-- **Access Control:** "Anyone" means users with the link can access
-- **Data Storage:** All data encrypted in Google Sheets (Google-managed)
+### Access Model
+- **Owner:** You (your Google Account owns the Sheet and Apps Script)
+- **Execution:** App runs under YOUR account ("Execute as: Me")
+- **User Access:** "Anyone" with the link can use the app
+- **No Google Login Required:** Customers can access without signing in
+- **Data Storage:** All data saved to YOUR Google Sheet (you maintain control)
+
+### Security Features
+- **HTTPS Encryption:** All data transmitted over secure connections
+- **Google-Managed Encryption:** Data encrypted at rest in Google Sheets
 - **No External Servers:** Everything stays within Google's infrastructure
-- **User Tracking:** Each submission records the user's email automatically
+- **Audit Trail:** Each submission records timestamp and user information
+- **Access Control:** Only people with the deployment URL can access the app
+
+### Important Notes
+- Your customers can use the app without a Google Account
+- If they ARE signed into Google, their email will be recorded in the audit trail
+- If they are NOT signed in, the "Created By" field will show "Anonymous"
+- Only YOU can access the Google Sheet and Apps Script (unless you share it)
+- You control all data - customers only interact through the app interface
+
+---
+
+## 🙋 Customer Access FAQ
+
+### Q: Do my customers need a Google Account to use this app?
+**A:** No! When you deploy with "Who has access: Anyone", customers can use the app without any Google login. They just need the URL.
+
+### Q: What happens if they try to access it without being logged into Google?
+**A:** The app will work perfectly. They'll see the interface and can submit invoices normally. The only difference is their submissions will show "Anonymous" instead of their email in the audit trail.
+
+### Q: Can customers see each other's data or access my Google Sheet?
+**A:** No. Customers only interact with the web interface. They cannot access:
+- Your Google Sheet directly
+- The Apps Script code
+- Data submitted by other users
+- Any Google Drive files
+
+### Q: Who can see the data in the Google Sheet?
+**A:** Only you (and anyone you explicitly share the Sheet with using Google's sharing settings). The app runs under your account, so all data is stored in YOUR Google Sheet.
+
+### Q: Will customers see any "permission required" popups?
+**A:** No. When you set "Execute as: Me" during deployment, the app runs with YOUR permissions. Customers just use the interface - no authorization needed on their end.
+
+### Q: Can I restrict access to specific people?
+**A:** The current deployment allows "Anyone" with the link. If you want to restrict access:
+1. Change "Who has access" to "Anyone with Google Account"
+2. Users will need to sign in with their Google Account
+3. You can also set to "Only myself" for testing
+
+### Q: What if I want to revoke access later?
+**A:** You can disable the deployment at any time:
+1. Go to Apps Script editor
+2. Click **Deploy** → **Manage Deployments**
+3. Click the archive icon to disable
+4. The URL will immediately stop working
 
 ---
 
@@ -366,11 +456,12 @@ If you need to modify the code:
 - Click moon/sun icon (top right)
 - Preference saves automatically
 
-### Share with Team
+### Share with Customers
 - Copy deployment URL from Google Apps Script
-- Send via email or Slack
-- Team members click link and start using
-- All share same Google Sheets
+- Send via email, text, or embed in your website
+- Customers click link and start using immediately
+- No Google Account required to use the app
+- All data saves to YOUR Google Sheet (you control access)
 
 ---
 
@@ -406,16 +497,39 @@ If you encounter issues:
 
 ## 📋 Checklist for Full Deployment
 
+### Setup Phase
 - [ ] Google Sheet created and named "Bonnie's Invoice Management"
-- [ ] Sheet has an "Invoices" tab
-- [ ] All 4 .gs files copied to Apps Script editor
-- [ ] App deployed as Web App
+- [ ] First sheet renamed to "Invoices"
+- [ ] Apps Script project opened from Extensions menu
+- [ ] All 4 files copied to Apps Script editor:
+  - [ ] Code.gs (server-side logic)
+  - [ ] index.html (HTML structure)
+  - [ ] script.html (JavaScript)
+  - [ ] styles.html (CSS)
+- [ ] All files saved successfully
+
+### Deployment Phase
+- [ ] Web app deployment created
+- [ ] Execute as: "Me" (your account)
+- [ ] Who has access: "Anyone"
+- [ ] Authorization completed (if first-time)
 - [ ] Deployment URL copied
+
+### Testing Phase
 - [ ] Test invoice submitted successfully
-- [ ] Data verified in Google Sheets
-- [ ] Dark mode toggle tested
-- [ ] Search functionality tested
-- [ ] URL shared with team members
+- [ ] Data appears in Google Sheets "Invoices" tab
+- [ ] Vendors sheet auto-created with default vendors
+- [ ] Search by invoice number works
+- [ ] Search by date range works
+- [ ] Edit invoice functionality works
+- [ ] Dark mode toggle works
+- [ ] Mobile responsive layout tested
+- [ ] Tested without Google login (incognito mode)
+
+### Distribution Phase
+- [ ] Deployment URL shared with customers
+- [ ] Instructions provided (if needed)
+- [ ] Test invoice created by customer successfully
 
 ---
 
@@ -432,6 +546,7 @@ All data is securely stored in Google Sheets and ready for business intelligence
 
 ---
 
-**Version:** 1.0  
-**Last Updated:** November 11, 2025  
+**Version:** 1.2  
+**Architecture:** Modular (Code.gs + 3 HTML files)  
+**Last Updated:** November 18, 2025  
 **Status:** Production Ready ✅
