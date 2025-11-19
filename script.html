@@ -153,8 +153,14 @@
 
     // Generic function to populate vendor lists for both create and edit forms
     function populateVendorListGeneric(prefix = '') {
-        const vendorList = document.getElementById(prefix + 'vendorList');
-        const vendorSelect = document.getElementById(prefix + 'vendorSelect');
+        // Helper to build element ID with proper capitalization
+        const fieldId = (fieldName) => {
+            if (prefix === '') return fieldName;
+            return prefix + fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+        };
+        
+        const vendorList = document.getElementById(fieldId('vendorList'));
+        const vendorSelect = document.getElementById(fieldId('vendorSelect'));
         vendorList.innerHTML = '';
 
         state.vendors.forEach(vendor => {
@@ -180,7 +186,13 @@
 
     // Generic function to filter vendor lists for both create and edit forms
     function filterVendorListGeneric(searchTerm, prefix = '') {
-        const vendorList = document.getElementById(prefix + 'vendorList');
+        // Helper to build element ID with proper capitalization
+        const fieldId = (fieldName) => {
+            if (prefix === '') return fieldName;
+            return prefix + fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+        };
+        
+        const vendorList = document.getElementById(fieldId('vendorList'));
         const selector = prefix === '' ? 'li:not(.add-new)' : 'li';
         const items = vendorList.querySelectorAll(selector);
         let hasVisibleItems = false;
