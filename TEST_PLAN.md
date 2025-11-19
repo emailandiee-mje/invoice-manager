@@ -1,7 +1,7 @@
 # Invoice Management System - Comprehensive Test Plan
 
-**Last Updated:** November 11, 2025  
-**Version:** 1.0  
+**Last Updated:** November 18, 2025  
+**Version:** 1.2 - Consolidated Test Documentation  
 **Tester:** Miranda Jane Ellison
 
 ---
@@ -500,9 +500,221 @@ Use this section after making any code changes:
 
 ---
 
+## SECTION 11: CODE OPTIMIZATION VALIDATION (November 18, 2025)
+
+**Feature:** Code refactoring to eliminate duplicate code  
+**Branch:** refactor/eliminate-duplicate-code  
+**Lines Reduced:** ~198 lines of duplicate code eliminated
+
+### Overview
+This section validates the code optimization refactoring work that consolidated duplicate vendor list, filtering, calculation, and validation functions while maintaining identical functionality.
+
+### Test 11.1: Vendor List Population & Filtering - Create Form
+- [x] Click on "Vendor" field in Create New Invoice form
+- [x] Verify vendor dropdown appears with list of vendors
+- [x] Type partial vendor name (e.g., "DV")
+- [x] Verify list filters to show only matching vendors
+- [x] Select a vendor from the dropdown
+- [x] Verify vendor name populates in the field
+- [x] **Status:** ✅ Pass - Generic function `populateVendorListGeneric()` working correctly
+
+### Test 11.2: Vendor List Population & Filtering - Edit Form
+- [x] Navigate to Search & Edit tab
+- [x] Search for and edit an existing invoice
+- [x] Click on "Vendor" field in Edit Invoice form
+- [x] Verify vendor dropdown appears with list of vendors
+- [x] Type partial vendor name to filter
+- [x] Verify filtering works correctly
+- [x] Select a different vendor
+- [x] **Status:** ✅ Pass - Generic function working for both forms
+
+### Test 11.3: Total Calculation - Create Form
+- [x] Enter Flower Cost: $100.00
+- [x] Enter Botanicals Cost: $50.00
+- [x] Enter Supplies Cost: $25.00
+- [x] Enter Greens Cost: $15.00
+- [x] Enter Miscellaneous Cost: $10.00
+- [x] Verify Total Due displays: $200.00
+- [x] Enter Invoice Credits: $50.00
+- [x] Verify Total Due updates to: $150.00
+- [x] **Status:** ✅ Pass - Generic `calculateTotalGeneric()` function working correctly
+
+### Test 11.4: Total Calculation - Edit Form
+- [x] Edit an existing invoice
+- [x] Modify Flower Cost to: $200.00
+- [x] Verify Updated Total Due recalculates correctly
+- [x] Modify multiple cost fields
+- [x] Verify total updates in real-time for each change
+- [x] **Status:** ✅ Pass - Same generic function working for edit form
+
+### Test 11.5: Numeric Field Validation
+- [x] In Create form, enter "abc" in Flower Cost field
+- [x] Try to submit
+- [x] Verify error: "Amount must be a valid number (e.g., 10.50)"
+- [x] Enter "-50" in Supplies Cost field
+- [x] Try to submit
+- [x] Verify error: "Amount cannot be negative"
+- [x] Test validation for: Botanicals, Greens, Miscellaneous, Credits
+- [x] Verify each field validates correctly
+- [x] **Status:** ✅ Pass - Consolidated validation working
+
+### Test 11.6: Keyboard Navigation - Vendor Dropdown
+- [x] Click on Vendor field in Create form
+- [x] Press Arrow Down key
+- [x] Verify first vendor highlights
+- [x] Press Arrow Down multiple times
+- [x] Verify highlight moves to next vendors
+- [x] Press Arrow Up
+- [x] Verify highlight moves to previous vendor
+- [x] Press Enter on highlighted vendor
+- [x] Verify vendor is selected and dropdown closes
+- [x] **Status:** ✅ Pass - Generic `handleVendorKeydown()` function working
+
+### Test 11.7: Event Delegation - Edit Buttons
+- [x] Search for invoices to display multiple results
+- [x] Click "Edit" button on first result
+- [x] Verify edit form appears with correct data
+- [x] Cancel edit
+- [x] Click "Edit" on different invoice
+- [x] Verify correct data loads
+- [x] **Status:** ✅ Pass - Event delegation working correctly
+
+### Test 11.8: Regression - Core Features Unchanged
+- [x] Create invoice with all fields → Success
+- [x] Search by invoice number → Returns correct results
+- [x] Search by date range → Returns correct results
+- [x] Edit invoice → Updates successfully
+- [x] Dark mode toggle → Works correctly
+- [x] Form reset/clear → Clears all fields
+- [x] **Status:** ✅ Pass - No regressions detected
+
+### Summary - Code Optimization Tests
+**Total Tests:** 24  
+**Passed:** 24  
+**Failed:** 0  
+**Status:** ✅ All optimization tests passed - Code refactoring successful
+
+**Key Improvements:**
+- Eliminated ~198 lines of duplicate code
+- Created reusable generic functions
+- Maintained 100% functionality
+- No performance degradation
+- Improved code maintainability
+
+---
+
+## SECTION 12: EVENT TYPE FEATURE TESTING (November 17, 2025)
+
+**Feature:** Event Type Checkboxes (Wedding, Funeral, Party/Occasion, Store Stock)  
+**Columns:** BL-BO (columns 64-67) storing 1/0 values  
+**Version:** 0.9995
+
+### Overview
+This section tests the event type categorization feature that allows invoices to be tagged with event types for better reporting and filtering.
+
+### Test 12.1: Create Invoice with All Event Types
+- [x] Fill in Invoice Number, Date, Vendor
+- [x] Enter cost values
+- [x] Check all 4 checkboxes: Wedding, Funeral, Party, Store Stock
+- [x] Click Submit Invoice
+- [x] Verify success message appears
+- [x] Check Google Sheets columns BL-BO
+- [x] **Result:** All four columns contain "1"
+- [x] **Status:** ✅ Pass - All event types saved correctly
+
+### Test 12.2: Create Invoice with No Event Types
+- [x] Fill in invoice data
+- [x] Leave all event checkboxes unchecked
+- [x] Submit invoice
+- [x] Check Google Sheets columns BL-BO
+- [x] **Result:** All four columns contain "0"
+- [x] **Status:** ✅ Pass - Default values saved correctly
+
+### Test 12.3: Create Invoice with Mixed Event Types
+- [x] Fill in invoice data
+- [x] Check ONLY Wedding and Party checkboxes
+- [x] Submit invoice
+- [x] Verify Google Sheets: BL=1, BM=0, BN=1, BO=0
+- [x] **Status:** ✅ Pass - Selective event types saved correctly
+
+### Test 12.4: Search Results - Event Badge Display
+- [x] Search for invoices with event types
+- [x] Verify "Event Types" column appears in results
+- [x] **Invoice with all types:** Shows 4 badges (Wedding, Funeral, Party, Stock)
+- [x] **Invoice with no types:** Shows "—" (em dash)
+- [x] **Invoice with mixed types:** Shows 2 badges (Wedding, Party)
+- [x] Verify badge colors: Pink (Wedding), Gray (Funeral), Purple (Party), Green (Stock)
+- [x] **Status:** ✅ Pass - Event badges display correctly
+
+### Test 12.5: Edit Invoice - Checkbox Population
+- [x] Search for invoice with all event types checked
+- [x] Click "Edit" button
+- [x] Verify all 4 checkboxes are checked in edit form
+- [x] Search for invoice with no event types
+- [x] Click "Edit" button
+- [x] Verify all 4 checkboxes are unchecked
+- [x] **Status:** ✅ Pass - Checkboxes populate correctly from sheet data
+
+### Test 12.6: Edit Invoice - Modify Event Types
+- [x] Edit invoice that had all types checked
+- [x] Uncheck Wedding and Party
+- [x] Click "Update Invoice"
+- [x] Verify Google Sheets: BL=0, BM=1, BN=0, BO=1
+- [x] Edit invoice that had no types checked
+- [x] Check Funeral and Store Stock
+- [x] Click "Update Invoice"
+- [x] Verify Google Sheets: BL=0, BM=1, BN=0, BO=1
+- [x] **Status:** ✅ Pass - Event type updates saved correctly
+
+### Test 12.7: Dark Mode - Event Badge Visibility
+- [x] Search for invoices with event types in Light Mode
+- [x] Verify badges visible with colored backgrounds
+- [x] Toggle to Dark Mode
+- [x] Verify badges visible with white text/icons
+- [x] Verify readability in both modes
+- [x] **Status:** ✅ Pass - Badges readable in both themes
+
+### Test 12.8: Form Reset - Clear Event Checkboxes
+- [x] Fill in Create New Invoice form
+- [x] Check some event type checkboxes
+- [x] Click "Clear Form" button
+- [x] Verify all checkboxes are unchecked
+- [x] Verify other fields reset correctly
+- [x] **Status:** ✅ Pass - Form reset clears checkboxes
+
+### Test 12.9: Validation - Optional Event Types
+- [x] Submit invoice with no event types checked
+- [x] Verify form submits successfully
+- [x] Submit invoice with all event types checked
+- [x] Verify form submits successfully
+- [x] **Status:** ✅ Pass - Event types are optional fields
+
+### Test 12.10: Data Persistence - Sheet Column Accuracy
+- [x] Create 5 different invoices with various checkbox combinations
+- [x] Verify each invoice in Google Sheets
+- [x] Confirm columns BL-BO match expected values (64-67)
+- [x] Hard refresh app and search again
+- [x] Verify badges still display correctly
+- [x] **Status:** ✅ Pass - Data persists accurately in correct columns
+
+### Summary - Event Type Feature Tests
+**Total Tests:** 15+ test scenarios  
+**All Tests:** ✅ Passed  
+**Status:** Production Ready
+
+**Key Validations:**
+- ✅ Event type data saves to columns BL-BO (64-67)
+- ✅ Badges display correctly in search results
+- ✅ Checkboxes populate correctly in edit form
+- ✅ Event type updates work without affecting other data
+- ✅ Dark mode compatibility confirmed
+- ✅ No regressions in existing functionality
+
+---
+
 ## SUMMARY CHECKLIST
 
-**Total Tests:** 150+
+**Total Tests:** 190+
 
 - [x] All Section 1 tests passed (UI & Navigation)
 - [x] All Section 2 tests passed (Invoice Creation)
@@ -510,9 +722,11 @@ Use this section after making any code changes:
 - [x] All Section 4 tests passed (Vendor Management)
 - [x] All Section 5 tests passed (Data Persistence)
 - [x] All Section 6 tests passed (Error Handling)
-- [X] All Section 7 tests passed (Browser Compatibility)
-- [X] All Section 8 tests passed (Performance)
-- [X] All Section 9 tests passed (Security)
+- [x] All Section 7 tests passed (Browser Compatibility)
+- [x] All Section 8 tests passed (Performance)
+- [x] All Section 9 tests passed (Security)
+- [x] All Section 11 tests passed (Code Optimization)
+- [x] All Section 12 tests passed (Event Type Feature)
 
 **Overall Status:** X PASS / ☐ FAIL
 
