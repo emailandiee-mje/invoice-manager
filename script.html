@@ -321,15 +321,21 @@
 
     // Generic function to calculate total for both create and edit forms
     function calculateTotalGeneric(prefix = '') {
-        const flowerCost = parseFloat(document.getElementById(prefix + 'flowerCost').value) || 0;
-        const botanicalsCost = parseFloat(document.getElementById(prefix + 'botanicalsCost').value) || 0;
-        const suppliesCost = parseFloat(document.getElementById(prefix + 'suppliesCost').value) || 0;
-        const greensCost = parseFloat(document.getElementById(prefix + 'greensCost').value) || 0;
-        const miscellaneousCost = parseFloat(document.getElementById(prefix + 'miscellaneousCost').value) || 0;
-        const credits = parseFloat(document.getElementById(prefix + 'invoiceCredits').value) || 0;
+        // Helper to build field ID with proper capitalization
+        const fieldId = (fieldName) => {
+            if (prefix === '') return fieldName;
+            return prefix + fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+        };
+
+        const flowerCost = parseFloat(document.getElementById(fieldId('flowerCost')).value) || 0;
+        const botanicalsCost = parseFloat(document.getElementById(fieldId('botanicalsCost')).value) || 0;
+        const suppliesCost = parseFloat(document.getElementById(fieldId('suppliesCost')).value) || 0;
+        const greensCost = parseFloat(document.getElementById(fieldId('greensCost')).value) || 0;
+        const miscellaneousCost = parseFloat(document.getElementById(fieldId('miscellaneousCost')).value) || 0;
+        const credits = parseFloat(document.getElementById(fieldId('invoiceCredits')).value) || 0;
 
         const total = flowerCost + botanicalsCost + suppliesCost + greensCost + miscellaneousCost - credits;
-        displayTotal(total, prefix + 'totalDisplay');
+        displayTotal(total, fieldId('totalDisplay'));
     }
 
     // Wrapper functions for backward compatibility
