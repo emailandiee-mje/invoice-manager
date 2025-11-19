@@ -111,7 +111,32 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 
 ## Proposed Enhancements
 
-### 1. Character Counter on Fields
+### 1. Auto-Scroll to Validation Errors
+- **Description:** When form validation fails (e.g., blank invoice number, blank date, invalid amounts), automatically scroll the page to the error message banner so users can immediately see what went wrong
+- **Benefit:** Improved user experience - users don't have to manually scroll to find error messages, especially on long forms or mobile devices. Provides immediate visual feedback on what needs to be corrected
+- **Priority:** Medium
+- **Status:** Under consideration
+- **Source:** Testing feedback - CODE_OPTIMIZATION_TEST_PLAN.md Test 3.2
+- **Implementation Notes:**
+  - Apply to both Create Invoice and Edit Invoice forms
+  - Scroll to error banner using `scrollIntoView({ behavior: 'smooth', block: 'center' })`
+  - Trigger on all validation failures (required fields, numeric validation, date validation, duplicate detection)
+  - Ensure error message is centered in viewport for optimal visibility
+
+### 2. Improve Duplicate Invoice Detection Performance
+- **Description:** Reduce the 3-second delay when checking for duplicate invoice numbers on blur event. Consider optimizing the server-side lookup or adding visual feedback (loading spinner) during the check
+- **Benefit:** Faster user feedback, less waiting time during data entry, improved perceived performance
+- **Priority:** Medium
+- **Status:** Under consideration
+- **Source:** Testing feedback - CODE_OPTIMIZATION_TEST_PLAN.md Test 9.1
+- **Implementation Options:**
+  - Optimize `checkInvoiceNumberExists()` server-side function for faster lookup
+  - Add debouncing to prevent unnecessary checks during rapid typing
+  - Display loading spinner/indicator while check is in progress
+  - Cache recent invoice number checks to avoid duplicate server calls
+  - Consider client-side caching of invoice numbers for instant validation
+
+### 3. Character Counter on Fields
 - **Description:** Add character counters to the invoice number and vendor name fields
 - **Benefit:** Users can see how many characters they've used vs. the limit (50 for invoice, 100 for vendor)
 - **Priority:** Low
@@ -123,25 +148,37 @@ This document tracks potential enhancements and feature ideas for the Invoice Ma
 - **Priority:** Low
 - **Status:** Under consideration
 
-### 3. Search by Vendor
+### 4. Prevent New Vendor Creation on Duplicate Invoice Error
+- **Description:** When invoice submission fails due to duplicate invoice number validation, prevent the system from adding the vendor name as a new vendor to the vendor list
+- **Benefit:** Prevents misleading behavior where validation fails but side effects (new vendor creation) still occur. Maintains data integrity and avoids user confusion
+- **Priority:** Medium-High
+- **Status:** Under consideration
+- **Source:** Testing feedback - CODE_OPTIMIZATION_TEST_PLAN.md Test 9.2
+- **Implementation Notes:**
+  - Validate invoice number/date uniqueness BEFORE processing new vendor addition
+  - Ensure transaction-like behavior: if validation fails, no data changes occur
+  - Order of operations: validation first, then data modifications
+  - Consider wrapping submission logic in try-catch to rollback any partial changes
+
+### 5. Search by Vendor
 - **Description:** Add ability to search for all invoices from a specific vendor
 - **Benefit:** Useful for vendor-specific reporting and analysis
 - **Priority:** Medium
 - **Status:** Under consideration
 
-### 4. Clear Search Results on Tab Switch
+### 6. Clear Search Results on Tab Switch
 - **Description:** Decide whether switching between tabs should clear search results, and whether a dedicated "Clear" button is needed
 - **Benefit:** Better state management, clearer UX expectations
 - **Priority:** Medium
 - **Status:** Needs discussion with customer/stakeholders
 
-### 5. Add Freeform Comment Field
+### 7. Add Freeform Comment Field
 - **Description:** Add freeform comment field to Create New Invoice and Edit Invoice screens
 - **Benefit:** Provide context for purchases
 - **Priority:** Medium
 - **Status:** Needs discussion with customer/stakeholders to understand best field placement
 
-### 6. Event Type Checkboxes
+### 8. Event Type Checkboxes
 - **Description:** Add three checkboxes on Create Invoice and Edit Invoice screens to categorize orders: Wedding, Funeral, and Holiday
 - **Benefit:** Enable event-type tracking for business analysis, seasonal trends, and reporting (e.g., "How much of our business comes from weddings vs. funerals?")
 - **Priority:** High
@@ -189,4 +226,4 @@ When implementing enhancements, consider:
 
 ---
 
-**Last Reviewed:** November 15, 2025
+**Last Reviewed:** November 18, 2025
