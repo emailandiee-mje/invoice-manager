@@ -243,8 +243,10 @@
     }
 
     function updateVendorHighlight(visibleItems) {
-        const vendorList = document.getElementById('vendorList');
-        clearVendorHighlight(vendorList);
+        // Clear all highlights from all visible items first
+        visibleItems.forEach(item => item.classList.remove('keyboard-highlighted'));
+        
+        // Highlight the currently selected item
         if (state.highlightedVendorIndex >= 0 && state.highlightedVendorIndex < visibleItems.length) {
             const item = visibleItems[state.highlightedVendorIndex];
             item.classList.add('keyboard-highlighted');
