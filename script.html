@@ -119,6 +119,14 @@
             }, 200);
         });
 
+        // Basic keyboard navigation for edit vendor dropdown (Escape to close)
+        editVendorInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                editVendorList.classList.add('hidden');
+            }
+        });
+
         document.addEventListener('click', (e) => {
             if (!e.target.closest('.vendor-input-wrapper')) {
                 vendorList.classList.add('hidden');
@@ -167,7 +175,9 @@
             const li = document.createElement('li');
             li.textContent = vendor;
             li.setAttribute('role', 'option');
-            li.addEventListener('click', () => {
+            // Use mousedown instead of click to beat the blur event timing
+            li.addEventListener('mousedown', (e) => {
+                e.preventDefault(); // Prevent blur from firing
                 vendorSelect.value = vendor;
                 vendorList.classList.add('hidden');
             });
